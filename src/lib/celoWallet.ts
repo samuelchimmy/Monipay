@@ -89,4 +89,50 @@ export async function getCeloUsdtBalance(address: `0x${string}`): Promise<number
   try {
     const raw = await (celoPublicClient as any).readContract({
       address: CELO_USDT_ADDRESS,
-      abi: erc20Abi,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [address],
+    });
+
+    const balance = parseFloat(formatUnits(raw, CELO_TOKEN_DECIMALS));
+
+    // Cache for 30s
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ balance, updatedAt: Date.now() }));
+    } catch { /* ignore */ }
+
+    return balance;
+  } catch (err) {
+    console.warn('[Celo] Balance fetch failed, trying cache:', err);
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { balance } = JSON.parse(cached);
+        if (typeof balance === 'number') return balance;
+      }
+    } catch { /* ignore */ }
+    return NaN;
+  }
+}
+
+// ─── Approval ────────────────────────────────────────────────────────────────
+
+/**
+ * Check how much USDT the user has approved to the MoniPayRouter on Celo.
+ */
+export async function getCeloUsdtAllowance(walletAddress: `0x${string}`): Promise<{
+  allowance: bigint;
+  balance: bigint;
+  hasUnlimitedApproval: boolean;
+}> {
+  const [allowance, balance] = await Promise.all([
+    (celoPublicClient as any).readContract({
+      address: CELO_USDT_ADDRESS,
+      abi: erc20Abi,
+      functionName: 'allowance',
+      args: [walletAddress, CELO_MONIPAY_ROUTER],
+    }),
+    (celoPublicClient as any).readContract({
+      address: CELO_USDT_ADDRESS,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
