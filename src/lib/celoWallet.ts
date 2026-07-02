@@ -319,4 +319,48 @@ export function formatCeloUsdt(amount: number): string {
 }
 
 /** Convert a raw bigint token amount to human-readable number */
-export function rawToUsdt(raw: bigint): number {
+export function rawToUsdt(raw: bigint): number {
+  return parseFloat(formatUnits(raw, CELO_TOKEN_DECIMALS));
+}
+
+/** Convert a human-readable USDT amount to raw bigint */
+export function usdtToRaw(amount: number): bigint {
+  return parseUnits(amount.toFixed(CELO_TOKEN_DECIMALS), CELO_TOKEN_DECIMALS);
+}
+
+/**
+ * Fetch any token balance on Celo for a given address.
+ */
+export async function getCeloTokenBalance(
+  address: `0x${string}`,
+  tokenAddress: `0x${string}`,
+  decimals: number
+): Promise<number> {
+  const CACHE_KEY = `monipay_celo_token_balance:${tokenAddress.toLowerCase()}:${address.toLowerCase()}`;
+
+  try {
+    const raw = await (celoPublicClient as any).readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [address],
+    });
+
+    const balance = parseFloat(formatUnits(raw, decimals));
+
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ balance, updatedAt: Date.now() }));
+    } catch {}
+
+    return balance;
+  } catch (err) {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { balance } = JSON.parse(cached);
+        if (typeof balance === 'number') return balance;
+      }
+    } catch {}
+    return NaN;
+  }
+}
