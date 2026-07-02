@@ -135,4 +135,50 @@ export async function getCeloUsdtAllowance(walletAddress: `0x${string}`): Promis
     (celoPublicClient as any).readContract({
       address: CELO_USDT_ADDRESS,
       abi: erc20Abi,
-      functionName: 'balanceOf',
+      functionName: 'balanceOf',
+      args: [walletAddress],
+    }),
+  ]);
+
+  return {
+    allowance,
+    balance,
+    hasUnlimitedApproval: allowance > BigInt('0xffffffffffffffffffffffff'),
+  };
+}
+
+/**
+ * Build the calldata for approving the MoniPayRouter to spend USDT.
+ * Returns the encoded calldata — caller sends it via window.ethereum.
+ *
+ * Approves the maximum uint256 value (unlimited) so users only need
+ * to approve once, same pattern as Base/BSC.
+ */
+export function buildCeloApprovalCalldata(): Hex {
+  return encodeFunctionData({
+    abi: erc20Abi,
+    functionName: 'approve',
+    args: [CELO_MONIPAY_ROUTER, BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')],
+  });
+}
+
+/**
+ * Send an approval transaction for USDT → MoniPayRouter on Celo.
+ * Uses MiniPay's injected wallet (window.ethereum).
+ * Returns the transaction hash.
+ */
+export async function approveCeloUsdt(walletAddress: `0x${string}`): Promise<`0x${string}`> {
+  const eth = (window as any).ethereum;
+  if (!eth?.isMiniPay) throw new Error('Not running inside MiniPay');
+
+  const calldata = buildCeloApprovalCalldata();
+
+  const txHash: `0x${string}` = await eth.request({
+    method: 'eth_sendTransaction',
+    params: [{
+      from:        walletAddress,
+      to:          CELO_USDT_ADDRESS,    // calling the USDT token contract
+      data:        calldata,
+      feeCurrency: CELO_FEE_CURRENCY,   // pay gas in USDm — MiniPay requirement
+      // No maxFeePerGas / maxPriorityFeePerGas — legacy tx format required
+    }],
