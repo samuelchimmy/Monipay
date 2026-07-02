@@ -28,3 +28,10 @@ contract IOURegistry {
         _registry[platform][userId] = wallet;
         _userIdentities[wallet].push(string(abi.encodePacked(platform, ":", userId)));
         
+        emit IdentityLinked(wallet, platform, userId);
+    }
+
+    function resolveIdentity(string calldata platform, string calldata userId) external view returns (address) {
+        return _registry[platform][userId];
+    }
+}
