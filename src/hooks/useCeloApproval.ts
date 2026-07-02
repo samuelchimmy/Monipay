@@ -38,4 +38,24 @@ export function useCeloApproval(
   const [isLoading, setIsLoading]         = useState(false);
   const [isSending, setIsSending]         = useState(false);
   const [error, setError]                 = useState<string | null>(null);
+
+  const fetchAllowance = useCallback(async () => {
+    if (!walletAddress) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { allowance } = await getCeloUsdtAllowance(walletAddress);
+      const minRaw = usdtToRaw(MIN_SUFFICIENT_ALLOWANCE_USDT);
+      const humanAllowance = Number(allowance) / 1_000_000;
+      setAllowanceUsdt(humanAllowance);
+      setIsApproved(allowance >= minRaw);
+    } catch (err: any) {
+      console.error('[useCeloApproval] Fetch failed:', err);
+      setError('Failed to check approval status');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [walletAddress]);
 
