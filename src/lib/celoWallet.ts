@@ -181,4 +181,50 @@ export async function approveCeloUsdt(walletAddress: `0x${string}`): Promise<`0x
       data:        calldata,
       feeCurrency: CELO_FEE_CURRENCY,   // pay gas in USDm — MiniPay requirement
       // No maxFeePerGas / maxPriorityFeePerGas — legacy tx format required
-    }],
+    }],
+  });
+
+  return txHash;
+}
+
+/**
+ * Send an approval transaction for a given token → router on Celo
+ * using a local private key (for the normal app, outside MiniPay).
+ */
+export async function approveCeloTokenWithKey(
+  privateKey: `0x${string}`,
+  tokenAddress: `0x${string}`,
+  routerAddress: `0x${string}`
+): Promise<`0x${string}`> {
+  const { createWalletClient } = await import('viem');
+
+  const account = privateKeyToAccount(privateKey);
+  const walletClient = createWalletClient({
+    account,
+    chain: celo,
+    transport: http('https://forno.celo.org'),
+  });
+
+  const maxApproval = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
+
+  const hash = await walletClient.writeContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    functionName: 'approve',
+    args: [routerAddress, maxApproval],
+    chain: celo,
+    account,
+  });
+
+  return hash;
+}
+
+/**
+ * Alias for approveCeloTokenWithKey (legacy).
+ */
+export async function approveCeloUsdtWithKey(privateKey: `0x${string}`): Promise<`0x${string}`> {
+  return approveCeloTokenWithKey(privateKey, CELO_USDT_ADDRESS, CELO_MONIPAY_ROUTER);
+}
+
+// ─── EIP-712 signing ─────────────────────────────────────────────────────────
+
