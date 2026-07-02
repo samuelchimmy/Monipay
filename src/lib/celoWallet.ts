@@ -227,4 +227,140 @@ export async function approveCeloUsdtWithKey(privateKey: `0x${string}`): Promise
 }
 
 // ─── EIP-712 signing ─────────────────────────────────────────────────────────
-
+
+const PAYMENT_TYPES = {
+  PaymentAuthorization: [
+    { name: 'from',     type: 'address' },
+    { name: 'to',       type: 'address' },
+    { name: 'amount',   type: 'uint256' },
+    { name: 'fee',      type: 'uint256' },
+    { name: 'nonce',    type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
+  ],
+} as const;
+
+/**
+ * Sign a PaymentAuthorization for the Celo MoniPayRouter using the
+ * user's decrypted private key (same pattern as signPaymentAuthorization
+ * in wallet.ts for Base/BSC).
+ */
+export async function signCeloPaymentAuthorization(
+  privateKey: `0x${string}`,
+  to: `0x${string}`,
+  amountUsdt: number,   // human-readable, e.g. 5.50
+  feeUsdt: number,       // human-readable, e.g. 0.055
+  nonce: bigint,
+): Promise<{ signature: `0x${string}`; message: {
+  from: `0x${string}`;
+  to: `0x${string}`;
+  amount: bigint;
+  fee: bigint;
+  nonce: bigint;
+  deadline: bigint;
+}}> {
+  const account = privateKeyToAccount(privateKey);
+
+  const message = {
+    from:     account.address,
+    to,
+    amount:   parseUnits(amountUsdt.toFixed(CELO_TOKEN_DECIMALS), CELO_TOKEN_DECIMALS),
+    fee:      parseUnits(feeUsdt.toFixed(CELO_TOKEN_DECIMALS),    CELO_TOKEN_DECIMALS),
+    nonce,
+    deadline: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour
+  };
+
+  const signature = await account.signTypedData({
+    domain: getCeloDomain(),
+    types:  PAYMENT_TYPES,
+    primaryType: 'PaymentAuthorization',
+    message,
+  });
+
+  return { signature, message };
+}
+
+// ─── Nonce ───────────────────────────────────────────────────────────────────
+
+const ROUTER_ABI_NONCE = [
+  {
+    name:    'isNonceUsed',
+    type:    'function',
+    inputs:  [{ name: 'user',  type: 'address' }, { name: 'nonce', type: 'uint256' }],
+    outputs: [{ name: '',      type: 'bool'    }],
+    stateMutability: 'view',
+  },
+] as const;
+
+/**
+ * Find the next unused nonce for a wallet on the Celo MoniPayRouter.
+ * Scans sequentially from 0 — same logic as relay-payment getNonce action.
+ */
+export async function getCeloPaymentNonce(walletAddress: `0x${string}`): Promise<bigint> {
+  let nonce = 0n;
+  while (nonce < 1000n) {
+    const used = await (celoPublicClient as any).readContract({
+      address: CELO_MONIPAY_ROUTER,
+      abi:     ROUTER_ABI_NONCE,
+      functionName: 'isNonceUsed',
+      args:    [walletAddress, nonce],
+    });
+    if (!used) break;
+    nonce++;
+  }
+  console.log(`[Celo] Nonce for ${walletAddress}: ${nonce}`);
+  return nonce;
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Format a USDT amount for display (2 decimal places) */
+export function formatCeloUsdt(amount: number): string {
+  return amount.toFixed(2);
+}
+
+/** Convert a raw bigint token amount to human-readable number */
+export function rawToUsdt(raw: bigint): number {
+  return parseFloat(formatUnits(raw, CELO_TOKEN_DECIMALS));
+}
+
+/** Convert a human-readable USDT amount to raw bigint */
+export function usdtToRaw(amount: number): bigint {
+  return parseUnits(amount.toFixed(CELO_TOKEN_DECIMALS), CELO_TOKEN_DECIMALS);
+}
+
+/**
+ * Fetch any token balance on Celo for a given address.
+ */
+export async function getCeloTokenBalance(
+  address: `0x${string}`,
+  tokenAddress: `0x${string}`,
+  decimals: number
+): Promise<number> {
+  const CACHE_KEY = `monipay_celo_token_balance:${tokenAddress.toLowerCase()}:${address.toLowerCase()}`;
+
+  try {
+    const raw = await (celoPublicClient as any).readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [address],
+    });
+
+    const balance = parseFloat(formatUnits(raw, decimals));
+
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ balance, updatedAt: Date.now() }));
+    } catch {}
+
+    return balance;
+  } catch (err) {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { balance } = JSON.parse(cached);
+        if (typeof balance === 'number') return balance;
+      }
+    } catch {}
+    return NaN;
+  }
+}
