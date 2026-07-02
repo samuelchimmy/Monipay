@@ -6,3 +6,10 @@ pragma solidity ^0.8.20;
  * @notice Stores mapping of social identities (Telegram, Discord, X) to Celo addresses.
  * Used for walletless social payments in the Monipay ecosystem.
  */
+contract IOURegistry {
+    struct SocialIdentity {
+        string platform;
+        string userId;
+        address walletAddress;
+        uint256 createdAt;
+    }
