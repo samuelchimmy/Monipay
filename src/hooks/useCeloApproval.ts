@@ -79,4 +79,24 @@ export function useCeloApproval(
           toast.message('Topping up network fee', {
             description: 'Please try again in a moment.',
           });
-          setIsSending(false);
+          setIsSending(false);
+          return;
+        }
+      }
+
+      if (isMiniPay) {
+        // MiniPay context — use injected wallet
+        const txHash = await approveCeloUsdt(walletAddress);
+        console.log('[useCeloApproval] MiniPay approval tx:', txHash);
+      } else if (decryptedPrivateKey) {
+        // Normal app context — use local private key
+        const txHash = await approveCeloUsdtWithKey(decryptedPrivateKey);
+        console.log('[useCeloApproval] Key-based approval tx:', txHash);
+      } else {
+        throw new Error('No signing method available. Please unlock your wallet first.');
+      }
+
+      // Wait for Celo block confirmation (~5s)
+      await new Promise(resolve => setTimeout(resolve, 6000));
+      await fetchAllowance();
+    } catch (err: any) {
