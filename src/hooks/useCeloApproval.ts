@@ -99,4 +99,23 @@ export function useCeloApproval(
       // Wait for Celo block confirmation (~5s)
       await new Promise(resolve => setTimeout(resolve, 6000));
       await fetchAllowance();
-    } catch (err: any) {
+    } catch (err: any) {
+      console.error('[useCeloApproval] Approval failed:', err);
+      if (err?.code !== 4001) {
+        setError(err?.message ?? 'Approval transaction failed');
+      }
+    } finally {
+      setIsSending(false);
+    }
+  }, [walletAddress, decryptedPrivateKey, fetchAllowance]);
+
+  return {
+    isApproved,
+    allowanceUsdt,
+    isLoading,
+    isSending,
+    error,
+    approve,
+    refetch: fetchAllowance,
+  };
+}
