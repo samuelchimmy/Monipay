@@ -227,4 +227,50 @@ export async function approveCeloUsdtWithKey(privateKey: `0x${string}`): Promise
 }
 
 // ─── EIP-712 signing ─────────────────────────────────────────────────────────
-
+
+const PAYMENT_TYPES = {
+  PaymentAuthorization: [
+    { name: 'from',     type: 'address' },
+    { name: 'to',       type: 'address' },
+    { name: 'amount',   type: 'uint256' },
+    { name: 'fee',      type: 'uint256' },
+    { name: 'nonce',    type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
+  ],
+} as const;
+
+/**
+ * Sign a PaymentAuthorization for the Celo MoniPayRouter using the
+ * user's decrypted private key (same pattern as signPaymentAuthorization
+ * in wallet.ts for Base/BSC).
+ */
+export async function signCeloPaymentAuthorization(
+  privateKey: `0x${string}`,
+  to: `0x${string}`,
+  amountUsdt: number,   // human-readable, e.g. 5.50
+  feeUsdt: number,       // human-readable, e.g. 0.055
+  nonce: bigint,
+): Promise<{ signature: `0x${string}`; message: {
+  from: `0x${string}`;
+  to: `0x${string}`;
+  amount: bigint;
+  fee: bigint;
+  nonce: bigint;
+  deadline: bigint;
+}}> {
+  const account = privateKeyToAccount(privateKey);
+
+  const message = {
+    from:     account.address,
+    to,
+    amount:   parseUnits(amountUsdt.toFixed(CELO_TOKEN_DECIMALS), CELO_TOKEN_DECIMALS),
+    fee:      parseUnits(feeUsdt.toFixed(CELO_TOKEN_DECIMALS),    CELO_TOKEN_DECIMALS),
+    nonce,
+    deadline: BigInt(Math.floor(Date.now() / 1000) + 3600), // 1 hour
+  };
+
+  const signature = await account.signTypedData({
+    domain: getCeloDomain(),
+    types:  PAYMENT_TYPES,
+    primaryType: 'PaymentAuthorization',
+    message,
