@@ -13,3 +13,10 @@ contract IOURegistry {
         address walletAddress;
         uint256 createdAt;
     }
+
+    // platform => userId => walletAddress
+    mapping(string => mapping(string => address)) private _registry;
+    mapping(address => string[]) private _userIdentities;
+
+    event IdentityLinked(address indexed wallet, string platform, string userId);
+    event IdentityUnlinked(address indexed wallet, string platform, string userId);
