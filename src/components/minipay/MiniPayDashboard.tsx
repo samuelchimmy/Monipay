@@ -509,4 +509,132 @@ export function MiniPayDashboard({ walletAddress, profileId, isLegacy }: Props) 
   }, [walletAddress]);
 
   useEffect(() => {
-    refreshBalance();
+    refreshBalance();
+    const id = setInterval(refreshBalance, 30_000);
+    return () => clearInterval(id);
+  }, [refreshBalance]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(walletAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+      feedback('copy');
+      toast.success('Address copied');
+    } catch {
+      toast.error('Could not copy');
+    }
+  };
+
+  const formattedBalance = useMemo(() => {
+    if (balance === null) return '—';
+    return balance.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }, [balance]);
+
+  const [greeting, setGreeting] = useState('');
+
+  // Simple timezone-aware greeting
+  useEffect(() => {
+    const hr = new Date().getHours();
+    if (hr >= 5 && hr < 12) {
+      setGreeting('Good morning');
+    } else if (hr >= 12 && hr < 18) {
+      setGreeting('Good afternoon');
+    } else {
+      setGreeting('Good evening');
+    }
+  }, []);
+
+  const [allowanceApproved, setAllowanceApproved] = useState(false);
+
+  // Poll allowance on-chain for Celo USDT
+  const checkAllowance = useCallback(async () => {
+    if (!walletAddress) return;
+    try {
+      const router = CELO_CFG.monibotRouter as `0x${string}`;
+      const iou = CELO_CFG.iouRegistry as `0x${string}`;
+      const token = CELO_CFG.token as `0x${string}`;
+
+      for (const rpc of CELO_RPCS) {
+        try {
+          const client = createPublicClient({ chain: celo, transport: http(rpc) });
+          let routerAll = 0n;
+          if (router) {
+            routerAll = await (client as any).readContract({
+              address: token,
+              abi: erc20Abi,
+              functionName: 'allowance',
+              args: [walletAddress, router],
+            }) as bigint;
+          }
+          let iouAll = 0n;
+          if (iou) {
+            iouAll = await (client as any).readContract({
+              address: token,
+              abi: erc20Abi,
+              functionName: 'allowance',
+              args: [walletAddress, iou],
+            }) as bigint;
+          }
+          if (routerAll > 0n || iouAll > 0n) {
+            setAllowanceApproved(true);
+            return;
+          }
+        } catch {
+          // ignore and try next RPC
+        }
+      }
+      setAllowanceApproved(false);
+    } catch {
+      setAllowanceApproved(false);
+    }
+  }, [walletAddress]);
+
+  useEffect(() => {
+    checkAllowance();
+    const id = setInterval(checkAllowance, 15_000);
+    return () => clearInterval(id);
+  }, [checkAllowance]);
+
+  // Compile smart guide messages based on status
+  const typewriterMessages = useMemo(() => {
+    const list: string[] = [];
+
+    // Bullet 1 (Fixed)
+    list.push("Monipay is an AI-powered social payment layer built on Celo.");
+
+    // Bullet 2 (Fixed)
+    if (isInMiniPay) {
+      list.push("Your MiniPay wallet, supercharged by Monipay.");
+    } else {
+      list.push("Your wallet, supercharged by Monipay.");
+    }
+
+    // Bullet 3 (Fixed)
+    list.push("Send and receive money using plain language.");
+
+    // Bullet 4 and onwards (Rotating)
+    list.push("Monipay connects to your social accounts so payments flow naturally through your existing communities.");
+    list.push("MoniBot only spends what you approve. You stay in control.");
+
+    if (!payTag) {
+      list.push("Step 1: Claim your MoniTag — your social payment handle on Monipay.");
+      list.push("Tap the copy icon near your greeting to copy your MoniTag once claimed.");
+      list.push("With a MoniTag, anyone can pay you by name — no wallet address needed.");
+    } else if (!allowanceApproved) {
+      list.push(`Welcome, @${payTag}. Step 2: Approve a spending allowance so MoniBot can send payments on your behalf.`);
+      list.push("Your allowance is a cap, not a balance — MoniBot can only spend what you authorize.");
+      list.push("You remain in full control — MoniBot cannot exceed the allowance you approve.");
+      list.push("Tip a creator on X right now. Just say: Send $5 to @username");
+      list.push("Automate a sports payout — MoniBot holds it until the result is confirmed.");
+      list.push("Set up a recurring payment with one line. Try: Send $20 to @username every month, 5 times");
+      list.push("Schedule a future payment effortlessly. Try: Send $20 to @username on Friday");
+      list.push("Pay multiple people in a single command. Try: Send $10 each to @Jade, @Mike and @Alice");
+      list.push("Send money to anyone — even without a wallet. MagicPay lets them claim it by linking their social account.");
+      list.push("Monetize your community. Gate your Telegram group or Discord server with automated subscription access.");
+    } else if (identities.length === 0) {
+      list.push(`Welcome, @${payTag}. Step 3: Connect your social accounts so people can find and pay you by handle.`);
+      list.push("Once linked, MoniBot listens for payment commands in your chats and acts on them instantly.");
