@@ -20,3 +20,11 @@ contract IOURegistry {
 
     event IdentityLinked(address indexed wallet, string platform, string userId);
     event IdentityUnlinked(address indexed wallet, string platform, string userId);
+
+    function linkIdentity(string calldata platform, string calldata userId, address wallet) external {
+        require(wallet != address(0), "Invalid wallet address");
+        require(_registry[platform][userId] == address(0), "Identity already linked");
+        
+        _registry[platform][userId] = wallet;
+        _userIdentities[wallet].push(string(abi.encodePacked(platform, ":", userId)));
+        
