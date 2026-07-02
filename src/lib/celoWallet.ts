@@ -273,4 +273,50 @@ export async function signCeloPaymentAuthorization(
     domain: getCeloDomain(),
     types:  PAYMENT_TYPES,
     primaryType: 'PaymentAuthorization',
-    message,
+    message,
+  });
+
+  return { signature, message };
+}
+
+// ─── Nonce ───────────────────────────────────────────────────────────────────
+
+const ROUTER_ABI_NONCE = [
+  {
+    name:    'isNonceUsed',
+    type:    'function',
+    inputs:  [{ name: 'user',  type: 'address' }, { name: 'nonce', type: 'uint256' }],
+    outputs: [{ name: '',      type: 'bool'    }],
+    stateMutability: 'view',
+  },
+] as const;
+
+/**
+ * Find the next unused nonce for a wallet on the Celo MoniPayRouter.
+ * Scans sequentially from 0 — same logic as relay-payment getNonce action.
+ */
+export async function getCeloPaymentNonce(walletAddress: `0x${string}`): Promise<bigint> {
+  let nonce = 0n;
+  while (nonce < 1000n) {
+    const used = await (celoPublicClient as any).readContract({
+      address: CELO_MONIPAY_ROUTER,
+      abi:     ROUTER_ABI_NONCE,
+      functionName: 'isNonceUsed',
+      args:    [walletAddress, nonce],
+    });
+    if (!used) break;
+    nonce++;
+  }
+  console.log(`[Celo] Nonce for ${walletAddress}: ${nonce}`);
+  return nonce;
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Format a USDT amount for display (2 decimal places) */
+export function formatCeloUsdt(amount: number): string {
+  return amount.toFixed(2);
+}
+
+/** Convert a raw bigint token amount to human-readable number */
+export function rawToUsdt(raw: bigint): number {
