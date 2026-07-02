@@ -125,4 +125,132 @@ async function fetchG$Price(): Promise<number> {
     if (Number.isFinite(price) && price > 0) {
       return price;
     }
-  } catch (e) {
+  } catch (e) {
+    console.warn("[G$ Price Fetch] Failed:", e);
+  }
+  return 0.00018; // Fallback reserve-backed estimate
+}
+
+/** BulletBoard — types one bullet at a time, dot appears when bullet starts, fixed height so card never reshapes */
+interface BulletBoardProps {
+  phrases: string[];
+}
+
+function BulletBoard({ phrases }: BulletBoardProps) {
+  const [activeRow, setActiveRow] = useState(0); // 0, 1, 2, 3
+  const [charsCount, setCharsCount] = useState(0);
+  const [rotOffset, setRotOffset] = useState(0); // index in rotating phrases
+  const [rotState, setRotState] = useState<'typing' | 'holding' | 'fading'>('typing');
+
+  const fixedPhrases = useMemo(() => phrases.slice(0, 3), [phrases]);
+  const rotatingPhrases = useMemo(() => phrases.slice(3), [phrases]);
+
+  // Reset if phrases change
+  useEffect(() => {
+    setActiveRow(0);
+    setCharsCount(0);
+    setRotOffset(0);
+    setRotState('typing');
+  }, [phrases]);
+
+  useEffect(() => {
+    if (activeRow < 3) {
+      // Fixed rows typing sequence
+      const targetText = fixedPhrases[activeRow] ?? '';
+      if (charsCount < targetText.length) {
+        const t = setTimeout(() => {
+          setCharsCount(prev => prev + 1);
+        }, 15 + Math.random() * 15);
+        return () => clearTimeout(t);
+      } else {
+        // Pause between bullets
+        const t = setTimeout(() => {
+          setActiveRow(prev => prev + 1);
+          setCharsCount(0);
+        }, 400);
+        return () => clearTimeout(t);
+      }
+    } else {
+      // Rotating row 3 (4th bullet)
+      const currentPhrase = rotatingPhrases[rotOffset] ?? '';
+      if (rotState === 'typing') {
+        if (charsCount < currentPhrase.length) {
+          const t = setTimeout(() => {
+            setCharsCount(prev => prev + 1);
+          }, 15 + Math.random() * 15);
+          return () => clearTimeout(t);
+        } else {
+          setRotState('holding');
+        }
+      } else if (rotState === 'holding') {
+        const t = setTimeout(() => {
+          setRotState('fading');
+        }, 6000); // hold for 6 seconds
+        return () => clearTimeout(t);
+      } else if (rotState === 'fading') {
+        const t = setTimeout(() => {
+          setRotOffset(prev => (rotatingPhrases.length > 0 ? (prev + 1) % rotatingPhrases.length : 0));
+          setCharsCount(0);
+          setRotState('typing');
+        }, 300); // 300ms fade
+        return () => clearTimeout(t);
+      }
+    }
+  }, [activeRow, charsCount, rotOffset, rotState, fixedPhrases, rotatingPhrases]);
+
+  return (
+    <div className="w-full space-y-1.5 min-h-[145px]">
+      {Array.from({ length: 4 }).map((_, i) => {
+        let phrase = '';
+        let isDone = false;
+        let isActive = false;
+        let hasStarted = false;
+        let displayText = '';
+
+        if (i < 3) {
+          phrase = fixedPhrases[i] ?? '';
+          isDone = i < activeRow;
+          isActive = i === activeRow;
+          hasStarted = isDone || isActive;
+          displayText = isDone ? phrase : isActive ? phrase.substring(0, charsCount) : '';
+        } else {
+          phrase = rotatingPhrases[rotOffset] ?? '';
+          isDone = false;
+          isActive = activeRow === 3;
+          hasStarted = activeRow >= 3;
+          displayText = isActive ? phrase.substring(0, charsCount) : '';
+        }
+
+        const isFading = i === 3 && rotState === 'fading';
+
+        return (
+          <div
+            key={i}
+            className={`flex items-start gap-2 transition-opacity duration-300 ${
+              isFading ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
+            <div className="h-[18px] flex items-center shrink-0">
+              <span
+                className="w-1.5 h-1.5 rounded-full transition-opacity duration-150"
+                style={{
+                  opacity: hasStarted ? 1 : 0,
+                  backgroundColor: '#000000',
+                }}
+              />
+            </div>
+            <span className="text-[12px] leading-snug text-black/75 font-medium select-none flex-1 py-0.5">
+              {displayText}
+              {isActive && charsCount < phrase.length && (
+                <span className="inline-block w-0.5 h-[13px] bg-black animate-pulse ml-0.5 align-middle" />
+              )}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function AnimatedBalance({ value }: { value: number }) {
+  const motionValue = useMotionValue(0);
