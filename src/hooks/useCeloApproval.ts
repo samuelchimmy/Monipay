@@ -58,4 +58,25 @@ export function useCeloApproval(
       setIsLoading(false);
     }
   }, [walletAddress]);
-
+
+  useEffect(() => {
+    fetchAllowance();
+  }, [fetchAllowance]);
+
+  const approve = useCallback(async () => {
+    if (!walletAddress) return;
+
+    setIsSending(true);
+    setError(null);
+
+    try {
+      const isMiniPay = !!(window as any).ethereum?.isMiniPay;
+
+      // Top up CELO gas first so the approve tx doesn't fail silently.
+      if (!isMiniPay) {
+        const guard = await ensureGasForApproval('celo', walletAddress);
+        if (!guard.funded) {
+          toast.message('Topping up network fee', {
+            description: 'Please try again in a moment.',
+          });
+          setIsSending(false);
