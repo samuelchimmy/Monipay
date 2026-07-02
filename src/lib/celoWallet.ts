@@ -43,4 +43,50 @@ export const CELO_MONIPAY_ROUTER = (isV2
 
 /** MoniBotRouter deployed on Celo Mainnet */
 export const CELO_MONIBOT_ROUTER = (isV2
-  ? '0x8768aCE3FCd925e9BD61808b90905a935697e227'
+  ? '0x8768aCE3FCd925e9BD61808b90905a935697e227'
+  : '0x2a6Ff7552F296A8C5e8688FbA32685E73e138B9e') as `0x${string}`;
+
+/** USDm — used as feeCurrency so users pay gas in stablecoin (MiniPay requirement) */
+export const CELO_FEE_CURRENCY = '0x765DE816845861e75A25fCA122bb6898B8B1282a' as const;
+
+/** MoniPay platform treasury */
+export const CELO_TREASURY = '0xDC9B47551734bE984D7Aa2a365251E002f8FF2D7' as const;
+
+/** Token decimals — USDT on Celo is 6 (same as USDC) */
+export const CELO_TOKEN_DECIMALS = 6;
+
+/** Celo chain ID in hex — used for wallet_switchEthereumChain */
+export const CELO_CHAIN_ID_HEX = '0xa4ec';
+
+// ─── Public RPC client (read-only) ───────────────────────────────────────────
+
+export const celoPublicClient = createPublicClient({
+  chain: celo,
+  transport: http('https://forno.celo.org'),
+});
+
+// ─── EIP-712 domain — must match the deployed MoniPayRouter exactly ───────────
+
+export function getCeloDomain() {
+  return {
+    name: 'MoniPay Router',
+    version: '1',
+    chainId: 42220,
+    verifyingContract: CELO_MONIPAY_ROUTER,
+  };
+}
+
+// ─── Balance ─────────────────────────────────────────────────────────────────
+
+/**
+ * Fetch USDT balance on Celo for a given address.
+ * Returns a human-readable number (e.g. 12.50 for 12.50 USDT).
+ * Falls back to localStorage cache on RPC failure.
+ */
+export async function getCeloUsdtBalance(address: `0x${string}`): Promise<number> {
+  const CACHE_KEY = `monipay_celo_usdt_balance:${address.toLowerCase()}`;
+
+  try {
+    const raw = await (celoPublicClient as any).readContract({
+      address: CELO_USDT_ADDRESS,
+      abi: erc20Abi,
