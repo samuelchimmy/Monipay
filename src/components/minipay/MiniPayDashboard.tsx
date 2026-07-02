@@ -381,4 +381,132 @@ export function MiniPayDashboard({ walletAddress, profileId, isLegacy }: Props) 
   const [loadingBal, setLoadingBal] = useState(true);
   const [payTag, setPayTag] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [identities, setIdentities] = useState<Array<{ platform: 'discord' | 'telegram' | 'twitter'; userId: string }>>([]);
+  const [identities, setIdentities] = useState<Array<{ platform: 'discord' | 'telegram' | 'twitter'; userId: string }>>([]);
+
+  const [showHistory, setShowHistory] = useState(false);
+  const [showReceive, setShowReceive] = useState(false);
+  const [showSend, setShowSend] = useState(false);
+  const [showScanPay, setShowScanPay] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showMonitag, setShowMonitag] = useState(false);
+  const [mode, setMode] = useState<'personal' | 'merchant'>(() => {
+    try { return (localStorage.getItem('minipay_mode') as any) === 'merchant' ? 'merchant' : 'personal'; }
+    catch { return 'personal'; }
+  });
+  const [merchantSheet, setMerchantSheet] = useState<null | 'invoices' | 'storefront' | 'merchant' | 'settings'>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [showSettings, setShowSettings] = useState(false);
+  const [openMoniSection, setOpenMoniSection] = useState<null | 'allowance' | 'socials' | 'add' | 'subscriptions'>(null);
+  const [showWhatIsMoniBot, setShowWhatIsMoniBot] = useState(false);
+  const [pendingIouCount, setPendingIouCount] = useState<number | null>(null);
+  const [linkConflict, setLinkConflict] = useState<LinkConflictDetail | null>(null);
+
+  // Listen for cross-context 409 from OAuth popup callbacks.
+  useEffect(() => {
+    const onMsg = (ev: MessageEvent) => {
+      if (ev.origin !== window.location.origin) return;
+      const d = ev.data;
+      if (d?.type === 'social-link-conflict') {
+        toast.error('This account is linked to another user');
+        setLinkConflict({
+          message: d.message ?? 'Account is linked to another user',
+          payTag: d.payTag ?? null,
+          platform: d.platform ?? undefined,
+        });
+      }
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  useEffect(() => {
+    try { localStorage.setItem('minipay_mode', mode); } catch { /* */ }
+  }, [mode]);
+
+  // Load Outfit font for greetings
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@800;900&display=swap';
+    if (document.querySelector(`link[href="${href}"]`)) return;
+    const l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = href;
+    document.head.appendChild(l);
+  }, []);
+
+  // Populate PayTagContext so PendingIOUsCard can access wallet address
+  useEffect(() => {
+    if (!walletAddress) return;
+    
+    setProfile({
+      id: profileId || undefined,
+      payTag: payTag || '',
+      pin: '', // Not used in wallet-only mode
+      preferredMode: 'user',
+      preferredNetwork: 'celo',
+      balance: balance || 0,
+      merchantBalance: 0,
+      wallet: {
+        address: walletAddress,
+        encryptedPrivateKey: '', // Not used in wallet-only mode
+      },
+    });
+  }, [walletAddress, payTag, balance, profileId, setProfile]);
+
+  // Sync transactions once we have a profileId (Path B never goes through
+  // verifyPin, which is where the legacy flow triggers syncTransactions).
+  useEffect(() => {
+    if (!profileId) return;
+    syncTransactions().catch(() => { /* non-fatal */ });
+  }, [profileId, syncTransactions]);
+
+  // Load wallet_profiles for pay_tag / preferred name
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await supabase.functions.invoke('wallet-session', {
+          body: { action: 'get', walletAddress },
+        });
+        const p = (data as any)?.profile;
+        if (!cancelled && p) {
+          if (p.pay_tag) setPayTag(p.pay_tag);
+          const ids: Array<{ platform: 'discord' | 'telegram' | 'twitter'; userId: string }> = [];
+          if (p.discord_id) ids.push({ platform: 'discord', userId: String(p.discord_id) });
+          if (p.telegram_id) ids.push({ platform: 'telegram', userId: String(p.telegram_id) });
+          if (p.x_verified && (p.x_user_id || p.x_username)) {
+            ids.push({ platform: 'twitter', userId: String(p.x_user_id ?? p.x_username) });
+          }
+          setIdentities(ids);
+        }
+      } catch { /* non-fatal */ }
+    })();
+    return () => { cancelled = true; };
+  }, [walletAddress]);
+
+  const refreshBalance = useCallback(async () => {
+    setLoadingBal(true);
+    try {
+      const [usdt, usdc, usdm, g$, price] = await Promise.all([
+        fetchCeloTokenBalance(walletAddress, "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e", 6),
+        fetchCeloTokenBalance(walletAddress, "0xcebA9300f2b948710d2653dD7B07f33A8B32118C", 6),
+        fetchCeloTokenBalance(walletAddress, "0x765DE816845861e75A25fCA122bb6898B8B1282a", 18),
+        fetchCeloTokenBalance(walletAddress, "0x62B8B11039FcfE5aB0C56E502b1C372A3d2a9c7A", 18),
+        fetchG$Price(),
+      ]);
+
+      const tokenBalances = { USDT: usdt, USDC: usdc, USDm: usdm, G$: g$ };
+      setBalances(tokenBalances);
+      setG$Price(price);
+
+      const totalUsd = usdt + usdc + usdm + (g$ * price);
+      setBalance(totalUsd);
+    } catch (err) {
+      console.error("[MiniPayDashboard] Failed to refresh balances:", err);
+    } finally {
+      setLoadingBal(false);
+    }
+  }, [walletAddress]);
+
+  useEffect(() => {
+    refreshBalance();
