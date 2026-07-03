@@ -122,4 +122,21 @@ export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChan
     identity,
     validProfileId: profileId,
     walletAddress,
-    fetchIdentity,
+    fetchIdentity,
+    setIdentity: handleIdentityChange,
+    writeCachedIdentity,
+    themeClasses,
+  } as const;
+
+  return (
+    <div className="space-y-2.5">
+      <XLinkCard
+        {...shared}
+        isUnlinkingX={isUnlinkingX}
+        handleUnlinkX={handleUnlinkX}
+      />
+      <DiscordLinkCard {...shared} />
+      <TelegramLinkCard {...shared} />
+    </div>
+  );
+}
