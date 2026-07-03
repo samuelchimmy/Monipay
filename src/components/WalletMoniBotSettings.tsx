@@ -51,4 +51,21 @@ export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChan
 
   const writeCachedIdentity = useCallback(
     (next: SocialIdentity | null) => {
-      try {
+      try {
+        if (!next) {
+          localStorage.removeItem(socialIdentityCacheKey(profileId));
+          return;
+        }
+        localStorage.setItem(socialIdentityCacheKey(profileId), JSON.stringify(next));
+      } catch {
+        /* non-fatal */
+      }
+    },
+    [profileId],
+  );
+
+  const fetchIdentity = useCallback(async () => {
+    try {
+      const response = await supabase.functions.invoke("social-identity", {
+        body: { action: "get", profileId },
+      });
