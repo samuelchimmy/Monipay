@@ -58,4 +58,64 @@ export function useCeloApproval(
       setIsLoading(false);
     }
   }, [walletAddress]);
-
+
+  useEffect(() => {
+    fetchAllowance();
+  }, [fetchAllowance]);
+
+  const approve = useCallback(async () => {
+    if (!walletAddress) return;
+
+    setIsSending(true);
+    setError(null);
+
+    try {
+      const isMiniPay = !!(window as any).ethereum?.isMiniPay;
+
+      // Top up CELO gas first so the approve tx doesn't fail silently.
+      if (!isMiniPay) {
+        const guard = await ensureGasForApproval('celo', walletAddress);
+        if (!guard.funded) {
+          toast.message('Topping up network fee', {
+            description: 'Please try again in a moment.',
+          });
+          setIsSending(false);
+          return;
+        }
+      }
+
+      if (isMiniPay) {
+        // MiniPay context — use injected wallet
+        const txHash = await approveCeloUsdt(walletAddress);
+        console.log('[useCeloApproval] MiniPay approval tx:', txHash);
+      } else if (decryptedPrivateKey) {
+        // Normal app context — use local private key
+        const txHash = await approveCeloUsdtWithKey(decryptedPrivateKey);
+        console.log('[useCeloApproval] Key-based approval tx:', txHash);
+      } else {
+        throw new Error('No signing method available. Please unlock your wallet first.');
+      }
+
+      // Wait for Celo block confirmation (~5s)
+      await new Promise(resolve => setTimeout(resolve, 6000));
+      await fetchAllowance();
+    } catch (err: any) {
+      console.error('[useCeloApproval] Approval failed:', err);
+      if (err?.code !== 4001) {
+        setError(err?.message ?? 'Approval transaction failed');
+      }
+    } finally {
+      setIsSending(false);
+    }
+  }, [walletAddress, decryptedPrivateKey, fetchAllowance]);
+
+  return {
+    isApproved,
+    allowanceUsdt,
+    isLoading,
+    isSending,
+    error,
+    approve,
+    refetch: fetchAllowance,
+  };
+}
