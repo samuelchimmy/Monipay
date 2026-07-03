@@ -21,4 +21,12 @@ export function enforceMiniPayChainRestriction(senderProfile, recipientProfile, 
       error: 'ERROR_MINIPAY_RECIPIENT_CHAIN_RESTRICTION'
     };
   }
-
+
+  return { valid: true };
+}
+
+/**
+ * Determine claim mode for MagicPay transactions.
+ */
+export function determineMagicPayClaimMode(senderProfile, chain) {
+  // Mandatory claim mode for MiniPay sender on Celo
