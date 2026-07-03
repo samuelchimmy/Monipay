@@ -126,4 +126,47 @@ export const CHAIN_CONFIGS = {
   },
 
   tempo: {
-    name: 'tempo',
+    name: 'tempo',
+    chainId: 42431,
+    viemChain: tempoChain,                                     // ✅ FIX B1
+    rpcs: [
+      process.env.TEMPO_RPC_URL,
+      'https://rpc.moderato.tempo.xyz',
+      'https://tempo-testnet.rpc.caldera.xyz',
+    ].filter(Boolean),
+    routerAddress: '0x78A824fDE7Ee3E69B2e2Ee52d1136EECD76749fc',
+    tokenAddress:  '0x20c0000000000000000000000000000000000001',
+    decimals: 6,
+    symbol: 'αUSD',
+    explorer: 'https://explore.tempo.xyz/tx/',
+    useBuilderCode: false,
+    isTestnet: true,
+  },
+
+  solana: {
+    name: 'solana',
+    chainId: 101,
+    viemChain: null, // Solana uses relay — no viem chain object needed
+    rpcs: [
+      process.env.SOLANA_RPC_URL,
+      'https://api.mainnet-beta.solana.com',
+      'https://solana-rpc.publicnode.com',
+      'https://rpc.ankr.com/solana',
+      'https://solana-mainnet.rpc.extrnode.com',
+    ].filter(Boolean),
+    routerAddress: 'TokenkegQfeZyiNwAJbVBCWLGGLGtoSte56GW7LUPbaL',
+    tokenAddress:  'EPjFWdd5AufqnvUePlk4kJ2d8c1gb2cpEH43t1YpTrW',
+    decimals: 6,
+    symbol: 'USDC',
+    explorer: 'https://solscan.io/tx/',
+    useBuilderCode: false,
+    isTestnet: false,
+  },
+};
+
+/**
+ * Returns the chain config including viemChain.
+ * Use config.viemChain when constructing createPublicClient / createWalletClient.
+ * See blockchain.js getClients() for the canonical pattern.
+ */
+export function getChainConfig(chainName) {
