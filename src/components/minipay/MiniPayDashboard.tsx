@@ -637,4 +637,131 @@ export function MiniPayDashboard({ walletAddress, profileId, isLegacy }: Props) 
       list.push("Monetize your community. Gate your Telegram group or Discord server with automated subscription access.");
     } else if (identities.length === 0) {
       list.push(`Welcome, @${payTag}. Step 3: Connect your social accounts so people can find and pay you by handle.`);
-      list.push("Once linked, MoniBot listens for payment commands in your chats and acts on them instantly.");
+      list.push("Once linked, MoniBot listens for payment commands in your chats and acts on them instantly.");
+      list.push("Once connected, anyone on X, Discord, or Telegram can send you money using your social handle.");
+      list.push("Tip a creator on X right now. Just say: Send $5 to @username");
+      list.push("Automate a sports payout — MoniBot holds it until the result is confirmed.");
+      list.push("Set up a recurring payment with one line. Try: Send $20 to @username every month, 5 times");
+      list.push("Schedule a future payment effortlessly. Try: Send $20 to @username on Friday");
+      list.push("Pay multiple people in a single command. Try: Send $10 each to @Jade, @Mike and @Alice");
+      list.push("Send money to anyone — even without a wallet. MagicPay lets them claim it by linking their social account.");
+      list.push("Monetize your community. Gate your Telegram group or Discord server with automated subscription access.");
+    } else {
+      list.push(`You're all set, @${payTag}. Send your first payment right now — just say: Send $5 to @username`);
+      list.push("MoniBot is active and ready to execute your payment commands across X, Discord, and Telegram.");
+      list.push("Empower your wallet by delegating spending to your AI agent — the future of payments is social and agentic.");
+      list.push("Use Monipay to tip creators, fund communities, manage subscriptions, and split bills — all in plain language.");
+      list.push("Tip a creator on X right now. Just say: Send $5 to @username");
+      list.push("Automate a sports payout — MoniBot holds it until the result is confirmed.");
+      list.push("Set up a recurring payment with one line. Try: Send $20 to @username every month, 5 times");
+      list.push("Schedule a future payment effortlessly. Try: Send $20 to @username on Friday");
+      list.push("Pay multiple people in a single command. Try: Send $10 each to @Jade, @Mike and @Alice");
+      list.push("Send money to anyone — even without a wallet. MagicPay lets them claim it by linking their social account.");
+      list.push("Monetize your community. Gate your Telegram group or Discord server with automated subscription access.");
+    }
+
+    return list;
+  }, [payTag, allowanceApproved, identities, isInMiniPay]);
+
+  return (
+    <MiniPayThemeScope className="min-h-screen pb-12 relative">
+      {/* ── Subtle green page wash (matches /minipay landing) ── */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-0"
+        style={{
+          background:
+            'radial-gradient(900px 480px at 20% 0%, hsl(var(--mp-primary) / 0.10), transparent 60%), radial-gradient(700px 420px at 85% 8%, hsl(var(--mp-primary) / 0.07), transparent 60%)',
+        }}
+      />
+      {/* ── Header pill (yellow Celo) ── */}
+      <div className="sticky top-3 z-40 px-3 pt-3">
+        <div className="mx-auto max-w-xl">
+          <div
+            className="flex items-center justify-between gap-2 rounded-full pl-2 pr-2 py-2 backdrop-blur-xl border border-black/80 dark:border-white/80"
+            style={{ background: '#FCFF52', boxShadow: '0 8px 32px -12px rgba(0,0,0,0.25)' }}
+          >
+            <div className="flex items-center gap-2 pl-1 min-w-0">
+              <MoniPayLogo size={24} color="#000" animationMode="header" />
+              <span className="font-bold tracking-tight text-[14px] text-black">Monipay</span>
+              <span className="mx-1 text-black/30">|</span>
+              <img src={celoGlyph} alt="Celo" className="h-4 w-auto object-contain shrink-0" />
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Toggle theme"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-black hover:bg-black/10 transition-colors"
+              >
+                <Sun className="h-4 w-4 dark:hidden" />
+                <Moon className="h-4 w-4 hidden dark:block" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSettings(true)}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-black hover:bg-black/10 transition-colors"
+                aria-label="Settings"
+              >
+                <SettingsIcon className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <motion.main
+        className="mx-auto max-w-xl px-4 pt-5 space-y-5"
+        variants={sectionStaggerContainer}
+        initial="hidden"
+        animate="show"
+      >
+        {/* ── Balance hero (Celo yellow gradient) ── */}
+        <motion.section
+          variants={sectionItem}
+          className="relative overflow-hidden rounded-[28px] p-5 text-black border border-black/80 dark:border-white/80 dark:brightness-[0.72]"
+          style={{
+            background:
+              'linear-gradient(135deg, #FCFF52 0%, #FDFF7A 40%, hsl(154 65% 82%) 100%)',
+          }}
+        >
+          {/* watermark sparkles */}
+          <Sparkles
+            aria-hidden
+            className="absolute -right-3 -top-3 w-28 h-28 text-black/[0.06] pointer-events-none"
+          />
+
+          {/* Top Row: Greeting + MoniTag (CAPS, no @) */}
+          <div className="relative z-10 flex flex-wrap items-baseline gap-x-2">
+            <h2
+              className="text-[26px] sm:text-[30px] font-black italic text-black leading-tight tracking-tight"
+              style={{ fontFamily: "'Outfit', sans-serif" }}
+            >
+              {greeting},
+            </h2>
+            {payTag ? (
+              <div className="flex items-center gap-1.5">
+                <span
+                  className="text-[26px] sm:text-[30px] font-black text-black tracking-tight uppercase leading-tight"
+                  style={{ fontFamily: "'Outfit', sans-serif" }}
+                >
+                  {payTag.replace(/^@/, '').toUpperCase()}
+                </span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(payTag.startsWith('@') ? payTag : `@${payTag}`);
+                      toast.success('MoniTag copied');
+                      feedback('copy');
+                    } catch {
+                      toast.error('Failed to copy MoniTag');
+                    }
+                  }}
+                  className="p-1 rounded-full hover:bg-black/10 transition-colors"
+                  aria-label="Copy MoniTag"
+                >
+                  <Copy className="w-3.5 h-3.5 text-black/40 hover:text-black" />
+                </button>
+              </div>
+            ) : (
