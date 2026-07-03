@@ -80,4 +80,52 @@ export default function TelegramCallback() {
           window.opener.postMessage(
             {
               type: "telegram-oauth-success",
-              telegram_id: data.telegram_id,
+              telegram_id: data.telegram_id,
+              telegram_username: data.telegram_username,
+            },
+            window.location.origin,
+          );
+          setTimeout(() => window.close(), 1500);
+        }
+      } catch (e: any) {
+        setStatus("error");
+        setMessage(e.message || "Failed to link Telegram account. Please try again.");
+      }
+    })();
+  }, [searchParams]);
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <PageMeta title="Telegram Linking" description="Linking your Telegram account to MoniPay." path="/telegram-callback" noIndex noIndexFollow />
+      <div className="text-center space-y-4 max-w-sm">
+        {status === "loading" && (
+          <>
+            <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+            <p className="text-lg font-semibold text-foreground">{message}</p>
+          </>
+        )}
+        {status === "success" && (
+          <>
+            <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
+            <p className="text-lg font-semibold text-foreground">Telegram Linked!</p>
+            <p className="text-sm text-muted-foreground">{message}</p>
+            <p className="text-sm text-muted-foreground">This window will close automatically.</p>
+          </>
+        )}
+        {status === "error" && (
+          <>
+            <XCircle className="w-12 h-12 text-destructive mx-auto" />
+            <p className="text-lg font-semibold text-foreground">Linking Failed</p>
+            <p className="text-sm text-muted-foreground">{message}</p>
+            <button
+              onClick={() => window.close()}
+              className="text-sm text-primary underline mt-2"
+            >
+              Close this window
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
