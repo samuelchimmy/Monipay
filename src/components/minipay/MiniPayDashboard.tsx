@@ -892,4 +892,643 @@ export function MiniPayDashboard({ walletAddress, profileId, isLegacy }: Props) 
                 </p>
               </div>
             </div>
-
+
+            {/* What is MoniBot — opens modal */}
+            <button
+              type="button"
+              onClick={() => { feedback('modalOpen'); setShowWhatIsMoniBot(true); }}
+              className="w-full flex items-center gap-3 px-5 py-3.5 text-left border-b border-black/15 hover:bg-black/5 transition-colors"
+            >
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-black text-[#FCFF52]">
+                <Info className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-black">What is MoniBot</p>
+                <p className="text-[11px] truncate text-black/65">How Monipay upgrades your MiniPay wallet</p>
+              </div>
+              <ExternalLink className="w-4 h-4 shrink-0 text-black/65" />
+            </button>
+
+            <MoniCollapsible
+              icon={Wallet}
+              title="Approve AI Spending Allowance"
+              subtitle="Set how much MoniBot can move from your MiniPay wallet"
+              open={openMoniSection === 'allowance'}
+              dataTour="allowance-row"
+              onToggle={() => {
+                feedback(openMoniSection === 'allowance' ? 'collapse' : 'expand');
+                setOpenMoniSection(openMoniSection === 'allowance' ? null : 'allowance');
+              }}
+            >
+              <div className="minipay-tint-children">
+                <WalletAllowanceCard
+                  walletAddress={walletAddress}
+                  profileId={profileId}
+                  preferredNetwork="celo"
+                  hideTokens={["G$"]}
+                />
+              </div>
+            </MoniCollapsible>
+
+            <MoniCollapsible
+              icon={Link2}
+              title="Connect Social Accounts"
+              subtitle="Let your social handles route payments to your MiniPay wallet"
+              open={openMoniSection === 'socials'}
+              dataTour="socials-row"
+              onToggle={() => {
+                feedback(openMoniSection === 'socials' ? 'collapse' : 'expand');
+                setOpenMoniSection(openMoniSection === 'socials' ? null : 'socials');
+              }}
+            >
+              <div className="minipay-tint-children">
+                <WalletMoniBotSettings
+                  profileId={profileId}
+                  walletAddress={walletAddress}
+                  onIdentityChange={(id) => {
+                    const ids: Array<{ platform: 'discord' | 'telegram' | 'twitter'; userId: string }> = [];
+                    if (id?.discord_id) ids.push({ platform: 'discord', userId: String(id.discord_id) });
+                    if (id?.telegram_id) ids.push({ platform: 'telegram', userId: String(id.telegram_id) });
+                    if (id?.x_verified && (id?.x_user_id || id?.x_username)) {
+                      ids.push({ platform: 'twitter', userId: String(id.x_user_id ?? id.x_username) });
+                    }
+                    setIdentities(ids);
+                  }}
+                />
+              </div>
+            </MoniCollapsible>
+
+            <MoniCollapsible
+              icon={Bot}
+              title="Use MoniBot"
+              subtitle="Activate MoniBot across your communities"
+              open={openMoniSection === 'add'}
+              onToggle={() => {
+                feedback(openMoniSection === 'add' ? 'collapse' : 'expand');
+                setOpenMoniSection(openMoniSection === 'add' ? null : 'add');
+              }}
+            >
+              <div
+                className="rounded-xl overflow-hidden border border-black/20"
+                style={{
+                  background:
+                    'linear-gradient(160deg, hsl(60 100% 90%) 0%, hsl(80 70% 86%) 55%, hsl(154 65% 88%) 100%)',
+                }}
+              >
+                {[
+                  { href: 'https://discord.com/oauth2/authorize?client_id=1473815294022520964&permissions=2147483648&scope=bot', label: 'Add to Discord', sub: 'Invite the bot to your guild', kind: 'discord' as const },
+                  { href: 'https://t.me/monipaybot?startgroup=new', label: 'Add to Telegram', sub: 'Open in Telegram', kind: 'telegram' as const },
+                  { href: 'https://x.com/intent/tweet?text=%40monibot%20', label: 'Tweet at MoniBot', sub: 'Send a public command', kind: 'twitter' as const },
+                ].map((it, i, arr) => (
+                  <a
+                    key={it.label}
+                    href={it.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => feedback('tap')}
+                    className={`flex items-center gap-3 px-3.5 py-3 ${i < arr.length - 1 ? 'border-b border-black/20' : ''}`}
+                  >
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-black text-[#FCFF52]">
+                      {it.kind === 'discord' && (
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden>
+                          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+                        </svg>
+                      )}
+                      {it.kind === 'telegram' && <Send className="w-4 h-4" />}
+                      {it.kind === 'twitter' && <Twitter className="w-4 h-4" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-black">{it.label}</p>
+                      <p className="text-[11px] truncate text-black/65">{it.sub}</p>
+                    </div>
+                    <ExternalLink className="w-4 h-4 shrink-0 text-black/65" />
+                  </a>
+                ))}
+              </div>
+              <p className="text-[10px] text-center pt-3 text-black/65">
+                Once added, members can use MoniBot commands to send instant payments.
+              </p>
+            </MoniCollapsible>
+
+            <MoniCollapsible
+              icon={CalendarClock}
+              title="Gated Access Manager"
+              subtitle="Monetize your Telegram & Discord communities"
+              badge="Coming Soon"
+              open={openMoniSection === 'subscriptions'}
+              onToggle={() => {
+                feedback(openMoniSection === 'subscriptions' ? 'collapse' : 'expand');
+                setOpenMoniSection(openMoniSection === 'subscriptions' ? null : 'subscriptions');
+              }}
+              last
+            >
+              <div className="rounded-xl border border-black/20 bg-black/[0.04] p-4 space-y-3">
+                <p className="text-[12.5px] leading-relaxed text-black">
+                  Turn your Telegram group, Discord server, or premium channels into a
+                  paid community. Set a fee in plain English and MoniBot automatically
+                  manages subscription-based access — verifying membership, sending
+                  renewal reminders, kicking lapsed members, and keeping a full
+                  on-chain audit trail.
+                </p>
+                <ul className="text-[11.5px] text-black/75 space-y-1.5 list-disc pl-4">
+                  <li>Gate Telegram groups, Discord servers, or specific channels by subscription.</li>
+                  <li>Natural-language setup: "Charge $5/month for VIP, kick after 3-day grace."</li>
+                  <li>Auto renew, expiry warnings, grace periods, bans and re-entry — handled by the bot.</li>
+                  <li>Discount codes and NFT-holder discounts built in. Non-custodial, on-chain receipts.</li>
+                </ul>
+                <p className="text-[10.5px] text-black/60">
+                  Rolling out alongside agent-to-agent payments. Stay tuned.
+                </p>
+              </div>
+            </MoniCollapsible>
+            {/* legacy "Use MoniBot" body removed in favor of new order */}
+            {false && (
+            <MoniCollapsible
+              icon={Bot}
+              title="placeholder"
+              open={false}
+              onToggle={() => {}}
+            >
+              <div
+                className="rounded-xl overflow-hidden border border-black/20"
+                style={{
+                  background:
+                    'linear-gradient(160deg, hsl(60 100% 90%) 0%, hsl(80 70% 86%) 55%, hsl(154 65% 88%) 100%)',
+                }}
+              >
+                {[
+                  { href: 'https://discord.com/oauth2/authorize?client_id=1473815294022520964&permissions=2147483648&scope=bot', label: 'Add to Discord', sub: 'Invite the bot to your guild', kind: 'discord' as const },
+                  { href: 'https://t.me/monipaybot?startgroup=new', label: 'Add to Telegram', sub: 'Open in Telegram', kind: 'telegram' as const },
+                  { href: 'https://x.com/intent/tweet?text=%40monibot%20', label: 'Tweet at MoniBot', sub: 'Send a public command', kind: 'twitter' as const },
+                ].map((it, i, arr) => (
+                  <a
+                    key={it.label}
+                    href={it.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => feedback('tap')}
+                    className={`flex items-center gap-3 px-3.5 py-3 ${i < arr.length - 1 ? 'border-b border-black/20' : ''}`}
+                  >
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-black text-[#FCFF52]">
+                      {it.kind === 'discord' && (
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden>
+                          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+                        </svg>
+                      )}
+                      {it.kind === 'telegram' && <Send className="w-4 h-4" />}
+                      {it.kind === 'twitter' && <Twitter className="w-4 h-4" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-black">{it.label}</p>
+                      <p className="text-[11px] truncate text-black/65">{it.sub}</p>
+                    </div>
+                    <ExternalLink className="w-4 h-4 shrink-0 text-black/65" />
+                  </a>
+                ))}
+              </div>
+              <p className="text-[10px] text-center pt-3 text-black/65">
+                Once added, members can use MoniBot commands to send instant payments.
+              </p>
+            </MoniCollapsible>
+            )}
+          </motion.section>
+          </>
+        ) : (
+          <div className="rounded-2xl border border-border/60 p-5 text-center text-sm text-muted-foreground">
+            Setting up your wallet profile…
+          </div>
+        )}
+
+        {/* ── Footer links ── */}
+        <motion.footer
+          variants={sectionItem}
+          className="pt-4 pb-2 flex items-center justify-center gap-4 text-[11px] font-medium text-muted-foreground"
+        >
+          <button type="button" onClick={() => navigate('/support')} className="hover:text-foreground transition-colors">
+            Support
+          </button>
+          <span className="text-muted-foreground/40">·</span>
+          <button type="button" onClick={() => navigate('/privacy')} className="hover:text-foreground transition-colors">
+            Privacy
+          </button>
+          <span className="text-muted-foreground/40">·</span>
+          <button type="button" onClick={() => navigate('/terms')} className="hover:text-foreground transition-colors">
+            Terms
+          </button>
+        </motion.footer>
+      </motion.main>
+
+      {/* ── Settings (inline panel, not /settings route) ── */}
+      {showSettings && (
+        <div className="fixed inset-0 z-[80] bg-background overflow-y-auto">
+          <SettingsPanel onClose={() => setShowSettings(false)} />
+        </div>
+      )}
+
+      {/* ── What is MoniBot modal ── */}
+      <WhatIsMoniBotModal open={showWhatIsMoniBot} onOpenChange={setShowWhatIsMoniBot} />
+
+      {/* ── Receive sheet (QR) ── */}
+      <Sheet open={showReceive} onOpenChange={setShowReceive}>
+        <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto rounded-t-[28px] border-t border-border/60 shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.25)] px-5 pt-6 pb-8">
+          <SheetHeader className="text-left">
+            <SheetTitle className="text-base font-semibold tracking-tight">Receive {CELO_CFG.currency} on Celo</SheetTitle>
+          </SheetHeader>
+          <div className="mt-6 flex flex-col items-center gap-4">
+            <BrandedQR
+              value={walletAddress}
+              payTag={payTag ?? shortAddr(walletAddress)}
+              subtitle={`Celo · ${CELO_CFG.currency}`}
+              size={220}
+              showActions
+              copyValue={walletAddress}
+            />
+            <p className="text-xs text-muted-foreground text-center max-w-xs">
+              Send {CELO_CFG.currency} on Celo to this address. Other tokens
+              or networks may be lost.
+            </p>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* ── History sheet ── */}
+      <HistorySheet
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        profileId={profileId}
+      />
+
+      {/* ── Send (uses WithdrawModal — defaults to MoniTag/social send on Celo) ── */}
+      <WithdrawModal
+        isOpen={showSend}
+        onClose={() => { setShowSend(false); refreshBalance(); }}
+        balance={balance ?? 0}
+        forceWalletOnly
+        mode="send"
+      />
+
+      {/* ── Withdraw to external address ── */}
+      <WithdrawModal
+        isOpen={showWithdraw}
+        onClose={() => { setShowWithdraw(false); refreshBalance(); }}
+        balance={balance ?? 0}
+        forceWalletOnly
+      />
+
+      {/* ── MoniTag create / edit sheet ── */}
+      <MonitagSheet
+        open={showMonitag}
+        onOpenChange={setShowMonitag}
+        walletAddress={walletAddress}
+        currentTag={payTag}
+        onSaved={(tag) => setPayTag(tag)}
+      />
+
+      {/* ── Merchant tool sheet (placeholder, wallet-mode aware) ── */}
+      <Sheet
+        open={merchantSheet === 'merchant' || merchantSheet === 'settings'}
+        onOpenChange={(o) => !o && setMerchantSheet(null)}
+      >
+        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-[28px] border-t border-border/60 shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.25)] px-5 pt-6 pb-8">
+          <SheetHeader className="text-left">
+            <SheetTitle className="capitalize text-base font-semibold tracking-tight">{merchantSheet ?? ''}</SheetTitle>
+          </SheetHeader>
+          <div className="mt-5 space-y-4 text-sm">
+            <div className="rounded-2xl border border-border/60 bg-muted/30 p-4">
+              <p className="font-semibold text-foreground mb-1">Coming to MiniPay wallet mode</p>
+              <p className="text-muted-foreground text-[13px] leading-relaxed">
+                {merchantSheet === 'merchant' && 'View orders, manage API keys and webhooks for accepting Monipay on your own site.'}
+                {merchantSheet === 'settings' && 'Manage your MoniTag, profile and connected socials.'}
+              </p>
+            </div>
+            {merchantSheet === 'settings' ? (
+              <button
+                type="button"
+                onClick={() => { setMerchantSheet(null); navigate('/settings'); }}
+                className="w-full h-11 rounded-xl bg-foreground text-background text-sm font-semibold"
+              >
+                Open settings
+              </button>
+            ) : (
+              <p className="text-[12px] text-muted-foreground leading-relaxed">
+                Orders & API keys are coming next. Invoices and Storefront are
+                fully available now from the tools above.
+              </p>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* ── Invoices (full modal) ── */}
+      {merchantSheet === 'invoices' && (
+        <InvoicesSection
+          isOpen
+          onClose={() => setMerchantSheet(null)}
+          deepLinkInvoiceId={null}
+        />
+      )}
+
+      {/* ── Storefront / Product catalog (full modal) ── */}
+      {merchantSheet === 'storefront' && (
+        <ProductCatalog
+          products={products}
+          onProductsChange={setProducts}
+          onClose={() => setMerchantSheet(null)}
+          bypassSecurity
+        />
+      )}
+
+      {/* ── Social link conflict modal ── */}
+      <LinkConflictModal
+        open={!!linkConflict}
+        detail={linkConflict}
+        onClose={() => setLinkConflict(null)}
+      />
+
+      {/* ── Scan-to-pay (personal mode) ── */}
+      <ScanPaySheet open={showScanPay} onClose={() => setShowScanPay(false)} />
+
+      {/* ── First-run walkthrough overlay ── */}
+      <MiniPayWalkthrough
+        walletAddress={walletAddress}
+        payTag={payTag}
+        socialCount={identities.length}
+      />
+    </MiniPayThemeScope>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────── */
+
+function ActionTile({
+  icon: Icon,
+  label,
+  hint,
+  onClick,
+  disabled = false,
+  comingSoon = false,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  hint?: string;
+  onClick: () => void;
+  disabled?: boolean;
+  comingSoon?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => { if (disabled) return; feedback('tap'); onClick(); }}
+      disabled={disabled}
+      aria-disabled={disabled}
+      className={`relative group flex flex-col items-center justify-center gap-1 rounded-2xl border border-black/15 transition-all py-3 text-black ${disabled ? 'opacity-55 cursor-not-allowed' : 'active:scale-[0.98]'}`}
+      style={{
+        background:
+          'linear-gradient(160deg, hsl(60 100% 90%) 0%, hsl(80 70% 86%) 55%, hsl(154 65% 88%) 100%)',
+      }}
+    >
+      {comingSoon && (
+        <span className="absolute -top-1.5 -right-1.5 text-[7px] font-extrabold uppercase tracking-wider bg-black text-[#FCFF52] rounded-full px-1.5 py-[1px] shadow-sm">Soon</span>
+      )}
+      <span className="h-9 w-9 rounded-full bg-black text-[#FCFF52] flex items-center justify-center transition-colors">
+        <Icon className="w-4 h-4" />
+      </span>
+      <span className="text-[11px] font-semibold tracking-wide text-black">{label}</span>
+      {hint && <span className="text-[9px] text-black/65 -mt-0.5">{hint}</span>}
+    </button>
+  );
+}
+
+function ToolTile({
+  icon: Icon,
+  label,
+  hint,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  hint: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => { feedback('tap'); onClick(); }}
+      className="flex items-center gap-3 rounded-2xl border border-black/15 px-3 py-3 active:scale-[0.99] transition-all text-left text-black"
+      style={{
+        background:
+          'linear-gradient(160deg, hsl(60 100% 90%) 0%, hsl(80 70% 86%) 55%, hsl(154 65% 88%) 100%)',
+      }}
+    >
+      <span className="h-9 w-9 rounded-xl bg-black text-[#FCFF52] flex items-center justify-center shrink-0">
+        <Icon className="w-4 h-4" />
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block text-sm font-semibold leading-tight text-black">{label}</span>
+        <span className="block text-[11px] text-black/65">{hint}</span>
+      </span>
+    </button>
+  );
+}
+
+function ModeButton({
+  active, onClick, icon: Icon, label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center justify-center gap-2 h-10 rounded-xl text-[12px] font-bold tracking-wide transition-all ${
+        active
+          ? 'bg-card text-foreground shadow-sm border border-border/60'
+          : 'text-muted-foreground hover:text-foreground'
+      }`}
+    >
+      <Icon className="w-3.5 h-3.5" />
+      {label}
+    </button>
+  );
+}
+
+/* ── Hero pill toggle (inside the yellow balance card) ── */
+function HeroModeButton({
+  active, onClick, icon: Icon, label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[10px] font-bold uppercase tracking-[0.12em] transition-colors ${
+        active ? 'bg-[#FCFF52] text-black' : 'text-white/80 hover:text-white'
+      }`}
+    >
+      <Icon className="w-3 h-3" />
+      {label}
+    </button>
+  );
+}
+
+/* ── Yellow MoniBot collapsible row ── */
+function MoniCollapsible({
+  title, subtitle, icon: Icon, open, onToggle, last, children, badge, dataTour,
+}: {
+  title: string;
+  subtitle?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  open: boolean;
+  onToggle: () => void;
+  last?: boolean;
+  badge?: string;
+  dataTour?: string;
+  children: React.ReactNode;
+}) {
+  const EASE_IN_OUT_QUINT = [0.83, 0, 0.17, 1] as const;
+  const EASE_OUT_QUINT = [0.22, 1, 0.36, 1] as const;
+  return (
+    <div className={last ? '' : 'border-b border-black/15'}>
+      <button
+        type="button"
+        onClick={onToggle}
+        data-tour={dataTour}
+        className="w-full flex items-center gap-3 px-5 py-3.5 text-left hover:bg-black/5 transition-colors"
+      >
+        {Icon && (
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-black text-[#FCFF52]">
+            <Icon className="w-4 h-4" />
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-black flex items-center gap-2">
+            <span className="truncate">{title}</span>
+            {badge && (
+              <span className="shrink-0 text-[9px] font-black tracking-[0.14em] uppercase px-1.5 py-0.5 rounded-full bg-black text-[#FCFF52]">
+                {badge}
+              </span>
+            )}
+          </p>
+          {subtitle && (
+            <p className="text-[11px] truncate text-black/65">{subtitle}</p>
+          )}
+        </div>
+        <ChevronDown
+          className={`w-4 h-4 shrink-0 text-black/70 transition-transform duration-[450ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height: 'auto',
+              opacity: 1,
+              transition: {
+                height: { duration: 0.55, ease: EASE_IN_OUT_QUINT },
+                opacity: { duration: 0.4, ease: EASE_OUT_QUINT, delay: 0.12 },
+              },
+            }}
+            exit={{
+              height: 0,
+              opacity: 0,
+              transition: {
+                height: { duration: 0.5, ease: EASE_IN_OUT_QUINT, delay: 0.05 },
+                opacity: { duration: 0.2, ease: EASE_OUT_QUINT },
+              },
+            }}
+            style={{ overflow: 'hidden', willChange: 'height, opacity' }}
+          >
+            <div className="px-5 pb-5">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ── MoniTag create / edit sheet (wallet_profiles via wallet-session) ── */
+function MonitagSheet({
+  open, onOpenChange, walletAddress, currentTag, onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  walletAddress: `0x${string}`;
+  currentTag: string | null;
+  onSaved: (tag: string) => void;
+}) {
+  const [tag, setTag] = useState(currentTag ?? '');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { if (open) setTag(currentTag ?? ''); }, [open, currentTag]);
+
+  const normalized = tag.trim().toLowerCase().replace(/^@/, '');
+  const valid = /^[a-z0-9_]{3,20}$/.test(normalized);
+
+  const handleSave = async () => {
+    if (!valid) {
+      toast.error('3–20 lowercase letters, numbers or underscores');
+      return;
+    }
+    setSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('wallet-session', {
+        body: { action: 'updateSettings', walletAddress, pay_tag: normalized },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      onSaved(normalized);
+      toast.success(`moniTag™ saved: @${normalized}`);
+      onOpenChange(false);
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Could not save moniTag™');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto rounded-t-[28px] border-t border-border/60 shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.25)] px-5 pt-6 pb-8">
+        <SheetHeader className="text-left">
+          <SheetTitle className="text-base font-semibold tracking-tight">{currentTag ? 'Update moniTag™' : 'Claim your moniTag™'}</SheetTitle>
+        </SheetHeader>
+        <div className="mt-5 space-y-4">
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
+            Your moniTag™ is how friends and customers pay you. 3–20 lowercase
+            letters, numbers or underscores.
+          </p>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+            <Input
+              autoFocus
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
+              placeholder="yourname"
+              className="pl-7 h-12 text-base"
+              maxLength={20}
+              inputMode="text"
+              autoCapitalize="none"
+              spellCheck={false}
+            />
+          </div>
+          <Button
+            onClick={handleSave}
+            disabled={!valid || saving || normalized === currentTag}
+            className="w-full h-12 text-sm font-semibold"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : (currentTag ? 'Update moniTag™' : 'Claim moniTag™')}
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
