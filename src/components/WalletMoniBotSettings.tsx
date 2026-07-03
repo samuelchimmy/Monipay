@@ -33,4 +33,22 @@ interface Props {
 // yellow surface in /minipay (matches the "Use MoniBot" card next to it).
 const themeClasses = {
   innerSurface: "bg-white/85 border-black/15",
-  innerSurfaceSolid: "bg-black/[0.06]",
+  innerSurfaceSolid: "bg-black/[0.06]",
+  dividerColor: "border-black/15",
+  mutedText: "text-black/65",
+  strongText: "text-black",
+  isLightTheme: true,
+};
+
+export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChange }: Props) {
+  const [identity, setIdentity] = useState<SocialIdentity | null>(null);
+  const [isUnlinkingX, setIsUnlinkingX] = useState(false);
+
+  // Use a ref to ensure onIdentityChange can be called inside stable callbacks
+  // without triggering infinite loops or re-evaluating useCallback dependencies.
+  const onIdentityChangeRef = useRef(onIdentityChange);
+  onIdentityChangeRef.current = onIdentityChange;
+
+  const writeCachedIdentity = useCallback(
+    (next: SocialIdentity | null) => {
+      try {
