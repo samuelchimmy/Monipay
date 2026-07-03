@@ -77,4 +77,19 @@ export default function DiscordCallback() {
             <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
             <p className="text-lg font-semibold text-foreground">{message}</p>
             <p className="text-sm text-muted-foreground">This window will close automatically.</p>
-          </>
+          </>
+        )}
+        {status === "error" && (
+          <>
+            <XCircle className="w-12 h-12 text-destructive mx-auto" />
+            <p className="text-lg font-semibold text-foreground">Linking Failed</p>
+            <p className="text-sm text-muted-foreground">{message}</p>
+            <button onClick={() => window.close()} className="text-sm text-indigo-500 underline">
+              Close this window
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
