@@ -1020,4 +1020,132 @@ export function MiniPayDashboard({ walletAddress, profileId, isLegacy }: Props) 
                 feedback(openMoniSection === 'subscriptions' ? 'collapse' : 'expand');
                 setOpenMoniSection(openMoniSection === 'subscriptions' ? null : 'subscriptions');
               }}
-              last
+              last
+            >
+              <div className="rounded-xl border border-black/20 bg-black/[0.04] p-4 space-y-3">
+                <p className="text-[12.5px] leading-relaxed text-black">
+                  Turn your Telegram group, Discord server, or premium channels into a
+                  paid community. Set a fee in plain English and MoniBot automatically
+                  manages subscription-based access — verifying membership, sending
+                  renewal reminders, kicking lapsed members, and keeping a full
+                  on-chain audit trail.
+                </p>
+                <ul className="text-[11.5px] text-black/75 space-y-1.5 list-disc pl-4">
+                  <li>Gate Telegram groups, Discord servers, or specific channels by subscription.</li>
+                  <li>Natural-language setup: "Charge $5/month for VIP, kick after 3-day grace."</li>
+                  <li>Auto renew, expiry warnings, grace periods, bans and re-entry — handled by the bot.</li>
+                  <li>Discount codes and NFT-holder discounts built in. Non-custodial, on-chain receipts.</li>
+                </ul>
+                <p className="text-[10.5px] text-black/60">
+                  Rolling out alongside agent-to-agent payments. Stay tuned.
+                </p>
+              </div>
+            </MoniCollapsible>
+            {/* legacy "Use MoniBot" body removed in favor of new order */}
+            {false && (
+            <MoniCollapsible
+              icon={Bot}
+              title="placeholder"
+              open={false}
+              onToggle={() => {}}
+            >
+              <div
+                className="rounded-xl overflow-hidden border border-black/20"
+                style={{
+                  background:
+                    'linear-gradient(160deg, hsl(60 100% 90%) 0%, hsl(80 70% 86%) 55%, hsl(154 65% 88%) 100%)',
+                }}
+              >
+                {[
+                  { href: 'https://discord.com/oauth2/authorize?client_id=1473815294022520964&permissions=2147483648&scope=bot', label: 'Add to Discord', sub: 'Invite the bot to your guild', kind: 'discord' as const },
+                  { href: 'https://t.me/monipaybot?startgroup=new', label: 'Add to Telegram', sub: 'Open in Telegram', kind: 'telegram' as const },
+                  { href: 'https://x.com/intent/tweet?text=%40monibot%20', label: 'Tweet at MoniBot', sub: 'Send a public command', kind: 'twitter' as const },
+                ].map((it, i, arr) => (
+                  <a
+                    key={it.label}
+                    href={it.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => feedback('tap')}
+                    className={`flex items-center gap-3 px-3.5 py-3 ${i < arr.length - 1 ? 'border-b border-black/20' : ''}`}
+                  >
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-black text-[#FCFF52]">
+                      {it.kind === 'discord' && (
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden>
+                          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+                        </svg>
+                      )}
+                      {it.kind === 'telegram' && <Send className="w-4 h-4" />}
+                      {it.kind === 'twitter' && <Twitter className="w-4 h-4" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-black">{it.label}</p>
+                      <p className="text-[11px] truncate text-black/65">{it.sub}</p>
+                    </div>
+                    <ExternalLink className="w-4 h-4 shrink-0 text-black/65" />
+                  </a>
+                ))}
+              </div>
+              <p className="text-[10px] text-center pt-3 text-black/65">
+                Once added, members can use MoniBot commands to send instant payments.
+              </p>
+            </MoniCollapsible>
+            )}
+          </motion.section>
+          </>
+        ) : (
+          <div className="rounded-2xl border border-border/60 p-5 text-center text-sm text-muted-foreground">
+            Setting up your wallet profile…
+          </div>
+        )}
+
+        {/* ── Footer links ── */}
+        <motion.footer
+          variants={sectionItem}
+          className="pt-4 pb-2 flex items-center justify-center gap-4 text-[11px] font-medium text-muted-foreground"
+        >
+          <button type="button" onClick={() => navigate('/support')} className="hover:text-foreground transition-colors">
+            Support
+          </button>
+          <span className="text-muted-foreground/40">·</span>
+          <button type="button" onClick={() => navigate('/privacy')} className="hover:text-foreground transition-colors">
+            Privacy
+          </button>
+          <span className="text-muted-foreground/40">·</span>
+          <button type="button" onClick={() => navigate('/terms')} className="hover:text-foreground transition-colors">
+            Terms
+          </button>
+        </motion.footer>
+      </motion.main>
+
+      {/* ── Settings (inline panel, not /settings route) ── */}
+      {showSettings && (
+        <div className="fixed inset-0 z-[80] bg-background overflow-y-auto">
+          <SettingsPanel onClose={() => setShowSettings(false)} />
+        </div>
+      )}
+
+      {/* ── What is MoniBot modal ── */}
+      <WhatIsMoniBotModal open={showWhatIsMoniBot} onOpenChange={setShowWhatIsMoniBot} />
+
+      {/* ── Receive sheet (QR) ── */}
+      <Sheet open={showReceive} onOpenChange={setShowReceive}>
+        <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto rounded-t-[28px] border-t border-border/60 shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.25)] px-5 pt-6 pb-8">
+          <SheetHeader className="text-left">
+            <SheetTitle className="text-base font-semibold tracking-tight">Receive {CELO_CFG.currency} on Celo</SheetTitle>
+          </SheetHeader>
+          <div className="mt-6 flex flex-col items-center gap-4">
+            <BrandedQR
+              value={walletAddress}
+              payTag={payTag ?? shortAddr(walletAddress)}
+              subtitle={`Celo · ${CELO_CFG.currency}`}
+              size={220}
+              showActions
+              copyValue={walletAddress}
+            />
+            <p className="text-xs text-muted-foreground text-center max-w-xs">
+              Send {CELO_CFG.currency} on Celo to this address. Other tokens
+              or networks may be lost.
+            </p>
+          </div>
+        </SheetContent>
