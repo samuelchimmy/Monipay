@@ -29,4 +29,11 @@ export function enforceMiniPayChainRestriction(senderProfile, recipientProfile, 
  * Determine claim mode for MagicPay transactions.
  */
 export function determineMagicPayClaimMode(senderProfile, chain) {
-  // Mandatory claim mode for MiniPay sender on Celo
+  // Mandatory claim mode for MiniPay sender on Celo
+  if (senderProfile && senderProfile.source === 'wallet_profile' && chain === 'celo') {
+    return 'mandatory';
+  }
+
+  // Default claim mode for standard users
+  return 'default';
+}
