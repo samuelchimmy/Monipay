@@ -15,4 +15,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import {
+import {
+  XLinkCard,
+  DiscordLinkCard,
+  TelegramLinkCard,
+  socialIdentityCacheKey,
+  type SocialIdentity,
+} from "@/components/MoniBotSettings";
+
+interface Props {
+  profileId: string;
+  walletAddress: `0x${string}`;
+  onIdentityChange?: (identity: SocialIdentity | null) => void;
+}
+
+// Light-on-yellow palette so the cards sit cleanly inside the MoniBot AI
+// yellow surface in /minipay (matches the "Use MoniBot" card next to it).
+const themeClasses = {
+  innerSurface: "bg-white/85 border-black/15",
+  innerSurfaceSolid: "bg-black/[0.06]",
