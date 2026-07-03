@@ -83,4 +83,47 @@ export const CHAIN_CONFIGS = {
     name: 'celo',
     chainId: 42220,
     viemChain: celo,                                           // ✅ FIX B1
-    rpcs: [
+    rpcs: [
+      process.env.CELO_RPC_URL,
+      'https://forno.celo.org',
+      'https://rpc.ankr.com/celo',
+      'https://1rpc.io/celo',
+      'https://celo-rpc.publicnode.com',
+      'https://celo.llamarpc.com',
+      'https://celo-pokt.nodies.app',
+    ].filter(Boolean),
+    routerAddress:   process.env.USE_V2_CONTRACTS === 'true' ? '0x8768aCE3FCd925e9BD61808b90905a935697e227' : '0x2a6Ff7552F296A8C5e8688FbA32685E73e138B9e',
+    tokenAddress:    '0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e',
+    magicPayAddress: process.env.USE_V2_CONTRACTS === 'true' ? '0x89218866374DF22c74a0F44ae648bfA9de8BD31e' : '0x6bB3C64C382fcF8fB65b24234C455bB62b155742',
+    decimals: 6,
+    symbol: 'USDT',
+    explorer: 'https://celoscan.io/tx/',
+    useBuilderCode: false,
+    isTestnet: false,
+  },
+
+  ink: {
+    name: 'ink',
+    chainId: 57073,
+    viemChain: inkChain,                                       // ✅ FIX B1
+    rpcs: [
+      process.env.INK_RPC_URL,
+      'https://rpc-qnd.inkonchain.com',
+      'https://ink.drpc.org',
+      'https://ink-public.nodies.app',
+      'https://1rpc.io/ink',
+      'https://ink.llamarpc.com',
+      'https://ink-pokt.nodies.app',
+    ].filter(Boolean),
+    routerAddress:   '0x046875a42B8F79E72349d38CB8225cbd6d24C7c5',
+    tokenAddress:    '0x0200C29006150606B650577BBE7B6248F58470c1',
+    magicPayAddress: '0xD294Ecaa25f9122FD3e16014D2f4923fEf874a08',
+    decimals: 6,
+    symbol: 'USDT0',
+    explorer: 'https://explorer.inkonchain.com/tx/',
+    useBuilderCode: false,
+    isTestnet: false,
+  },
+
+  tempo: {
+    name: 'tempo',
