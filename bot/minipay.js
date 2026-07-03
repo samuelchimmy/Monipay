@@ -13,4 +13,12 @@ export function enforceMiniPayChainRestriction(senderProfile, recipientProfile, 
       error: 'ERROR_MINIPAY_SENDER_CHAIN_RESTRICTION'
     };
   }
+
+  // Check recipient restriction (MiniPay recipient must receive on Celo)
+  if (recipientProfile && recipientProfile.source === 'wallet_profile' && chain !== 'celo') {
+    return {
+      valid: false,
+      error: 'ERROR_MINIPAY_RECIPIENT_CHAIN_RESTRICTION'
+    };
+  }
 
