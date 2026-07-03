@@ -68,4 +68,22 @@ export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChan
     try {
       const response = await supabase.functions.invoke("social-identity", {
         body: { action: "get", profileId },
-      });
+      });
+      if (response.error) throw response.error;
+      const next = response.data as SocialIdentity;
+      setIdentity(next);
+      writeCachedIdentity(next);
+      onIdentityChangeRef.current?.(next);
+    } catch (err) {
+      console.error("WalletMoniBotSettings: fetch identity failed", err);
+    }
+  }, [profileId, writeCachedIdentity]);
+
+  const handleIdentityChange = useCallback(
+    (next: SocialIdentity | null) => {
+      setIdentity(next);
+      writeCachedIdentity(next);
+      onIdentityChangeRef.current?.(next);
+    },
+    [writeCachedIdentity],
+  );
