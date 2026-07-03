@@ -5,4 +5,12 @@
 /**
  * Enforce MiniPay chain restrictions for sender and recipient.
  */
-export function enforceMiniPayChainRestriction(senderProfile, recipientProfile, chain) {
+export function enforceMiniPayChainRestriction(senderProfile, recipientProfile, chain) {
+  // Check sender restriction (MiniPay sender must use Celo)
+  if (senderProfile && senderProfile.source === 'wallet_profile' && chain !== 'celo') {
+    return {
+      valid: false,
+      error: 'ERROR_MINIPAY_SENDER_CHAIN_RESTRICTION'
+    };
+  }
+
