@@ -86,4 +86,22 @@ export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChan
       onIdentityChangeRef.current?.(next);
     },
     [writeCachedIdentity],
-  );
+  );
+
+  // Hydrate from cache immediately, then refresh in background — no blocking
+  // spinner, the panel opens instantly.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(socialIdentityCacheKey(profileId));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setIdentity(parsed);
+        onIdentityChangeRef.current?.(parsed);
+      }
+    } catch { /* ignore */ }
+    fetchIdentity();
+  }, [profileId, fetchIdentity]);
+
+  const handleUnlinkX = async () => {
+    setIsUnlinkingX(true);
+    try {
