@@ -764,4 +764,132 @@ export function MiniPayDashboard({ walletAddress, profileId, isLegacy }: Props) 
                   <Copy className="w-3.5 h-3.5 text-black/40 hover:text-black" />
                 </button>
               </div>
-            ) : (
+            ) : (
+              <div className="flex items-center gap-1.5">
+                <span
+                  className="text-[26px] sm:text-[30px] font-black text-black/30 tracking-tight uppercase leading-tight"
+                  style={{ fontFamily: "'Outfit', sans-serif" }}
+                >
+                  UNKNOWN
+                </span>
+                <button
+                  type="button"
+                  onClick={() => { feedback('tap'); setShowMonitag(true); }}
+                  className="p-1 rounded-full hover:bg-black/10 transition-colors"
+                  aria-label="Claim MoniTag"
+                >
+                  <Pencil className="w-3.5 h-3.5 text-black/40 hover:text-black" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Middle Row: 4-bullet animated board — fixed height prevents card resize */}
+          <div className="mt-4">
+            <BulletBoard phrases={typewriterMessages} />
+          </div>
+
+          {/* Bottom Row: Balance + hero subline + History */}
+          <div className="mt-5 relative z-10 space-y-4">
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-black/45 leading-none">
+                {isInMiniPay ? 'Your MiniPay Portfolio' : 'Available Balance'}
+              </p>
+              <div className="flex items-baseline gap-1 mt-1.5">
+                <h1 className="text-[34px] sm:text-[40px] leading-none font-black tracking-tight tabular-nums">
+                  ${loadingBal || balance === null ? '\u2014' : <AnimatedBalance value={balance} />}
+                </h1>
+                <span className="text-[10px] font-black text-black/60 tracking-wider uppercase ml-1">
+                  USD
+                </span>
+              </div>
+            </div>
+
+            {/* Multi-Token Asset Breakdown — MiniPay supports USDT, USDC, USDm only */}
+            {walletAddress && (
+              <CeloHoldingsCollapse
+                walletAddress={walletAddress}
+                forceTheme="light"
+                tokens={['USDT', 'USDC', 'USDm']}
+                title="Holdings"
+              />
+            )}
+
+            {/* History — clean text link bottom-right */}
+            <div className="flex justify-end pt-1">
+              <button
+                type="button"
+                onClick={() => { feedback('tap'); setShowHistory(true); }}
+                className="flex items-center gap-1 text-[11px] font-bold text-black/55 hover:text-black transition-colors"
+                aria-label="Transaction History"
+              >
+                <History className="w-3.5 h-3.5" />
+                History
+              </button>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* ── Quick actions — commented out until live ── */}
+        {/*
+        <section
+          className="rounded-3xl border border-black/80 dark:border-white/80 p-3 dark:brightness-[0.72]"
+          style={{
+            background:
+              'linear-gradient(160deg, #FCFF52 0%, #F4FB8E 55%, hsl(154 65% 82%) 100%)',
+          }}
+        >
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-black px-2 pt-1 pb-3">
+            Quick Actions
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <ActionTile icon={QrCode} label="Receive" hint="Soon" onClick={() => setShowReceive(true)} disabled comingSoon />
+            <ActionTile icon={ScanLine} label="Pay" hint="Soon" onClick={() => setShowScanPay(true)} disabled comingSoon />
+            <ActionTile icon={Send} label="Send" hint="Soon" onClick={() => setShowSend(true)} disabled comingSoon />
+          </div>
+        </section>
+        */}
+
+        {/* ── MoniBot (compact) ── */}
+        {profileId ? (
+          <>
+          {/* ── Pending MagicPay / IOUs (auto-scans when socials linked) ── */}
+          {identities.length > 0 && pendingIouCount !== 0 && (
+            <motion.section
+              variants={sectionItem}
+              className="rounded-3xl border border-black/80 p-3 dark:brightness-[0.72]"
+              style={{
+                background:
+                  'linear-gradient(160deg, hsl(154 75% 90%) 0%, hsl(154 65% 82%) 60%, #FCFF52 100%)',
+              }}
+            >
+              <div className="flex items-center gap-2 px-2 pt-1 pb-2">
+                <Sparkles className="w-3.5 h-3.5 text-black" />
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-black">
+                  Pending MagicPay
+                </p>
+              </div>
+              <PendingIOUsCard identities={identities} onVisibleCountChange={setPendingIouCount} />
+            </motion.section>
+          )}
+          <motion.section
+            variants={sectionItem}
+            className="rounded-3xl border border-black/80 overflow-hidden dark:brightness-[0.72]"
+            style={{
+              background:
+                'linear-gradient(160deg, #FCFF52 0%, #F4FB8E 55%, hsl(154 65% 82%) 100%)',
+              color: '#000',
+            }}
+          >
+            <div className="px-5 pt-5 pb-3 flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center shrink-0">
+                <Bot className="w-5 h-5 text-[#FCFF52]" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-sm font-extrabold tracking-tight text-black">MoniBot · Your MiniPay AI Agent</h3>
+                <p className="text-[11px] text-black/70 leading-relaxed">
+                  Delegate spending from your MiniPay wallet — pay anyone, anywhere, by social handle.
+                </p>
+              </div>
+            </div>
+
