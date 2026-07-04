@@ -181,4 +181,66 @@ function getClients(chainName) {
   const rpcs = config.rpcs;
   const idx = Math.min(rpcIndexes[chain] || 0, rpcs.length - 1);
   const rpc = rpcs[idx];
-
+
+  const publicClient = createPublicClient({
+    chain: config.viemChain,
+    transport: http(rpc, { retryCount: 0 }),
+  });
+
+  const walletClient = createWalletClient({
+    account: privateKeyToAccount(process.env.MONIBOT_PRIVATE_KEY),
+    chain: config.viemChain,
+    transport: http(rpc, { retryCount: 0 }),
+  });
+
+  return { publicClient, walletClient, config, rpc };
+}
+
+// ============ Utility ============
+
+function isSolanaChain(chainName) {
+  return normalizeChain(chainName) === 'solana';
+}
+
+export function getRecipientId(platform, userId) {
+  return keccak256(encodePacked(['string', 'string', 'string'], [platform, ':', String(userId)]));
+}
+
+async function executeSolanaRelay(action, body) {
+  const resp = await fetch(`${process.env.SUPABASE_URL}/functions/v1/relay-solana-payment`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+    },
+    body: JSON.stringify({ action, ...body }),
+  });
+  const data = await resp.json();
+  if (!resp.ok || data.error) throw new Error(data.error || `Solana error: ${resp.status}`);
+  return data;
+}
+
+// ============ Balance & Allowance ============
+
+export async function getBalance(address, chainName = 'base') {
+  const chain = normalizeChain(chainName);
+  if (!address || typeof address !== 'string') return { balance: 0, symbol: 'UNKNOWN' };
+
+  if (isSolanaChain(chain)) {
+    try {
+      const data = await executeSolanaRelay('getBalance', { address });
+      return { balance: data.balance || 0, symbol: 'USDC' };
+    } catch (e) {
+      return { balance: 0, symbol: 'USDC' };
+    }
+  }
+
+  const config = getChainConfig(chain);
+  const totalRpcs = config.rpcs.length;
+
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      const bal = await publicClient.readContract({
+        address: config.tokenAddress,
+        abi: erc20Abi,
