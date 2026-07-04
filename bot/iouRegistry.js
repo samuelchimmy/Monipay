@@ -65,4 +65,21 @@ export async function executeCreateMagicPay({ chain, fromAddress, amount, platfo
 
   const account = privateKeyToAccount(executorKey.startsWith('0x') ? executorKey : `0x${executorKey}`);
 
-  // Use the first available RPC from chains.js
+  // Use the first available RPC from chains.js
+  const rpc = config.rpcs[0];
+  const publicClient = createPublicClient({ chain: config.chain, transport: http(rpc, { retryCount: 3 }) });
+  const walletClient = createWalletClient({ account, chain: config.chain, transport: http(rpc, { retryCount: 3 }) });
+
+  const recipientId = getRecipientId(platform, platformUserId);
+  const amountUnits = parseUnits(Number(amount).toFixed(config.decimals), config.decimals);
+
+  // Pre-flight: sender must have allowance to MagicPay (IOURegistry)
+  const allowance = await publicClient.readContract({
+    address: config.tokenAddress,
+    abi: erc20Abi,
+    functionName: 'allowance',
+    args: [fromAddress, registry],
+  });
+
+  if (allowance < amountUnits) {
+    throw new Error(`ERROR_MAGIC_PAY_ALLOWANCE:Approve MagicPay on ${chain} for at least ${amount} ${config.symbol}`);
