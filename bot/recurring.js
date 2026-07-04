@@ -780,3 +780,115 @@ export async function handleOneTimeScheduleCreation(tweet, author, language) {
       max_attempts: 3,
       attempts: 0,
       payload: {
+        platform: 'twitter',
+        senderId: senderProfile.id,
+        senderPayTag: senderProfile.pay_tag,
+        senderWallet: senderProfile.wallet_address,
+        receiverId: recipientProfile ? recipientProfile.id : null,
+        recipientPayTag: targetTag,
+        receiverWallet: recipientProfile ? recipientProfile.wallet_address : null,
+        recipientId: isMagicPay ? recipientIdentifier : null,
+        command: {
+          amount, recipients: [targetTag], chain, isMagicPay,
+        },
+        originalText: cleanText,
+        seriesId,
+        isRecurring: false,
+      }
+    };
+
+    const supabase = getSupabase();
+    const { error } = await supabase.from('scheduled_jobs').insert([job]);
+
+    if (error) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount, fee: 0, tx_hash: 'ERROR_SCHEDULE_DB_FAILED', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+        error_reason: `Database error scheduling job. Try again.`, language
+      });
+      return;
+    }
+
+    // Success! Log the SCHEDULE_CREATE transaction
+    const timeDesc = `in ${parsedSchedule.value} ${parsedSchedule.unit}${parsedSchedule.value !== 1 ? 's' : ''}`;
+    await logTransaction({
+      sender_id: senderProfile.id,
+      receiver_id: recipientProfile ? recipientProfile.id : senderProfile.id,
+      amount, fee: 0, tx_hash: 'SCHEDULE_CREATE', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+      error_reason: JSON.stringify({ seriesId, amount, targetTag, chain, isMagicPay, timeDesc, balanceWarning }),
+      language
+    });
+
+  } catch (err) {
+    console.error('❌ One-time schedule creation exception:', err.message);
+  }
+}
+
+// ============ Feature 2: Help, Onboarding, and Setup Commands ============
+
+export async function handleHelpSetupLink(tweet, author, language) {
+  try {
+    const text = tweet.text.toLowerCase();
+    const senderProfile = await getProfileByXUsername(author.username);
+
+    if (text.includes('link')) {
+      await logTransaction({
+        sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'LINK_SHOW', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: JSON.stringify({ linked: !!senderProfile, payTag: senderProfile?.pay_tag }),
+        language
+      });
+    } else if (text.includes('setup')) {
+      await logTransaction({
+        sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'SETUP_SHOW', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: '',
+        language
+      });
+    } else if (text.includes('about')) {
+      await logTransaction({
+        sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ABOUT_SHOW', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: '',
+        language
+      });
+    } else if (text.includes('command')) {
+      await logTransaction({
+        sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'COMMANDS_LIST_SHOW', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: '',
+        language
+      });
+    } else if (text.includes('help')) {
+      await logTransaction({
+        sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'HELP_SHOW', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: '',
+        language
+      });
+    }
+  } catch (err) {
+    console.error('❌ handleHelpSetupLink exception:', err.message);
+  }
+}
+
+// ============ Feature 3: Network Preference Management ============
+
+export async function handleSetChainCommand(tweet, author, language) {
+  try {
+    const text = tweet.text;
+    const cleanText = text.replace(/@monibot/gi, '').trim();
+
+    const match = cleanText.match(/(?:set-chain|change network to|change preferred network to|change chain to|change preferred chain to|switch to|use network|set network to|use chain|set chain|on)\s+(\w+)/i);
