@@ -109,7 +109,7 @@ The signed struct is a `PaymentAuthorization` containing `from`, `to`, `amount`,
 
 ### The Celo Relayer (`relay-payment-celo`)
 
-MiniPay users use a dedicated `relay-payment-celo` edge function isolated from the shared multi-chain relay, ensuring zero risk to Base and BSC flows during Celo-specific iterations. The function verifies the EIP-712 signature, checks `isNonceUsed` to reject replays, validates the deadline at the block level, then calls `relayPayment(from, to, amount, fee, nonce, deadline, signature)` on the `MoniPayRouter`. Nonces are marked as used on-chain the moment a transaction finishes, making any duplicate submission with the same nonce immediately rejected.
+Celo users use a dedicated `relay-payment-celo` edge function isolated from the shared multi-chain relay, ensuring zero risk to Base and BSC flows during Celo-specific iterations. The function verifies the EIP-712 signature, checks `isNonceUsed` to reject replays, validates the deadline at the block level, then calls `relayPayment(from, to, amount, fee, nonce, deadline, signature)` on the `MoniPayRouter`. Nonces are marked as used on-chain the moment a transaction finishes, making any duplicate submission with the same nonce immediately rejected.
 
 After beta, the public RPC endpoints will be replaced with a dedicated private RPC node for improved throughput, reduced latency, and higher reliability under sustained load.
 
