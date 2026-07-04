@@ -488,4 +488,65 @@ export async function executeGrantViaRouter(toAddress, amount, campaignId, chain
       if (isGrantIssued) throw new Error('ERROR_DUPLICATE_GRANT:This wallet already received a grant from this campaign.');
 
       if (contractBalance < amountInUnits) {
-        const have = parseFloat(formatUnits(contractBalance, config.decimals)).toFixed(2);
+        const have = parseFloat(formatUnits(contractBalance, config.decimals)).toFixed(2);
+        throw new Error(`ERROR_CONTRACT_BALANCE:Campaign treasury has $${have} ${config.symbol} remaining but the grant is $${amount}. Campaign may be underfunded.`);
+      }
+
+      const [fee] = await publicClient.readContract({
+        address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [amountInUnits],
+      });
+
+      let calldata = encodeFunctionData({ abi: moniBotRouterAbi, functionName: 'executeGrant', args: [toAddress, amountInUnits, campaignId] });
+      if (config.useBuilderCode) calldata = appendBuilderCode(calldata);
+
+      let gas;
+      try {
+        gas = await publicClient.estimateGas({ account: walletClient.account.address, to: config.routerAddress, data: calldata });
+      } catch (e) {
+        if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+        gas = 250000n;
+      }
+
+      const hash = await sendTransactionWithNonce(chain, publicClient, walletClient, {
+        to: config.routerAddress,
+        data: calldata,
+        gas: gas + gas / 5n,
+      });
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.status === 'reverted') throw new Error(`ERROR_REVERTED:Grant reverted on ${chain.toUpperCase()} (${hash})`);
+
+      return { hash, fee: parseFloat(formatUnits(fee, config.decimals)) };
+
+    } catch (err) {
+      if (isRpcFailure(err) && attempt < totalRpcs - 1) {
+        console.warn(`  ⚠️ RPC failed [Grant] on ${chain} (attempt ${attempt + 1}/${totalRpcs}): ${err.message.split('\n')[0]}`);
+        rotateRpc(chain);
+        continue;
+      }
+      throw err;
+    }
+  }
+
+  throw new Error(`ERROR_RPC_EXHAUSTED:All ${config.rpcs.length} RPCs failed for ${chain}. Try again later.`);
+}
+
+// ============ Legacy / Wrapper Exports ============
+
+export const getOnchainAllowance  = (user, chain = 'base') => getAllowance(user, chain, 'router');
+export const getMagicPayAllowance = (user, chain = 'base') => getAllowance(user, chain, 'magicpay');
+export const getUSDCBalance       = (user, chain = 'base') => getBalance(user, chain);
+
+export const getUserNonce = async (user, chainName = 'base') => {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const totalRpcs = config.rpcs.length;
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
+      return await publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: isV2 ? 'nonces' : 'getNonce', args: [user] });
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      throw e;
+    }
+  }
