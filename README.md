@@ -86,38 +86,6 @@ If a user who previously registered a full Monipay account opens the MiniPay lin
 
 ---
 
-## Core Features: CasualPay and MagicPay
-
-Monipay routes all social payments through two primitives, selected dynamically based on the recipient's registration state.
-
-### CasualPay (Direct Transfer)
-
-Used when the recipient has a registered PayTag or linked social identity. Settles immediately on-chain via the `MoniBotRouter` contract under the sender's active spending allowance.
-
-**Execution flow:**
-
-1. **Resolution.** MoniBot parses the recipient handle from the natural language command and queries the database resolver to retrieve their registered Celo address. To protect against username hijacking, resolution anchors to the platform's permanent, immutable numeric user ID (Twitter numeric ID, Discord snowflake, Telegram ID), not the handle text. Name changes cannot intercept pending payments.
-
-2. **Allowance validation.** The relayer verifies the transaction amount is within the sender's active spending allowance granted to `MoniBotRouter`. The allowance is checked in the database mirror first, then verified directly on-chain, before any RPC call is made.
-
-3. **Execution.** `MoniBotRouter` processes the gasless payment, splits the 1% platform fee to the treasury address, and transfers 99% to the recipient in a single atomic transaction.
-
-### MagicPay (IOU Escrow)
-
-Used as a fallback when the recipient is not yet a registered Monipay user. Tokens are locked on-chain in the `IOURegistry` contract until the recipient claims them via a verified social account link.
-
-**Execution flow:**
-
-1. **On-chain lock.** The sender locks stablecoins into `IOURegistry`. The transaction specifies the expiration block and the hashed recipient identifier. The recipient's social handle is never written to the chain.
-
-2. **Claim verification.** When the recipient links their verified social account, the relayer invokes `batchClaim`. The contract computes `keccak256(abi.encodePacked(platform, ":", userId))` to match the stored hash and releases funds to the recipient's address.
-
-3. **Refund option.** If the recipient does not claim before expiry, the sender calls `batchRefund` directly on the contract. The platform cannot block, delay, or intercept this function. Emergency situations are also covered by OpenZeppelin's `Pausable` module which allows temporary suspension of deposits and claims during black-swan events, but the owner has no custody or withdrawal rights over escrowed funds at any time.
-
-**Wrong-recipient rescue.** If a user accidentally specifies the wrong handle and the unintended recipient is not yet registered, funds are routed to `IOURegistry`. The sender can delete the social command to prevent visibility, wait for expiry, and call `batchRefund` for a full recovery. If the unintended recipient is already registered, the transaction settles immediately via CasualPay, and the user's configured daily bot allowance limits total exposure.
-
----
-
 ## MiniPay-Specific Architecture
 
 ### CIP-64 Fee Abstraction
