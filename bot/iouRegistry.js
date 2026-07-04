@@ -31,4 +31,21 @@ export const MAGIC_PAY_ABI = [
  * Delegates to the canonical implementation in blockchain.js.
  */
 export function getRecipientId(platform, userId) {
-  return canonicalGetRecipientId(platform, userId);
+  return canonicalGetRecipientId(platform, userId);
+}
+
+const SLANG_LOGS = [
+  "MagicPay deposit is BUSSIN ⚡",
+  "Identity hashing: Certified Sigma move 🤫",
+  "Sending funds to the Shadow Realm... 🪄",
+  "MagicPay activated, no cap 🧢",
+  "Escrowing with maximum Rizz 📈"
+];
+
+function getRandomSlang() {
+  return SLANG_LOGS[Math.floor(Math.random() * SLANG_LOGS.length)];
+}
+
+/**
+ * Executes MagicPay (IOURegistry).executeCreate on-chain via the executor wallet.
+ * Returns { iouId, txHash, netAmount } or throws an error.
