@@ -304,4 +304,65 @@ export async function executeMagicPay(fromAddress, recipientTwitterUserId, amoun
   const recipientId = getRecipientId('twitter', recipientTwitterUserId);
   const amountInUnits = parseUnits(amount.toFixed(config.decimals), config.decimals);
   const totalRpcs = config.rpcs.length;
-
+
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient, walletClient } = getClients(chain);
+
+      // Pre-flight balance
+      const balance = await publicClient.readContract({
+        address: config.tokenAddress, abi: erc20Abi, functionName: 'balanceOf', args: [fromAddress],
+      });
+      if (balance < amountInUnits) {
+        const have = parseFloat(formatUnits(balance, config.decimals)).toFixed(2);
+        throw new Error(`ERROR_MAGIC_PAY_BALANCE:You have $${have} ${config.symbol} on ${chain.toUpperCase()} but tried to send $${amount}. Top up your MoniPay wallet.`);
+      }
+
+      // Pre-flight MagicPay allowance (not router allowance — FIX B2)
+      const magicPayAllowance = await publicClient.readContract({
+        address: config.tokenAddress,
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [fromAddress, config.magicPayAddress],
+      });
+      if (magicPayAllowance < amountInUnits) {
+        const approved = parseFloat(formatUnits(magicPayAllowance, config.decimals)).toFixed(2);
+        throw new Error(`ERROR_MAGIC_PAY_ALLOWANCE:MagicPay allowance on ${chain.toUpperCase()} is $${approved} but you need $${amount}. Go to MoniPay Settings > MoniBot > Set Allowance and approve the MagicPay contract.`);
+      }
+
+      const calldata = encodeFunctionData({
+        abi: magicPayAbi,
+        functionName: 'executeCreate',
+        args: [fromAddress, amountInUnits, recipientId],
+      });
+
+      let gas;
+      try {
+        gas = await publicClient.estimateGas({ account: walletClient.account.address, to: config.magicPayAddress, data: calldata });
+        gas = gas + (gas * 20n / 100n);
+      } catch (e) {
+        if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+        gas = 400000n;
+      }
+
+      const hash = await sendTransactionWithNonce(chain, publicClient, walletClient, {
+        to: config.magicPayAddress,
+        data: calldata,
+        gas,
+      });
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.status === 'reverted') throw new Error(`ERROR_REVERTED:MagicPay transaction reverted on ${chain.toUpperCase()} (${hash})`);
+
+      let iouId = null;
+      for (const log of receipt.logs) {
+        if (log.address.toLowerCase() !== config.magicPayAddress.toLowerCase()) continue;
+        try {
+          const decoded = decodeEventLog({ abi: magicPayAbi, data: log.data, topics: log.topics });
+          if (decoded.eventName === 'IOUCreated') { iouId = decoded.args.iouId.toString(); break; }
+        } catch (_) {}
+      }
+
+      return { hash, iouId };
+
+    } catch (err) {
+      if (isRpcFailure(err) && attempt < totalRpcs - 1) {
