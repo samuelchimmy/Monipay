@@ -48,4 +48,21 @@ function getRandomSlang() {
 
 /**
  * Executes MagicPay (IOURegistry).executeCreate on-chain via the executor wallet.
- * Returns { iouId, txHash, netAmount } or throws an error.
+ * Returns { iouId, txHash, netAmount } or throws an error.
+ *
+ * SOURCE: All chain-specific values pulled from chains.js
+ */
+export async function executeCreateMagicPay({ chain, fromAddress, amount, platform, platformUserId }) {
+  const config = getChainConfig(chain);
+  const registry = config.magicPayAddress;
+
+  if (!registry) throw new Error(`MagicPay not deployed on chain: ${chain}`);
+
+  console.log(`[MagicPay] ${getRandomSlang()}`);
+
+  const executorKey = process.env.MONIBOT_PRIVATE_KEY || process.env.MONIBOT_WALLET_PRIVATE_KEY;
+  if (!executorKey) throw new Error('MONIBOT_PRIVATE_KEY missing — cannot execute MagicPay create');
+
+  const account = privateKeyToAccount(executorKey.startsWith('0x') ? executorKey : `0x${executorKey}`);
+
+  // Use the first available RPC from chains.js
