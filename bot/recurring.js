@@ -445,3 +445,115 @@ export async function handleRecurringCreation(tweet, author, language) {
     } else {
       amount    = parseFloat(match[3]);
       targetTag = match[4].toLowerCase();
+    }
+
+    if (targetTag === 'monibot' || targetTag === 'monipay') return;
+    if (isNaN(amount) || amount <= 0) return;
+
+    // Self send guard
+    if (targetTag === senderProfile.pay_tag?.toLowerCase() || targetTag === author.username.toLowerCase()) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_SELF', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: "Blud tried to schedule self-send. Stop the cap 🧢", language
+      });
+      return;
+    }
+
+    // Network detection
+    const NETWORK_KEYWORDS = {
+      celo:   ['on celo', 'celo', 'minipay'],
+      ink:    ['on ink', 'ink chain', 'ink network', 'inkonchain'],
+      solana: ['on solana', 'solana', 'sol ', 'spl'],
+      tempo:  ['on tempo', 'tempo', 'alphausd', 'αusd'],
+      bsc:    ['usdt', 'bnb', 'bsc', 'binance'],
+    };
+    let chain = senderProfile.preferred_network || 'base';
+    const lowerText = baseCommandText.toLowerCase();
+    for (const [ch, keywords] of Object.entries(NETWORK_KEYWORDS)) {
+      if (keywords.some(kw => lowerText.includes(kw))) {
+        chain = ch;
+        break;
+      }
+    }
+    chain = normalizeChain(chain);
+
+    // 4. Resolve Recipient Profile or MagicPay (Twitter ID)
+    let recipientProfile = await getProfileByMonitag(targetTag) || await getProfileByXUsername(targetTag);
+    let isMagicPay = false;
+    let recipientIdentifier = targetTag;
+
+    if (!recipientProfile) {
+      const numericId = await fetchTwitterNumericId(targetTag);
+      if (!numericId) {
+        await logTransaction({
+          sender_id: senderProfile.id, receiver_id: senderProfile.id,
+          amount, fee: 0, tx_hash: 'ERROR_TARGET_NOT_FOUND', type: 'p2p_command',
+          tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+          error_reason: `@${targetTag} does not exist on Twitter. Double-check username.`, language
+        });
+        return;
+      }
+      isMagicPay = true;
+      recipientIdentifier = numericId;
+    } else {
+      recipientIdentifier = recipientProfile.pay_tag;
+    }
+
+    // Pre-flight check: sender balance & allowance check
+    const { getUSDCBalance, getAllowance } = await import('./blockchain.js');
+    const { balance } = await getUSDCBalance(senderProfile.wallet_address, chain);
+    const { allowance } = await getAllowance(senderProfile.wallet_address, chain, isMagicPay ? 'magicpay' : 'router');
+
+    const preferredChain = chain;
+    let balanceWarning = '';
+
+    if (balance < amount || allowance < amount) {
+      const { findAlternateChain } = await import('./crossChainCheck.js');
+      const alt = await findAlternateChain(senderProfile.wallet_address, amount, preferredChain, isMagicPay ? 'magicpay' : 'p2p');
+      
+      if (alt && !alt.needsAllowance) {
+        balanceWarning = ` (Auto-rerouted from ${preferredChain.toUpperCase()} to ${alt.chain.toUpperCase()})`;
+        chain = alt.chain; // Update target chain for scheduling!
+      } else if (alt && alt.needsAllowance) {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} to ${alt.chain.toUpperCase()} but it lacks allowance. Go to MoniPay Settings > MoniBot > Set Allowance > ${isMagicPay ? 'MagicPay' : 'CasualPay'} to approve allowance on ${alt.chain.toUpperCase()} before execution!)`;
+      } else if (balance < amount) {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} but found no way to do so because of insufficient funds on all chains. Top up your wallet before execution!)`;
+      } else {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} but found no way to do so because MoniBot allowance is too low. Go to Settings > MoniBot > Set Allowance to approve spending before execution!)`;
+      }
+    }
+
+    // 5. Create scheduled jobs
+    const seriesId = randomUUID();
+    const intervalMs = syntax.intervalMs;
+    const count = syntax.count;
+    const startTime = Date.now();
+
+    const jobs = Array.from({ length: count }, (_, i) => ({
+      type: isMagicPay ? 'scheduled_magicpay' : 'scheduled_p2p',
+      status: 'pending',
+      scheduled_at: new Date(startTime + (i + 1) * intervalMs).toISOString(),
+      source_author_id: author.id,
+      source_author_username: author.username,
+      source_tweet_id: tweet.id,
+      max_attempts: 3,
+      attempts: 0,
+      payload: {
+        platform: 'twitter',
+        senderId: senderProfile.id,
+        senderPayTag: senderProfile.pay_tag,
+        senderWallet: senderProfile.wallet_address,
+        receiverId: recipientProfile ? recipientProfile.id : null,
+        recipientPayTag: targetTag,
+        receiverWallet: recipientProfile ? recipientProfile.wallet_address : null,
+        recipientId: isMagicPay ? recipientIdentifier : null, // for MagicPay (Twitter numeric ID)
+        
+        command: {
+          amount, recipients: [targetTag], chain, isMagicPay,
+        },
+        originalText: cleanText,
+
+        seriesId,
+        seriesIndex: i + 1,
