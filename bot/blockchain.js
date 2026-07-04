@@ -59,4 +59,65 @@ export async function sendTransactionWithNonce(chainName, publicClient, walletCl
       console.warn(`[NonceManager] Tx failed on ${chainKey}, clearing cached nonce. Error: ${err.message?.split('\n')[0]}`);
       _chainNonces[chainKey] = null;
       throw err;
-    }
+    }
+  });
+}
+
+import {
+  createPublicClient,
+  createWalletClient,
+  http,
+  parseUnits,
+  formatUnits,
+  erc20Abi,
+  encodeFunctionData,
+  keccak256,
+  encodePacked,
+  decodeEventLog,
+} from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { getChainConfig, CHAIN_CONFIGS, isTestnet, getExplorerUrl, normalizeChain } from './chains.js';
+
+// ============ ERC-8021 Builder Code (Twitter-specific) ============
+const BUILDER_CODE_SUFFIX = '802162635f71743979786f31640b00802180218021802180218021802180218021';
+
+function appendBuilderCode(calldata) {
+  if (!calldata || !calldata.startsWith('0x')) return calldata;
+  return `${calldata}${BUILDER_CODE_SUFFIX}`;
+}
+
+// ============ Exports ============
+export const MONIBOT_ROUTER_ADDRESS = '0xBEE37c2f3Ce9a48D498FC0D47629a1E10356A516';
+export const USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+
+// ============ ABIs ============
+const moniBotRouterAbi = [
+  { name: 'executeP2P',    type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'from', type: 'address' }, { name: 'to', type: 'address' }, { name: 'amount', type: 'uint256' }, { name: 'nonce', type: 'uint256' }, { name: 'tweetId', type: 'string' }], outputs: [{ name: 'success', type: 'bool' }] },
+  { name: 'executeGrant',  type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'to', type: 'address' }, { name: 'amount', type: 'uint256' }, { name: 'campaignId', type: 'string' }], outputs: [{ name: 'success', type: 'bool' }] },
+  { name: 'getNonce',      type: 'function', stateMutability: 'view',       inputs: [{ name: 'user', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
+  { name: 'nonces',        type: 'function', stateMutability: 'view',       inputs: [{ name: '', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
+  { name: 'isTweetUsed',   type: 'function', stateMutability: 'view',       inputs: [{ name: 'tweetId', type: 'string' }], outputs: [{ name: '', type: 'bool' }] },
+  { name: 'isGrantIssued', type: 'function', stateMutability: 'view',       inputs: [{ name: 'campaignId', type: 'string' }, { name: 'recipient', type: 'address' }], outputs: [{ name: '', type: 'bool' }] },
+  { name: 'calculateFee',  type: 'function', stateMutability: 'view',       inputs: [{ name: 'amount', type: 'uint256' }], outputs: [{ name: 'fee', type: 'uint256' }, { name: 'netAmount', type: 'uint256' }] },
+  { name: 'calculateFee',  type: 'function', stateMutability: 'view',       inputs: [{ name: 'user', type: 'address' }, { name: 'token', type: 'address' }, { name: 'amount', type: 'uint256' }], outputs: [{ name: '', type: 'uint256' }] },
+];
+
+const magicPayAbi = [
+  { name: 'executeCreate', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'from', type: 'address' }, { name: 'amount', type: 'uint256' }, { name: 'recipientId', type: 'bytes32' }], outputs: [{ name: 'iouId', type: 'uint256' }] },
+  {
+    name: 'IOUCreated', type: 'event',
+    inputs: [
+      { name: 'iouId',       type: 'uint256', indexed: true },
+      { name: 'sender',      type: 'address', indexed: true },
+      { name: 'recipientId', type: 'bytes32', indexed: true },
+      { name: 'grossAmount', type: 'uint256', indexed: false },
+      { name: 'netAmount',   type: 'uint256', indexed: false },
+      { name: 'fee',         type: 'uint256', indexed: false },
+      { name: 'expiry',      type: 'uint64',  indexed: false },
+    ],
+  },
+];
+
+// ============ RPC Failover ============
+
+const rpcIndexes = {};
