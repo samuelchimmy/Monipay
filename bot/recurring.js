@@ -557,3 +557,114 @@ export async function handleRecurringCreation(tweet, author, language) {
 
         seriesId,
         seriesIndex: i + 1,
+        seriesTotalCount: count,
+        seriesIntervalMs: intervalMs,
+        seriesStartedAt: new Date(startTime).toISOString(),
+        
+        isRecurring: false,
+        recurrenceRule: null,
+      }
+    }));
+
+    const supabase = getSupabase();
+    const { error } = await supabase.from('scheduled_jobs').insert(jobs);
+
+    if (error) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount, fee: 0, tx_hash: 'ERROR_RECURRING_DB_FAILED', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+        error_reason: `Database error scheduling jobs. Try again.`, language
+      });
+      return;
+    }
+
+    // Success! Log the recurring create transaction
+    const firstAt = jobs[0].scheduled_at;
+    const lastAt = jobs[count - 1].scheduled_at;
+
+    await logTransaction({
+      sender_id: senderProfile.id,
+      receiver_id: recipientProfile ? recipientProfile.id : senderProfile.id,
+      amount, fee: 0, tx_hash: 'RECURRING_CREATE', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+      error_reason: JSON.stringify({ seriesId, count, amount, intervalMs, targetTag, chain, isMagicPay, firstAt, lastAt, balanceWarning }),
+      language
+    });
+
+  } catch (err) {
+    console.error('❌ Recurring creation exception:', err.message);
+  }
+}
+
+// ============ Feature 1: One-time Scheduled Payments ============
+
+const SIMPLE_SCHEDULE = /\bin\s+(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*(second|sec|s|minute|min|m|hour|hr|h|day|d)s?\b/i;
+
+const WORD_TO_NUM = {
+  one: 1, two: 2, three: 3, four: 4, five: 5,
+  six: 6, seven: 7, eight: 8, nine: 9, ten: 10
+};
+
+export function isOneTimeScheduleCommand(text) {
+  if (!text) return false;
+  return SIMPLE_SCHEDULE.test(text);
+}
+
+export function parseOneTimeScheduleCommand(text) {
+  const match = text.match(SIMPLE_SCHEDULE);
+  if (!match) return null;
+
+  const valStr = match[1].toLowerCase();
+  const value = WORD_TO_NUM[valStr] || parseInt(valStr, 10);
+  if (isNaN(value) || value <= 0) return null;
+
+  const unit = match[2].toLowerCase();
+  const normalizedUnit = normalizeTimeUnit(unit);
+  const ms = value * UNIT_TO_MS[normalizedUnit];
+
+  const baseCommand = text.replace(match[0], '').trim();
+  return {
+    ms,
+    value,
+    unit: normalizedUnit,
+    baseCommand
+  };
+}
+
+export async function handleOneTimeScheduleCreation(tweet, author, language) {
+  try {
+    const text = tweet.text;
+    const cleanText = text.replace(/@monibot/gi, '').trim();
+
+    // 1. Resolve Sender
+    const senderProfile = await getProfileByXUsername(author.username);
+    if (!senderProfile) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `@${author.username} is not registered. Sign up at monipay.xyz and link X in Settings.`, language
+      });
+      return;
+    }
+
+    // 2. Parse schedule params
+    const parsedSchedule = parseOneTimeScheduleCommand(cleanText);
+    if (!parsedSchedule) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SCHEDULE_PARSE_FAILED', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: "Parsing scheduled time failed, stop being delulu 🤡", language
+      });
+      return;
+    }
+
+    // 3. Parse base command (e.g. "send $5 to @alice")
+    const baseCommandText = parsedSchedule.baseCommand;
+    const P2P_PATTERN = new RegExp(
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)@([a-zA-Z0-9_-]+)(?:[^@$]*?)\\$?([\\d.]+)|` +
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)\\$?([\\d.]+)(?:[^@$]*?)@([a-zA-Z0-9_-]+)`,
+      'i'
+    );
