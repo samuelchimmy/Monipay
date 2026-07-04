@@ -110,3 +110,115 @@ export function parseRecurringCommand(text) {
   const match2 = processed.match(RECURRING_ALIAS);
   if (match2) {
     const [fullMatch, alias, countStr, durationNum, durationUnit] = match2;
+    try {
+      const normalizedUnit = normalizeTimeUnit(alias);
+      const intervalMs = UNIT_TO_MS[normalizedUnit];
+      let count;
+      if (countStr) {
+        count = parseInt(countStr, 10);
+      } else if (durationNum && durationUnit) {
+        const durStr = durationNum.toLowerCase();
+        const duration = (durStr === 'a' || durStr === 'an') ? 1 : parseInt(durationNum, 10);
+        count = convertDurationToCount(duration, durationUnit, intervalMs);
+      } else {
+        return { error: ERROR_MESSAGES.MISSING_COUNT, pattern: 'alias_incomplete' };
+      }
+      
+      const baseCommand = processed.replace(fullMatch, '').trim();
+      return {
+        intervalMs, count, warnings: [], originalText: text, pattern: 'alias',
+        baseCommand, intervalValue: 1, intervalUnit: normalizedUnit
+      };
+    } catch (e) { return null; }
+  }
+  
+  const incompletePattern = /\bevery\s+(?:\d+\s+)?(\w+?)s?\b/i;
+  if (incompletePattern.test(processed)) {
+    return { error: ERROR_MESSAGES.MISSING_COUNT, pattern: 'incomplete' };
+  }
+  
+  return null;
+}
+
+export function validateSyntax(parsed) {
+  if (!parsed) throw new Error(ERROR_MESSAGES.INVALID_SYNTAX);
+  if (parsed.error) throw new Error(parsed.error);
+  if (!parsed.intervalMs || !parsed.count) throw new Error(ERROR_MESSAGES.PARSING_FAILED);
+  
+  let { intervalMs, count } = parsed;
+  const warnings = [...(parsed.warnings || [])];
+  
+  if (intervalMs < 60000) {
+    if (!warnings.includes(ERROR_MESSAGES.SUB_60_SECONDS)) {
+      warnings.push(ERROR_MESSAGES.SUB_60_SECONDS);
+    }
+    intervalMs = 60000;
+  }
+  
+  if (count > 100) {
+    throw new Error(VALIDATION_ERRORS.MAX_COUNT_EXCEEDED);
+  }
+  
+  const durationMs = intervalMs * count;
+  const maxDurationMs = 30 * 24 * 60 * 60 * 1000;
+  if (durationMs > maxDurationMs) {
+    throw new Error(VALIDATION_ERRORS.MAX_DURATION_EXCEEDED);
+  }
+  
+  return {
+    intervalMs, count, warnings, baseCommand: parsed.baseCommand,
+    originalText: parsed.originalText, pattern: parsed.pattern, ok: true
+  };
+}
+
+export function preprocessRecurringText(text) {
+  if (!text) return null;
+  let processed = text.trim();
+  
+  processed = processed
+    .replace(/\b(\d+)\s*(?:times?|payments?|rounds?|occurrences?|x|runs?|executions?)\b/gi, '$1 times')
+    .replace(/\bx(\d+)\b/gi, '$1 times')
+    .replace(/\b(?:lasting|over|during|for\s+a\s+period\s+of)\s+(\d+(?:\.\d+)?)\s*(\w+)/gi, 'for $1 $2')
+    .replace(/\bfor\s+(?:an|a)\s+(\w+)\b/gi, 'for 1 $1');
+  
+  const implicitPattern = /(\bevery\s+(?:\d+\s+)?\w+?s?\s+)(\d+)\b(?!\s*times?\b)/i;
+  if (implicitPattern.test(processed)) {
+    processed = processed.replace(implicitPattern, '$1$2 times');
+  }
+  
+  const conflictPattern = /(\bevery\s+(?:\d+\s+)?\w+?s?\s+\d+\s+times?)\s+for\s+\d+\s+\w+?s?\b/i;
+  if (conflictPattern.test(processed)) {
+    processed = processed.replace(conflictPattern, '$1');
+  }
+  
+  return processed;
+}
+
+export function isRecurringCommand(text) {
+  if (!text) return false;
+  try {
+    const parsed = parseRecurringCommand(text);
+    return parsed !== null && !parsed.error;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function isRecurringManagementCommand(text) {
+  const lower = text.toLowerCase();
+  return lower.includes('cancel series') || 
+         lower.includes('stop series') ||
+         lower.includes('series status') || 
+         lower.includes('status series') ||
+         lower.includes('my series') ||
+         lower.includes('series list');
+}
+
+// ============ Series Management Handlers ============
+
+export async function handleRecurringManagement(tweet, author, language) {
+  const text = tweet.text;
+  const supabase = getSupabase();
+  const lower = text.toLowerCase();
+
+  // 1. Cancel Command
