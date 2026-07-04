@@ -333,3 +333,115 @@ export async function handleRecurringManagement(tweet, author, language) {
     const failed = jobs.filter(j => j.status === 'failed').length;
 
     await logTransaction({
+      sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+      amount: 0, fee: 0, tx_hash: 'RECURRING_STATUS', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      error_reason: JSON.stringify({ seriesId, completed, pending, running, failed, total: jobs.length }), language
+    });
+    return;
+  }
+
+  // 3. List Command
+  if (lower.includes('my series') || lower.includes('list')) {
+    const { data: jobs, error } = await supabase
+      .from('scheduled_jobs').select('*')
+      .eq('source_author_id', author.id)
+      .not('payload->>seriesId', 'is', null)
+      .order('created_at', { ascending: false });
+
+    if (error || !jobs || jobs.length === 0) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_LIST_EMPTY', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: "You don't have any active recurring series, blud.", language
+      });
+      return;
+    }
+
+    const seriesMap = {};
+    jobs.forEach(job => {
+      const sid = job.payload.seriesId;
+      if (!seriesMap[sid]) {
+        seriesMap[sid] = {
+          seriesId: sid,
+          completed: 0,
+          total: job.payload.seriesTotalCount || 0,
+          target: job.payload.recipientPayTag || 'unknown',
+        };
+      }
+      if (job.status === 'completed') seriesMap[sid].completed++;
+    });
+
+    const list = Object.values(seriesMap).slice(0, 3); // top 3 for tweet space limit
+    await logTransaction({
+      sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+      amount: 0, fee: 0, tx_hash: 'RECURRING_LIST', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      error_reason: JSON.stringify({ list }), language
+    });
+    return;
+  }
+}
+
+// ============ Series Creation Handler ============
+
+export async function handleRecurringCreation(tweet, author, language) {
+  try {
+    const text = tweet.text;
+    const cleanText = text.replace(/@monibot/gi, '').trim();
+
+    // 1. Resolve Sender
+    const senderProfile = await getProfileByXUsername(author.username);
+    if (!senderProfile) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `@${author.username} is not registered. Sign up at monipay.xyz and link X in Settings.`, language
+      });
+      return;
+    }
+
+    // 2. Parse & Validate Recurring Params
+    const parsed = parseRecurringCommand(cleanText);
+    let syntax;
+    try {
+      syntax = validateSyntax(parsed);
+    } catch (e) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_LIMIT', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: e.message, language
+      });
+      return;
+    }
+
+    // 3. Parse Base Command (e.g. "send $1 to @alice")
+    const baseCommandText = syntax.baseCommand;
+    
+    // Adapted from twitter.js single P2P regex
+    const P2P_PATTERN = new RegExp(
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)@([a-zA-Z0-9_-]+)(?:[^@$]*?)\\$?([\\d.]+)|` +
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)\\$?([\\d.]+)(?:[^@$]*?)@([a-zA-Z0-9_-]+)`,
+      'i'
+    );
+    const match = baseCommandText.match(P2P_PATTERN);
+    if (!match) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: `Could not parse payment details from command. Format: send $5 to @username every day 7 times.`, language
+      });
+      return;
+    }
+
+    let amount, targetTag;
+    if (match[1] !== undefined) {
+      targetTag = match[1].toLowerCase();
+      amount    = parseFloat(match[2]);
+    } else {
+      amount    = parseFloat(match[3]);
+      targetTag = match[4].toLowerCase();
