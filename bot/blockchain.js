@@ -549,4 +549,64 @@ export const getUserNonce = async (user, chainName = 'base') => {
       if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
       throw e;
     }
-  }
+  }
+};
+
+export const isTweetProcessed = async (tweetId, chainName = 'base') => {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const totalRpcs = config.rpcs.length;
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      return await publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'isTweetUsed', args: [tweetId] });
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      throw e;
+    }
+  }
+};
+
+export const isGrantAlreadyIssued = async (campaignId, recipient, chainName = 'base') => {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const totalRpcs = config.rpcs.length;
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      return await publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'isGrantIssued', args: [campaignId, recipient] });
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      throw e;
+    }
+  }
+};
+
+export const calculateFee = async (amount, chainName = 'base') => {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const amountUnits = parseUnits(amount.toFixed(config.decimals), config.decimals);
+  const totalRpcs = config.rpcs.length;
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
+      if (isV2) {
+        const fee = await publicClient.readContract({
+          address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: ['0x0000000000000000000000000000000000000000', config.tokenAddress, amountUnits],
+        });
+        return { fee: parseFloat(formatUnits(fee, config.decimals)), netAmount: parseFloat(formatUnits(amountUnits - fee, config.decimals)) };
+      } else {
+        const [fee, net] = await publicClient.readContract({
+          address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [amountUnits],
+        });
+        return { fee: parseFloat(formatUnits(fee, config.decimals)), netAmount: parseFloat(formatUnits(net, config.decimals)) };
+      }
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      throw e;
+    }
+  }
+};
+
+export { CHAIN_CONFIGS, getChainConfig, isTestnet, getExplorerUrl, normalizeChain } from './chains.js';
