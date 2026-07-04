@@ -1276,4 +1276,132 @@ function ActionTile({
   comingSoon?: boolean;
 }) {
   return (
-    <button
+    <button
+      type="button"
+      onClick={() => { if (disabled) return; feedback('tap'); onClick(); }}
+      disabled={disabled}
+      aria-disabled={disabled}
+      className={`relative group flex flex-col items-center justify-center gap-1 rounded-2xl border border-black/15 transition-all py-3 text-black ${disabled ? 'opacity-55 cursor-not-allowed' : 'active:scale-[0.98]'}`}
+      style={{
+        background:
+          'linear-gradient(160deg, hsl(60 100% 90%) 0%, hsl(80 70% 86%) 55%, hsl(154 65% 88%) 100%)',
+      }}
+    >
+      {comingSoon && (
+        <span className="absolute -top-1.5 -right-1.5 text-[7px] font-extrabold uppercase tracking-wider bg-black text-[#FCFF52] rounded-full px-1.5 py-[1px] shadow-sm">Soon</span>
+      )}
+      <span className="h-9 w-9 rounded-full bg-black text-[#FCFF52] flex items-center justify-center transition-colors">
+        <Icon className="w-4 h-4" />
+      </span>
+      <span className="text-[11px] font-semibold tracking-wide text-black">{label}</span>
+      {hint && <span className="text-[9px] text-black/65 -mt-0.5">{hint}</span>}
+    </button>
+  );
+}
+
+function ToolTile({
+  icon: Icon,
+  label,
+  hint,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  hint: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => { feedback('tap'); onClick(); }}
+      className="flex items-center gap-3 rounded-2xl border border-black/15 px-3 py-3 active:scale-[0.99] transition-all text-left text-black"
+      style={{
+        background:
+          'linear-gradient(160deg, hsl(60 100% 90%) 0%, hsl(80 70% 86%) 55%, hsl(154 65% 88%) 100%)',
+      }}
+    >
+      <span className="h-9 w-9 rounded-xl bg-black text-[#FCFF52] flex items-center justify-center shrink-0">
+        <Icon className="w-4 h-4" />
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block text-sm font-semibold leading-tight text-black">{label}</span>
+        <span className="block text-[11px] text-black/65">{hint}</span>
+      </span>
+    </button>
+  );
+}
+
+function ModeButton({
+  active, onClick, icon: Icon, label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center justify-center gap-2 h-10 rounded-xl text-[12px] font-bold tracking-wide transition-all ${
+        active
+          ? 'bg-card text-foreground shadow-sm border border-border/60'
+          : 'text-muted-foreground hover:text-foreground'
+      }`}
+    >
+      <Icon className="w-3.5 h-3.5" />
+      {label}
+    </button>
+  );
+}
+
+/* ── Hero pill toggle (inside the yellow balance card) ── */
+function HeroModeButton({
+  active, onClick, icon: Icon, label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[10px] font-bold uppercase tracking-[0.12em] transition-colors ${
+        active ? 'bg-[#FCFF52] text-black' : 'text-white/80 hover:text-white'
+      }`}
+    >
+      <Icon className="w-3 h-3" />
+      {label}
+    </button>
+  );
+}
+
+/* ── Yellow MoniBot collapsible row ── */
+function MoniCollapsible({
+  title, subtitle, icon: Icon, open, onToggle, last, children, badge, dataTour,
+}: {
+  title: string;
+  subtitle?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  open: boolean;
+  onToggle: () => void;
+  last?: boolean;
+  badge?: string;
+  dataTour?: string;
+  children: React.ReactNode;
+}) {
+  const EASE_IN_OUT_QUINT = [0.83, 0, 0.17, 1] as const;
+  const EASE_OUT_QUINT = [0.22, 1, 0.36, 1] as const;
+  return (
+    <div className={last ? '' : 'border-b border-black/15'}>
+      <button
+        type="button"
+        onClick={onToggle}
+        data-tour={dataTour}
+        className="w-full flex items-center gap-3 px-5 py-3.5 text-left hover:bg-black/5 transition-colors"
+      >
+        {Icon && (
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-black text-[#FCFF52]">
+            <Icon className="w-4 h-4" />
