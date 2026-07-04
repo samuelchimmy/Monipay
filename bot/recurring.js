@@ -110,3 +110,561 @@ export function parseRecurringCommand(text) {
   const match2 = processed.match(RECURRING_ALIAS);
   if (match2) {
     const [fullMatch, alias, countStr, durationNum, durationUnit] = match2;
+    try {
+      const normalizedUnit = normalizeTimeUnit(alias);
+      const intervalMs = UNIT_TO_MS[normalizedUnit];
+      let count;
+      if (countStr) {
+        count = parseInt(countStr, 10);
+      } else if (durationNum && durationUnit) {
+        const durStr = durationNum.toLowerCase();
+        const duration = (durStr === 'a' || durStr === 'an') ? 1 : parseInt(durationNum, 10);
+        count = convertDurationToCount(duration, durationUnit, intervalMs);
+      } else {
+        return { error: ERROR_MESSAGES.MISSING_COUNT, pattern: 'alias_incomplete' };
+      }
+      
+      const baseCommand = processed.replace(fullMatch, '').trim();
+      return {
+        intervalMs, count, warnings: [], originalText: text, pattern: 'alias',
+        baseCommand, intervalValue: 1, intervalUnit: normalizedUnit
+      };
+    } catch (e) { return null; }
+  }
+  
+  const incompletePattern = /\bevery\s+(?:\d+\s+)?(\w+?)s?\b/i;
+  if (incompletePattern.test(processed)) {
+    return { error: ERROR_MESSAGES.MISSING_COUNT, pattern: 'incomplete' };
+  }
+  
+  return null;
+}
+
+export function validateSyntax(parsed) {
+  if (!parsed) throw new Error(ERROR_MESSAGES.INVALID_SYNTAX);
+  if (parsed.error) throw new Error(parsed.error);
+  if (!parsed.intervalMs || !parsed.count) throw new Error(ERROR_MESSAGES.PARSING_FAILED);
+  
+  let { intervalMs, count } = parsed;
+  const warnings = [...(parsed.warnings || [])];
+  
+  if (intervalMs < 60000) {
+    if (!warnings.includes(ERROR_MESSAGES.SUB_60_SECONDS)) {
+      warnings.push(ERROR_MESSAGES.SUB_60_SECONDS);
+    }
+    intervalMs = 60000;
+  }
+  
+  if (count > 100) {
+    throw new Error(VALIDATION_ERRORS.MAX_COUNT_EXCEEDED);
+  }
+  
+  const durationMs = intervalMs * count;
+  const maxDurationMs = 30 * 24 * 60 * 60 * 1000;
+  if (durationMs > maxDurationMs) {
+    throw new Error(VALIDATION_ERRORS.MAX_DURATION_EXCEEDED);
+  }
+  
+  return {
+    intervalMs, count, warnings, baseCommand: parsed.baseCommand,
+    originalText: parsed.originalText, pattern: parsed.pattern, ok: true
+  };
+}
+
+export function preprocessRecurringText(text) {
+  if (!text) return null;
+  let processed = text.trim();
+  
+  processed = processed
+    .replace(/\b(\d+)\s*(?:times?|payments?|rounds?|occurrences?|x|runs?|executions?)\b/gi, '$1 times')
+    .replace(/\bx(\d+)\b/gi, '$1 times')
+    .replace(/\b(?:lasting|over|during|for\s+a\s+period\s+of)\s+(\d+(?:\.\d+)?)\s*(\w+)/gi, 'for $1 $2')
+    .replace(/\bfor\s+(?:an|a)\s+(\w+)\b/gi, 'for 1 $1');
+  
+  const implicitPattern = /(\bevery\s+(?:\d+\s+)?\w+?s?\s+)(\d+)\b(?!\s*times?\b)/i;
+  if (implicitPattern.test(processed)) {
+    processed = processed.replace(implicitPattern, '$1$2 times');
+  }
+  
+  const conflictPattern = /(\bevery\s+(?:\d+\s+)?\w+?s?\s+\d+\s+times?)\s+for\s+\d+\s+\w+?s?\b/i;
+  if (conflictPattern.test(processed)) {
+    processed = processed.replace(conflictPattern, '$1');
+  }
+  
+  return processed;
+}
+
+export function isRecurringCommand(text) {
+  if (!text) return false;
+  try {
+    const parsed = parseRecurringCommand(text);
+    return parsed !== null && !parsed.error;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function isRecurringManagementCommand(text) {
+  const lower = text.toLowerCase();
+  return lower.includes('cancel series') || 
+         lower.includes('stop series') ||
+         lower.includes('series status') || 
+         lower.includes('status series') ||
+         lower.includes('my series') ||
+         lower.includes('series list');
+}
+
+// ============ Series Management Handlers ============
+
+export async function handleRecurringManagement(tweet, author, language) {
+  const text = tweet.text;
+  const supabase = getSupabase();
+  const lower = text.toLowerCase();
+
+  // 1. Cancel Command
+  if (lower.includes('cancel') || lower.includes('stop')) {
+    const match = text.match(/(?:cancel|stop|delete|remove)\s+(?:scheduled|recurring|payment|job|series)?\s*([a-f0-9-]+)/i);
+    const seriesId = match ? match[1] : null;
+    
+    if (!seriesId) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: 'Please specify the Series ID, e.g. cancel series abc12345.', language
+      });
+      return;
+    }
+
+    // Verify ownership of the series
+    const { data: checkJobs, error: checkError } = await supabase
+      .from('scheduled_jobs').select('id, source_author_id')
+      .eq('payload->>seriesId', seriesId).limit(1);
+
+    if (checkError || !checkJobs || checkJobs.length === 0) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `Series ID ${seriesId} not found in the database.`, language
+      });
+      return;
+    }
+
+    const checkJob = checkJobs[0];
+    if (String(checkJob.source_author_id) !== String(author.id)) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_OWNER', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: "That's not your series, chief 🚫", language
+      });
+      return;
+    }
+
+    // Cancel all pending jobs in the series
+    const { data: cancelledJobs, error } = await supabase
+      .from('scheduled_jobs').update({ status: 'failed', error_message: 'Cancelled by user' })
+      .eq('payload->>seriesId', seriesId).eq('status', 'pending').select();
+
+    if (error) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_DB', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: 'Database error cancelling series. Try again.', language
+      });
+      return;
+    }
+
+    const cancelledCount = cancelledJobs?.length || 0;
+    await logTransaction({
+      sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+      amount: 0, fee: 0, tx_hash: 'RECURRING_CANCEL', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      error_reason: JSON.stringify({ seriesId, cancelledCount }), language
+    });
+    return;
+  }
+
+  // 2. Status Command
+  if (lower.includes('status') || lower.includes('check')) {
+    const match = text.match(/(?:status|check)\s+(?:scheduled|recurring|payment|job|series)?\s*([a-f0-9-]+)/i);
+    const seriesId = match ? match[1] : null;
+
+    if (!seriesId) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: 'Please specify the Series ID, e.g. series status abc12345.', language
+      });
+      return;
+    }
+
+    const { data: jobs, error } = await supabase
+      .from('scheduled_jobs').select('*')
+      .eq('payload->>seriesId', seriesId);
+
+    if (error || !jobs || jobs.length === 0) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `Series ID ${seriesId} not found.`, language
+      });
+      return;
+    }
+
+    const firstJob = jobs[0];
+    if (String(firstJob.source_author_id) !== String(author.id)) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_OWNER', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: "That's not your series, chief 🚫", language
+      });
+      return;
+    }
+
+    const completed = jobs.filter(j => j.status === 'completed').length;
+    const pending = jobs.filter(j => j.status === 'pending').length;
+    const running = jobs.filter(j => j.status === 'running').length;
+    const failed = jobs.filter(j => j.status === 'failed').length;
+
+    await logTransaction({
+      sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+      amount: 0, fee: 0, tx_hash: 'RECURRING_STATUS', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      error_reason: JSON.stringify({ seriesId, completed, pending, running, failed, total: jobs.length }), language
+    });
+    return;
+  }
+
+  // 3. List Command
+  if (lower.includes('my series') || lower.includes('list')) {
+    const { data: jobs, error } = await supabase
+      .from('scheduled_jobs').select('*')
+      .eq('source_author_id', author.id)
+      .not('payload->>seriesId', 'is', null)
+      .order('created_at', { ascending: false });
+
+    if (error || !jobs || jobs.length === 0) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_LIST_EMPTY', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: "You don't have any active recurring series, blud.", language
+      });
+      return;
+    }
+
+    const seriesMap = {};
+    jobs.forEach(job => {
+      const sid = job.payload.seriesId;
+      if (!seriesMap[sid]) {
+        seriesMap[sid] = {
+          seriesId: sid,
+          completed: 0,
+          total: job.payload.seriesTotalCount || 0,
+          target: job.payload.recipientPayTag || 'unknown',
+        };
+      }
+      if (job.status === 'completed') seriesMap[sid].completed++;
+    });
+
+    const list = Object.values(seriesMap).slice(0, 3); // top 3 for tweet space limit
+    await logTransaction({
+      sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+      amount: 0, fee: 0, tx_hash: 'RECURRING_LIST', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      error_reason: JSON.stringify({ list }), language
+    });
+    return;
+  }
+}
+
+// ============ Series Creation Handler ============
+
+export async function handleRecurringCreation(tweet, author, language) {
+  try {
+    const text = tweet.text;
+    const cleanText = text.replace(/@monibot/gi, '').trim();
+
+    // 1. Resolve Sender
+    const senderProfile = await getProfileByXUsername(author.username);
+    if (!senderProfile) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `@${author.username} is not registered. Sign up at monipay.xyz and link X in Settings.`, language
+      });
+      return;
+    }
+
+    // 2. Parse & Validate Recurring Params
+    const parsed = parseRecurringCommand(cleanText);
+    let syntax;
+    try {
+      syntax = validateSyntax(parsed);
+    } catch (e) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_LIMIT', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: e.message, language
+      });
+      return;
+    }
+
+    // 3. Parse Base Command (e.g. "send $1 to @alice")
+    const baseCommandText = syntax.baseCommand;
+    
+    // Adapted from twitter.js single P2P regex
+    const P2P_PATTERN = new RegExp(
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)@([a-zA-Z0-9_-]+)(?:[^@$]*?)\\$?([\\d.]+)|` +
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)\\$?([\\d.]+)(?:[^@$]*?)@([a-zA-Z0-9_-]+)`,
+      'i'
+    );
+    const match = baseCommandText.match(P2P_PATTERN);
+    if (!match) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: `Could not parse payment details from command. Format: send $5 to @username every day 7 times.`, language
+      });
+      return;
+    }
+
+    let amount, targetTag;
+    if (match[1] !== undefined) {
+      targetTag = match[1].toLowerCase();
+      amount    = parseFloat(match[2]);
+    } else {
+      amount    = parseFloat(match[3]);
+      targetTag = match[4].toLowerCase();
+    }
+
+    if (targetTag === 'monibot' || targetTag === 'monipay') return;
+    if (isNaN(amount) || amount <= 0) return;
+
+    // Self send guard
+    if (targetTag === senderProfile.pay_tag?.toLowerCase() || targetTag === author.username.toLowerCase()) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_SELF', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: "Blud tried to schedule self-send. Stop the cap 🧢", language
+      });
+      return;
+    }
+
+    // Network detection
+    const NETWORK_KEYWORDS = {
+      celo:   ['on celo', 'celo', 'minipay'],
+      ink:    ['on ink', 'ink chain', 'ink network', 'inkonchain'],
+      solana: ['on solana', 'solana', 'sol ', 'spl'],
+      tempo:  ['on tempo', 'tempo', 'alphausd', 'αusd'],
+      bsc:    ['usdt', 'bnb', 'bsc', 'binance'],
+    };
+    let chain = senderProfile.preferred_network || 'base';
+    const lowerText = baseCommandText.toLowerCase();
+    for (const [ch, keywords] of Object.entries(NETWORK_KEYWORDS)) {
+      if (keywords.some(kw => lowerText.includes(kw))) {
+        chain = ch;
+        break;
+      }
+    }
+    chain = normalizeChain(chain);
+
+    // 4. Resolve Recipient Profile or MagicPay (Twitter ID)
+    let recipientProfile = await getProfileByMonitag(targetTag) || await getProfileByXUsername(targetTag);
+    let isMagicPay = false;
+    let recipientIdentifier = targetTag;
+
+    if (!recipientProfile) {
+      const numericId = await fetchTwitterNumericId(targetTag);
+      if (!numericId) {
+        await logTransaction({
+          sender_id: senderProfile.id, receiver_id: senderProfile.id,
+          amount, fee: 0, tx_hash: 'ERROR_TARGET_NOT_FOUND', type: 'p2p_command',
+          tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+          error_reason: `@${targetTag} does not exist on Twitter. Double-check username.`, language
+        });
+        return;
+      }
+      isMagicPay = true;
+      recipientIdentifier = numericId;
+    } else {
+      recipientIdentifier = recipientProfile.pay_tag;
+    }
+
+    // Pre-flight check: sender balance & allowance check
+    const { getUSDCBalance, getAllowance } = await import('./blockchain.js');
+    const { balance } = await getUSDCBalance(senderProfile.wallet_address, chain);
+    const { allowance } = await getAllowance(senderProfile.wallet_address, chain, isMagicPay ? 'magicpay' : 'router');
+
+    const preferredChain = chain;
+    let balanceWarning = '';
+
+    if (balance < amount || allowance < amount) {
+      const { findAlternateChain } = await import('./crossChainCheck.js');
+      const alt = await findAlternateChain(senderProfile.wallet_address, amount, preferredChain, isMagicPay ? 'magicpay' : 'p2p');
+      
+      if (alt && !alt.needsAllowance) {
+        balanceWarning = ` (Auto-rerouted from ${preferredChain.toUpperCase()} to ${alt.chain.toUpperCase()})`;
+        chain = alt.chain; // Update target chain for scheduling!
+      } else if (alt && alt.needsAllowance) {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} to ${alt.chain.toUpperCase()} but it lacks allowance. Go to MoniPay Settings > MoniBot > Set Allowance > ${isMagicPay ? 'MagicPay' : 'CasualPay'} to approve allowance on ${alt.chain.toUpperCase()} before execution!)`;
+      } else if (balance < amount) {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} but found no way to do so because of insufficient funds on all chains. Top up your wallet before execution!)`;
+      } else {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} but found no way to do so because MoniBot allowance is too low. Go to Settings > MoniBot > Set Allowance to approve spending before execution!)`;
+      }
+    }
+
+    // 5. Create scheduled jobs
+    const seriesId = randomUUID();
+    const intervalMs = syntax.intervalMs;
+    const count = syntax.count;
+    const startTime = Date.now();
+
+    const jobs = Array.from({ length: count }, (_, i) => ({
+      type: isMagicPay ? 'scheduled_magicpay' : 'scheduled_p2p',
+      status: 'pending',
+      scheduled_at: new Date(startTime + (i + 1) * intervalMs).toISOString(),
+      source_author_id: author.id,
+      source_author_username: author.username,
+      source_tweet_id: tweet.id,
+      max_attempts: 3,
+      attempts: 0,
+      payload: {
+        platform: 'twitter',
+        senderId: senderProfile.id,
+        senderPayTag: senderProfile.pay_tag,
+        senderWallet: senderProfile.wallet_address,
+        receiverId: recipientProfile ? recipientProfile.id : null,
+        recipientPayTag: targetTag,
+        receiverWallet: recipientProfile ? recipientProfile.wallet_address : null,
+        recipientId: isMagicPay ? recipientIdentifier : null, // for MagicPay (Twitter numeric ID)
+        
+        command: {
+          amount, recipients: [targetTag], chain, isMagicPay,
+        },
+        originalText: cleanText,
+
+        seriesId,
+        seriesIndex: i + 1,
+        seriesTotalCount: count,
+        seriesIntervalMs: intervalMs,
+        seriesStartedAt: new Date(startTime).toISOString(),
+        
+        isRecurring: false,
+        recurrenceRule: null,
+      }
+    }));
+
+    const supabase = getSupabase();
+    const { error } = await supabase.from('scheduled_jobs').insert(jobs);
+
+    if (error) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount, fee: 0, tx_hash: 'ERROR_RECURRING_DB_FAILED', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+        error_reason: `Database error scheduling jobs. Try again.`, language
+      });
+      return;
+    }
+
+    // Success! Log the recurring create transaction
+    const firstAt = jobs[0].scheduled_at;
+    const lastAt = jobs[count - 1].scheduled_at;
+
+    await logTransaction({
+      sender_id: senderProfile.id,
+      receiver_id: recipientProfile ? recipientProfile.id : senderProfile.id,
+      amount, fee: 0, tx_hash: 'RECURRING_CREATE', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+      error_reason: JSON.stringify({ seriesId, count, amount, intervalMs, targetTag, chain, isMagicPay, firstAt, lastAt, balanceWarning }),
+      language
+    });
+
+  } catch (err) {
+    console.error('❌ Recurring creation exception:', err.message);
+  }
+}
+
+// ============ Feature 1: One-time Scheduled Payments ============
+
+const SIMPLE_SCHEDULE = /\bin\s+(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*(second|sec|s|minute|min|m|hour|hr|h|day|d)s?\b/i;
+
+const WORD_TO_NUM = {
+  one: 1, two: 2, three: 3, four: 4, five: 5,
+  six: 6, seven: 7, eight: 8, nine: 9, ten: 10
+};
+
+export function isOneTimeScheduleCommand(text) {
+  if (!text) return false;
+  return SIMPLE_SCHEDULE.test(text);
+}
+
+export function parseOneTimeScheduleCommand(text) {
+  const match = text.match(SIMPLE_SCHEDULE);
+  if (!match) return null;
+
+  const valStr = match[1].toLowerCase();
+  const value = WORD_TO_NUM[valStr] || parseInt(valStr, 10);
+  if (isNaN(value) || value <= 0) return null;
+
+  const unit = match[2].toLowerCase();
+  const normalizedUnit = normalizeTimeUnit(unit);
+  const ms = value * UNIT_TO_MS[normalizedUnit];
+
+  const baseCommand = text.replace(match[0], '').trim();
+  return {
+    ms,
+    value,
+    unit: normalizedUnit,
+    baseCommand
+  };
+}
+
+export async function handleOneTimeScheduleCreation(tweet, author, language) {
+  try {
+    const text = tweet.text;
+    const cleanText = text.replace(/@monibot/gi, '').trim();
+
+    // 1. Resolve Sender
+    const senderProfile = await getProfileByXUsername(author.username);
+    if (!senderProfile) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `@${author.username} is not registered. Sign up at monipay.xyz and link X in Settings.`, language
+      });
+      return;
+    }
+
+    // 2. Parse schedule params
+    const parsedSchedule = parseOneTimeScheduleCommand(cleanText);
+    if (!parsedSchedule) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SCHEDULE_PARSE_FAILED', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: "Parsing scheduled time failed, stop being delulu 🤡", language
+      });
+      return;
+    }
+
+    // 3. Parse base command (e.g. "send $5 to @alice")
+    const baseCommandText = parsedSchedule.baseCommand;
+    const P2P_PATTERN = new RegExp(
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)@([a-zA-Z0-9_-]+)(?:[^@$]*?)\\$?([\\d.]+)|` +
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)\\$?([\\d.]+)(?:[^@$]*?)@([a-zA-Z0-9_-]+)`,
+      'i'
+    );
