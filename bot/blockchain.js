@@ -120,4 +120,65 @@ const magicPayAbi = [
 
 // ============ RPC Failover ============
 
-const rpcIndexes = {};
+const rpcIndexes = {};
+
+/**
+ * Classifies an error as an RPC infrastructure failure vs a real contract error.
+ * RPC failures rotate to the next endpoint. Real errors throw immediately.
+ */
+function isRpcFailure(err) {
+  const msg = String(err?.message || err?.details || err?.cause?.message || '');
+  return (
+    msg.includes('Requested resource not found') ||
+    msg.includes('usage limit') ||
+    msg.includes('rate limit') ||
+    msg.includes('Rate limit') ||
+    msg.includes('429') ||
+    msg.includes('Too Many Requests') ||
+    msg.includes('ECONNREFUSED') ||
+    msg.includes('ETIMEDOUT') ||
+    msg.includes('ENOTFOUND') ||
+    msg.includes('fetch failed') ||
+    msg.includes('Failed to fetch') ||
+    msg.includes('network error') ||
+    msg.includes('socket hang up') ||
+    msg.includes('Connection refused') ||
+    msg.includes('Service Unavailable') ||
+    msg.includes('Bad Gateway') ||
+    msg.includes('Gateway Timeout') ||
+    msg.includes('upstream')
+  );
+}
+
+function rotateRpc(chainName) {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const current = rpcIndexes[chain] || 0;
+  if (current < config.rpcs.length - 1) {
+    rpcIndexes[chain] = current + 1;
+    console.warn(`  🔁 RPC rotated [${chain}] → ${config.rpcs[rpcIndexes[chain]]}`);
+    return true;
+  }
+  console.warn(`  💀 All RPCs exhausted for ${chain}`);
+  return false;
+}
+
+// ============ Client Factory ============
+
+/**
+ * Returns viem clients using the current RPC index for the chain.
+ * retryCount: 0 because we handle rotation ourselves — viem's internal
+ * retry hammers the same dead endpoint which wastes time and burns quota.
+ */
+function getClients(chainName) {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+
+  if (!config.viemChain) {
+    throw new Error(`No viem chain object for ${chain}. Use Solana relay instead.`);
+  }
+
+  const rpcs = config.rpcs;
+  const idx = Math.min(rpcIndexes[chain] || 0, rpcs.length - 1);
+  const rpc = rpcs[idx];
+
