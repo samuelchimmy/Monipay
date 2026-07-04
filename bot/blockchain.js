@@ -427,4 +427,186 @@ export async function executeP2PViaRouter(fromAddress, toAddress, amount, tweetI
         feeValue = f;
       }
 
-      let calldata = encodeFunctionData({
+      let calldata = encodeFunctionData({
+        abi: moniBotRouterAbi,
+        functionName: 'executeP2P',
+        args: [fromAddress, toAddress, amountInUnits, nonce, tweetId],
+      });
+      if (config.useBuilderCode) calldata = appendBuilderCode(calldata);
+
+      let gas;
+      try {
+        gas = await publicClient.estimateGas({ account: walletClient.account.address, to: config.routerAddress, data: calldata });
+      } catch (e) {
+        if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+        gas = 300000n;
+      }
+
+      const hash = await sendTransactionWithNonce(chain, publicClient, walletClient, {
+        to: config.routerAddress,
+        data: calldata,
+        gas: gas + gas / 5n,
+      });
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.status === 'reverted') throw new Error(`ERROR_REVERTED:P2P transaction reverted on ${chain.toUpperCase()} (${hash})`);
+
+      return { hash, fee: parseFloat(formatUnits(feeValue, config.decimals)) };
+
+    } catch (err) {
+      if (isRpcFailure(err) && attempt < totalRpcs - 1) {
+        console.warn(`  ⚠️ RPC failed [P2P] on ${chain} (attempt ${attempt + 1}/${totalRpcs}): ${err.message.split('\n')[0]}`);
+        rotateRpc(chain);
+        continue;
+      }
+      throw err;
+    }
+  }
+
+  throw new Error(`ERROR_RPC_EXHAUSTED:All ${config.rpcs.length} RPCs failed for ${chain}. Try again later.`);
+}
+
+// ============ Grant via Router ============
+
+export async function executeGrantViaRouter(toAddress, amount, campaignId, chainName = 'base') {
+  const chain = normalizeChain(chainName);
+  const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
+  if (isV2) throw new Error('ERROR_V2_OMITTED:executeGrant is disabled in V2. Use off-chain grant processing.');
+
+  const config = getChainConfig(chain);
+  const amountInUnits = parseUnits(amount.toFixed(config.decimals), config.decimals);
+  const totalRpcs = config.rpcs.length;
+
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient, walletClient } = getClients(chain);
+
+      const [isGrantIssued, contractBalance] = await Promise.all([
+        publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'isGrantIssued', args: [campaignId, toAddress] }),
+        publicClient.readContract({ address: config.tokenAddress,  abi: erc20Abi,         functionName: 'balanceOf',    args: [config.routerAddress] }),
+      ]);
+
+      if (isGrantIssued) throw new Error('ERROR_DUPLICATE_GRANT:This wallet already received a grant from this campaign.');
+
+      if (contractBalance < amountInUnits) {
+        const have = parseFloat(formatUnits(contractBalance, config.decimals)).toFixed(2);
+        throw new Error(`ERROR_CONTRACT_BALANCE:Campaign treasury has $${have} ${config.symbol} remaining but the grant is $${amount}. Campaign may be underfunded.`);
+      }
+
+      const [fee] = await publicClient.readContract({
+        address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [amountInUnits],
+      });
+
+      let calldata = encodeFunctionData({ abi: moniBotRouterAbi, functionName: 'executeGrant', args: [toAddress, amountInUnits, campaignId] });
+      if (config.useBuilderCode) calldata = appendBuilderCode(calldata);
+
+      let gas;
+      try {
+        gas = await publicClient.estimateGas({ account: walletClient.account.address, to: config.routerAddress, data: calldata });
+      } catch (e) {
+        if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+        gas = 250000n;
+      }
+
+      const hash = await sendTransactionWithNonce(chain, publicClient, walletClient, {
+        to: config.routerAddress,
+        data: calldata,
+        gas: gas + gas / 5n,
+      });
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.status === 'reverted') throw new Error(`ERROR_REVERTED:Grant reverted on ${chain.toUpperCase()} (${hash})`);
+
+      return { hash, fee: parseFloat(formatUnits(fee, config.decimals)) };
+
+    } catch (err) {
+      if (isRpcFailure(err) && attempt < totalRpcs - 1) {
+        console.warn(`  ⚠️ RPC failed [Grant] on ${chain} (attempt ${attempt + 1}/${totalRpcs}): ${err.message.split('\n')[0]}`);
+        rotateRpc(chain);
+        continue;
+      }
+      throw err;
+    }
+  }
+
+  throw new Error(`ERROR_RPC_EXHAUSTED:All ${config.rpcs.length} RPCs failed for ${chain}. Try again later.`);
+}
+
+// ============ Legacy / Wrapper Exports ============
+
+export const getOnchainAllowance  = (user, chain = 'base') => getAllowance(user, chain, 'router');
+export const getMagicPayAllowance = (user, chain = 'base') => getAllowance(user, chain, 'magicpay');
+export const getUSDCBalance       = (user, chain = 'base') => getBalance(user, chain);
+
+export const getUserNonce = async (user, chainName = 'base') => {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const totalRpcs = config.rpcs.length;
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
+      return await publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: isV2 ? 'nonces' : 'getNonce', args: [user] });
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      throw e;
+    }
+  }
+};
+
+export const isTweetProcessed = async (tweetId, chainName = 'base') => {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const totalRpcs = config.rpcs.length;
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      return await publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'isTweetUsed', args: [tweetId] });
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      throw e;
+    }
+  }
+};
+
+export const isGrantAlreadyIssued = async (campaignId, recipient, chainName = 'base') => {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const totalRpcs = config.rpcs.length;
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      return await publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'isGrantIssued', args: [campaignId, recipient] });
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      throw e;
+    }
+  }
+};
+
+export const calculateFee = async (amount, chainName = 'base') => {
+  const chain = normalizeChain(chainName);
+  const config = getChainConfig(chain);
+  const amountUnits = parseUnits(amount.toFixed(config.decimals), config.decimals);
+  const totalRpcs = config.rpcs.length;
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
+      if (isV2) {
+        const fee = await publicClient.readContract({
+          address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: ['0x0000000000000000000000000000000000000000', config.tokenAddress, amountUnits],
+        });
+        return { fee: parseFloat(formatUnits(fee, config.decimals)), netAmount: parseFloat(formatUnits(amountUnits - fee, config.decimals)) };
+      } else {
+        const [fee, net] = await publicClient.readContract({
+          address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [amountUnits],
+        });
+        return { fee: parseFloat(formatUnits(fee, config.decimals)), netAmount: parseFloat(formatUnits(net, config.decimals)) };
+      }
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      throw e;
+    }
+  }
+};
+
+export { CHAIN_CONFIGS, getChainConfig, isTestnet, getExplorerUrl, normalizeChain } from './chains.js';
