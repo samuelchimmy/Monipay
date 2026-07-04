@@ -222,3 +222,114 @@ export async function handleRecurringManagement(tweet, author, language) {
   const lower = text.toLowerCase();
 
   // 1. Cancel Command
+  if (lower.includes('cancel') || lower.includes('stop')) {
+    const match = text.match(/(?:cancel|stop|delete|remove)\s+(?:scheduled|recurring|payment|job|series)?\s*([a-f0-9-]+)/i);
+    const seriesId = match ? match[1] : null;
+    
+    if (!seriesId) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: 'Please specify the Series ID, e.g. cancel series abc12345.', language
+      });
+      return;
+    }
+
+    // Verify ownership of the series
+    const { data: checkJobs, error: checkError } = await supabase
+      .from('scheduled_jobs').select('id, source_author_id')
+      .eq('payload->>seriesId', seriesId).limit(1);
+
+    if (checkError || !checkJobs || checkJobs.length === 0) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `Series ID ${seriesId} not found in the database.`, language
+      });
+      return;
+    }
+
+    const checkJob = checkJobs[0];
+    if (String(checkJob.source_author_id) !== String(author.id)) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_OWNER', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: "That's not your series, chief 🚫", language
+      });
+      return;
+    }
+
+    // Cancel all pending jobs in the series
+    const { data: cancelledJobs, error } = await supabase
+      .from('scheduled_jobs').update({ status: 'failed', error_message: 'Cancelled by user' })
+      .eq('payload->>seriesId', seriesId).eq('status', 'pending').select();
+
+    if (error) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_DB', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: 'Database error cancelling series. Try again.', language
+      });
+      return;
+    }
+
+    const cancelledCount = cancelledJobs?.length || 0;
+    await logTransaction({
+      sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+      amount: 0, fee: 0, tx_hash: 'RECURRING_CANCEL', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      error_reason: JSON.stringify({ seriesId, cancelledCount }), language
+    });
+    return;
+  }
+
+  // 2. Status Command
+  if (lower.includes('status') || lower.includes('check')) {
+    const match = text.match(/(?:status|check)\s+(?:scheduled|recurring|payment|job|series)?\s*([a-f0-9-]+)/i);
+    const seriesId = match ? match[1] : null;
+
+    if (!seriesId) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: 'Please specify the Series ID, e.g. series status abc12345.', language
+      });
+      return;
+    }
+
+    const { data: jobs, error } = await supabase
+      .from('scheduled_jobs').select('*')
+      .eq('payload->>seriesId', seriesId);
+
+    if (error || !jobs || jobs.length === 0) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `Series ID ${seriesId} not found.`, language
+      });
+      return;
+    }
+
+    const firstJob = jobs[0];
+    if (String(firstJob.source_author_id) !== String(author.id)) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_OWNER', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: "That's not your series, chief 🚫", language
+      });
+      return;
+    }
+
+    const completed = jobs.filter(j => j.status === 'completed').length;
+    const pending = jobs.filter(j => j.status === 'pending').length;
+    const running = jobs.filter(j => j.status === 'running').length;
+    const failed = jobs.filter(j => j.status === 'failed').length;
+
+    await logTransaction({
