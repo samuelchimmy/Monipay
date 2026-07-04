@@ -1148,4 +1148,132 @@ export function MiniPayDashboard({ walletAddress, profileId, isLegacy }: Props) 
               or networks may be lost.
             </p>
           </div>
-        </SheetContent>
+        </SheetContent>
+      </Sheet>
+
+      {/* ── History sheet ── */}
+      <HistorySheet
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        profileId={profileId}
+      />
+
+      {/* ── Send (uses WithdrawModal — defaults to MoniTag/social send on Celo) ── */}
+      <WithdrawModal
+        isOpen={showSend}
+        onClose={() => { setShowSend(false); refreshBalance(); }}
+        balance={balance ?? 0}
+        forceWalletOnly
+        mode="send"
+      />
+
+      {/* ── Withdraw to external address ── */}
+      <WithdrawModal
+        isOpen={showWithdraw}
+        onClose={() => { setShowWithdraw(false); refreshBalance(); }}
+        balance={balance ?? 0}
+        forceWalletOnly
+      />
+
+      {/* ── MoniTag create / edit sheet ── */}
+      <MonitagSheet
+        open={showMonitag}
+        onOpenChange={setShowMonitag}
+        walletAddress={walletAddress}
+        currentTag={payTag}
+        onSaved={(tag) => setPayTag(tag)}
+      />
+
+      {/* ── Merchant tool sheet (placeholder, wallet-mode aware) ── */}
+      <Sheet
+        open={merchantSheet === 'merchant' || merchantSheet === 'settings'}
+        onOpenChange={(o) => !o && setMerchantSheet(null)}
+      >
+        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-[28px] border-t border-border/60 shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.25)] px-5 pt-6 pb-8">
+          <SheetHeader className="text-left">
+            <SheetTitle className="capitalize text-base font-semibold tracking-tight">{merchantSheet ?? ''}</SheetTitle>
+          </SheetHeader>
+          <div className="mt-5 space-y-4 text-sm">
+            <div className="rounded-2xl border border-border/60 bg-muted/30 p-4">
+              <p className="font-semibold text-foreground mb-1">Coming to MiniPay wallet mode</p>
+              <p className="text-muted-foreground text-[13px] leading-relaxed">
+                {merchantSheet === 'merchant' && 'View orders, manage API keys and webhooks for accepting Monipay on your own site.'}
+                {merchantSheet === 'settings' && 'Manage your MoniTag, profile and connected socials.'}
+              </p>
+            </div>
+            {merchantSheet === 'settings' ? (
+              <button
+                type="button"
+                onClick={() => { setMerchantSheet(null); navigate('/settings'); }}
+                className="w-full h-11 rounded-xl bg-foreground text-background text-sm font-semibold"
+              >
+                Open settings
+              </button>
+            ) : (
+              <p className="text-[12px] text-muted-foreground leading-relaxed">
+                Orders & API keys are coming next. Invoices and Storefront are
+                fully available now from the tools above.
+              </p>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* ── Invoices (full modal) ── */}
+      {merchantSheet === 'invoices' && (
+        <InvoicesSection
+          isOpen
+          onClose={() => setMerchantSheet(null)}
+          deepLinkInvoiceId={null}
+        />
+      )}
+
+      {/* ── Storefront / Product catalog (full modal) ── */}
+      {merchantSheet === 'storefront' && (
+        <ProductCatalog
+          products={products}
+          onProductsChange={setProducts}
+          onClose={() => setMerchantSheet(null)}
+          bypassSecurity
+        />
+      )}
+
+      {/* ── Social link conflict modal ── */}
+      <LinkConflictModal
+        open={!!linkConflict}
+        detail={linkConflict}
+        onClose={() => setLinkConflict(null)}
+      />
+
+      {/* ── Scan-to-pay (personal mode) ── */}
+      <ScanPaySheet open={showScanPay} onClose={() => setShowScanPay(false)} />
+
+      {/* ── First-run walkthrough overlay ── */}
+      <MiniPayWalkthrough
+        walletAddress={walletAddress}
+        payTag={payTag}
+        socialCount={identities.length}
+      />
+    </MiniPayThemeScope>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────── */
+
+function ActionTile({
+  icon: Icon,
+  label,
+  hint,
+  onClick,
+  disabled = false,
+  comingSoon = false,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  hint?: string;
+  onClick: () => void;
+  disabled?: boolean;
+  comingSoon?: boolean;
+}) {
+  return (
+    <button
