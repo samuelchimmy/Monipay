@@ -99,4 +99,21 @@ export async function executeCreateMagicPay({ chain, fromAddress, amount, platfo
   const data = encodeFunctionData({
     abi: MAGIC_PAY_ABI,
     functionName: 'executeCreate',
-    args: [fromAddress, amountUnits, recipientId],
+    args: [fromAddress, amountUnits, recipientId],
+  });
+
+  let gas;
+  try {
+    gas = await publicClient.estimateGas({ account: account.address, to: registry, data });
+  } catch (e) {
+    throw new Error(`ERROR_MAGIC_PAY_GAS:${e.message}`);
+  }
+
+  const txHash = await sendTransactionWithNonce(chain, publicClient, walletClient, { to: registry, data, gas: gas + gas / 5n });
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+  if (receipt.status === 'reverted') {
+    throw new Error(`ERROR_MAGIC_PAY_REVERTED:On-chain create reverted (${txHash})`);
+  }
+
+  // Decode IOUCreated event to capture iouId + netAmount
