@@ -169,4 +169,46 @@ export const CHAIN_CONFIGS = {
  * Use config.viemChain when constructing createPublicClient / createWalletClient.
  * See blockchain.js getClients() for the canonical pattern.
  */
-export function getChainConfig(chainName) {
+export function getChainConfig(chainName) {
+  const config = CHAIN_CONFIGS[chainName?.toLowerCase()];
+  if (!config) throw new Error(`Unsupported chain: ${chainName}`);
+  return config;
+}
+
+export function isTestnet(chainName) {
+  return CHAIN_CONFIGS[chainName?.toLowerCase()]?.isTestnet || false;
+}
+
+export function getExplorerUrl(chainName, txHash) {
+  const config = getChainConfig(chainName);
+  return `${config.explorer}${txHash}`;
+}
+
+export function getTestnetWarning(chainName) {
+  const config = CHAIN_CONFIGS[chainName?.toLowerCase()];
+  if (config?.isTestnet) {
+    return '\n\n⚠️ Note: This is a testnet transaction. These funds have no real-world value.';
+  }
+  return '';
+}
+
+// Normalize chain name to lowercase — fixes B6 (Worker stores uppercase, VP-Social expects lower)
+export function normalizeChain(chainName) {
+  return (chainName || 'base').toLowerCase();
+}
+
+/**
+ * Returns a human-readable summary of all configured chains.
+ * Useful for startup logs and health checks.
+ */
+export function getChainSummary() {
+  return Object.entries(CHAIN_CONFIGS).map(([name, cfg]) => ({
+    name,
+    chainId: cfg.chainId,
+    symbol: cfg.symbol,
+    rpcCount: cfg.rpcs.length,
+    isTestnet: cfg.isTestnet || false,
+    hasRouter: !!cfg.routerAddress,
+    hasMagicPay: !!cfg.magicPayAddress,
+  }));
+}
