@@ -24,12 +24,49 @@ Send stablecoins to anyone on X (Twitter), Telegram, Discord, and WhatsApp direc
 
 ## What Monipay Does
 
-Monipay is a non-custodial AI-powered social payment layer built specifically for Celo and MiniPay. It connects MiniPay wallets to social platforms so users can send USDT, USDC, USDm, and G$ to anyone using only a social handle. No wallet address needed, no app switching, no friction.
+Monipay is a non-custodial AI-powered social payment layer built specifically for Celo and MiniPay. It connects MiniPay wallets to social platforms so users can send USDT, USDC, USDm, and G$ to anyone using only a social handle via natural language commands. No wallet address needed, no app switching, no friction.
 
 The system is built on two core smart contract primitives. Every feature routes through one of them, determined dynamically by whether the recipient is registered.
 
 ---
+## Core Features: CasualPay & MagicPay (Routing)
 
+Monipay's application logic routes all social payments through two core primitives, determined dynamically by the recipient's registration state:
+
+### CasualPay (MoniBot Direct Transfer)
+
+Used when the recipient has a registered `@PayTag` or linked social identity. Settles immediately on-chain using the `MoniBotRouter` contract under the sender's active spending allowance.
+
+### MagicPay (IOU Registry Escrow)
+
+Used as a fallback escrow registry when the recipient is not yet a registered Monipay user. Tokens are locked on-chain in the `IOURegistry` contract until claimed via verified social account links.
+
+---
+
+### CasualPay Execution Flow
+
+1. **Resolution**
+   MoniBot parses the recipient `@PayTag` or linked social handle from the user's natural language command, querying the database resolver to retrieve the recipient's registered Celo address.
+
+2. **Allowance Validation**
+   Before submitting, the relayer verifies that the transaction amount is within the sender's active spending allowance granted to the `MoniBotRouter` contract. The allowance is checked both in the database mirror and verified directly on-chain.
+
+3. **Execution**
+   The `MoniBotRouter` contract processes the gasless payment on behalf of the user, splits the 1% platform fee to the treasury address, and transfers the remaining 99% to the recipient in a single atomic transaction.
+
+---
+
+### MagicPay Escrow Flow
+
+1. **On-Chain Lock**
+   The sender locks stablecoins (USDT, G$, USDC, or USDm) into the `IOURegistry` smart contract. The transaction specifies the expiration block and the hashed identifier of the recipient.
+
+2. **Claim Verification**
+   When the recipient links their verified social account (verified via a [Secure claim](https://docs.monipay.xyz/minipay-security#identity-privacy)), the relayer invokes `batchClaim`. The contract releases the locked funds to the recipient's address.
+
+3. **Refund Option**
+   If the recipient does not claim the funds before the expiration date, the sender is free to call `batchRefund` directly on the contract to retrieve their tokens. The platform cannot block or override this function.
+   
 ## Three Ways to Access Monipay
 
 Monipay is a multi-access protocol. The `/minipay` route has distinct behavior depending on how it is opened.
