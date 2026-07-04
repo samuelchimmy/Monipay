@@ -116,4 +116,20 @@ export async function executeCreateMagicPay({ chain, fromAddress, amount, platfo
     throw new Error(`ERROR_MAGIC_PAY_REVERTED:On-chain create reverted (${txHash})`);
   }
 
-  // Decode IOUCreated event to capture iouId + netAmount
+  // Decode IOUCreated event to capture iouId + netAmount
+  let iouId = null;
+  let netAmount = null;
+  for (const log of receipt.logs) {
+    if (log.address.toLowerCase() !== registry.toLowerCase()) continue;
+    try {
+      const decoded = decodeEventLog({ abi: MAGIC_PAY_ABI, data: log.data, topics: log.topics });
+      if (decoded.eventName === 'IOUCreated') {
+        iouId = decoded.args.iouId.toString();
+        netAmount = Number(decoded.args.netAmount) / 10 ** config.decimals;
+        break;
+      }
+    } catch (_) { /* not a MagicPay event */ }
+  }
+
+  return { iouId, txHash, netAmount, recipientId, registry };
+}
