@@ -29,7 +29,7 @@ Monipay is a non-custodial AI-powered social payment layer built specifically fo
 The system is built on two core smart contract primitives. Every feature routes through one of them, determined dynamically by whether the recipient is registered.
 
 ---
-## Core Features: CasualPay & MagicPay (Routing)
+## Core Features: 
 
 Monipay's application logic routes all social payments through two core primitives, determined dynamically by the recipient's registration state:
 
@@ -66,6 +66,7 @@ Used as a fallback escrow registry when the recipient is not yet a registered Mo
 
 3. **Refund Option**
    If the recipient does not claim the funds before the expiration date, the sender is free to call `batchRefund` directly on the contract to retrieve their tokens. The platform cannot block or override this function.
+   
    
 ## Three Ways to Access Monipay
 
