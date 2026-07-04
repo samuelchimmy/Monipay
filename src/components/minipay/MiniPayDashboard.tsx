@@ -1404,4 +1404,131 @@ function MoniCollapsible({
       >
         {Icon && (
           <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-black text-[#FCFF52]">
-            <Icon className="w-4 h-4" />
+            <Icon className="w-4 h-4" />
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-black flex items-center gap-2">
+            <span className="truncate">{title}</span>
+            {badge && (
+              <span className="shrink-0 text-[9px] font-black tracking-[0.14em] uppercase px-1.5 py-0.5 rounded-full bg-black text-[#FCFF52]">
+                {badge}
+              </span>
+            )}
+          </p>
+          {subtitle && (
+            <p className="text-[11px] truncate text-black/65">{subtitle}</p>
+          )}
+        </div>
+        <ChevronDown
+          className={`w-4 h-4 shrink-0 text-black/70 transition-transform duration-[450ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height: 'auto',
+              opacity: 1,
+              transition: {
+                height: { duration: 0.55, ease: EASE_IN_OUT_QUINT },
+                opacity: { duration: 0.4, ease: EASE_OUT_QUINT, delay: 0.12 },
+              },
+            }}
+            exit={{
+              height: 0,
+              opacity: 0,
+              transition: {
+                height: { duration: 0.5, ease: EASE_IN_OUT_QUINT, delay: 0.05 },
+                opacity: { duration: 0.2, ease: EASE_OUT_QUINT },
+              },
+            }}
+            style={{ overflow: 'hidden', willChange: 'height, opacity' }}
+          >
+            <div className="px-5 pb-5">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ── MoniTag create / edit sheet (wallet_profiles via wallet-session) ── */
+function MonitagSheet({
+  open, onOpenChange, walletAddress, currentTag, onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  walletAddress: `0x${string}`;
+  currentTag: string | null;
+  onSaved: (tag: string) => void;
+}) {
+  const [tag, setTag] = useState(currentTag ?? '');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { if (open) setTag(currentTag ?? ''); }, [open, currentTag]);
+
+  const normalized = tag.trim().toLowerCase().replace(/^@/, '');
+  const valid = /^[a-z0-9_]{3,20}$/.test(normalized);
+
+  const handleSave = async () => {
+    if (!valid) {
+      toast.error('3–20 lowercase letters, numbers or underscores');
+      return;
+    }
+    setSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('wallet-session', {
+        body: { action: 'updateSettings', walletAddress, pay_tag: normalized },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      onSaved(normalized);
+      toast.success(`moniTag™ saved: @${normalized}`);
+      onOpenChange(false);
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Could not save moniTag™');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto rounded-t-[28px] border-t border-border/60 shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.25)] px-5 pt-6 pb-8">
+        <SheetHeader className="text-left">
+          <SheetTitle className="text-base font-semibold tracking-tight">{currentTag ? 'Update moniTag™' : 'Claim your moniTag™'}</SheetTitle>
+        </SheetHeader>
+        <div className="mt-5 space-y-4">
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
+            Your moniTag™ is how friends and customers pay you. 3–20 lowercase
+            letters, numbers or underscores.
+          </p>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+            <Input
+              autoFocus
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
+              placeholder="yourname"
+              className="pl-7 h-12 text-base"
+              maxLength={20}
+              inputMode="text"
+              autoCapitalize="none"
+              spellCheck={false}
+            />
+          </div>
+          <Button
+            onClick={handleSave}
+            disabled={!valid || saving || normalized === currentTag}
+            className="w-full h-12 text-sm font-semibold"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : (currentTag ? 'Update moniTag™' : 'Claim moniTag™')}
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
