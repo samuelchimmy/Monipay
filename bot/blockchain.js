@@ -243,4 +243,65 @@ export async function getBalance(address, chainName = 'base') {
       const { publicClient } = getClients(chain);
       const bal = await publicClient.readContract({
         address: config.tokenAddress,
-        abi: erc20Abi,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address],
+      });
+      return { balance: parseFloat(formatUnits(bal, config.decimals)), symbol: config.symbol };
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      console.warn(`[getBalance] Failed on ${chain}: ${e.message.split('\n')[0]}`);
+      return { balance: 0, symbol: config.symbol };
+    }
+  }
+
+  return { balance: 0, symbol: config.symbol };
+}
+
+export async function getAllowance(address, chainName = 'base', spender = 'router') {
+  const chain = normalizeChain(chainName);
+  if (!address || typeof address !== 'string') return { allowance: 0, symbol: 'UNKNOWN' };
+  if (isSolanaChain(chain)) return { allowance: 999999, symbol: 'USDC' };
+
+  const config = getChainConfig(chain);
+  const spenderAddress = spender === 'magicpay' && config.magicPayAddress
+    ? config.magicPayAddress
+    : config.routerAddress;
+
+  const totalRpcs = config.rpcs.length;
+
+  for (let attempt = 0; attempt < totalRpcs; attempt++) {
+    try {
+      const { publicClient } = getClients(chain);
+      const allowance = await publicClient.readContract({
+        address: config.tokenAddress,
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [address, spenderAddress],
+      });
+      return { allowance: parseFloat(formatUnits(allowance, config.decimals)), symbol: config.symbol };
+    } catch (e) {
+      if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
+      console.warn(`[getAllowance] Failed on ${chain}: ${e.message.split('\n')[0]}`);
+      return { allowance: 0, symbol: config.symbol };
+    }
+  }
+
+  return { allowance: 0, symbol: config.symbol };
+}
+
+// ============ MagicPay (Social Escrow) ============
+
+export async function executeMagicPay(fromAddress, recipientTwitterUserId, amount, chainName = 'base') {
+  const chain = normalizeChain(chainName);
+
+  if (!fromAddress?.startsWith('0x')) throw new Error('ERROR_INVALID_ADDRESS:Sender address is not a valid EVM address');
+  if (isSolanaChain(chain)) throw new Error('ERROR_SOLANA_MAGICPAY_NOT_SUPPORTED:MagicPay is EVM-only. Use a Base, BSC, Celo, or Ink wallet.');
+
+  const config = getChainConfig(chain);
+  if (!config.magicPayAddress) throw new Error(`ERROR_NOT_SUPPORTED:MagicPay not deployed on ${chain}`);
+
+  const recipientId = getRecipientId('twitter', recipientTwitterUserId);
+  const amountInUnits = parseUnits(amount.toFixed(config.decimals), config.decimals);
+  const totalRpcs = config.rpcs.length;
+
