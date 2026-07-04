@@ -892,3 +892,114 @@ export async function handleSetChainCommand(tweet, author, language) {
     const cleanText = text.replace(/@monibot/gi, '').trim();
 
     const match = cleanText.match(/(?:set-chain|change network to|change preferred network to|change chain to|change preferred chain to|switch to|use network|set network to|use chain|set chain|on)\s+(\w+)/i);
+    if (!match) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SET_CHAIN_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: "Invalid set-chain syntax. Try: @monibot set-chain Celo", language
+      });
+      return;
+    }
+
+    const requestedChain = match[1].toLowerCase();
+    const SUPPORTED_CHAINS = ['base', 'solana', 'celo', 'ink', 'bsc', 'tempo'];
+    if (!SUPPORTED_CHAINS.includes(requestedChain)) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SET_CHAIN_UNSUPPORTED', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `\`${requestedChain}\` is not supported. Try: ${SUPPORTED_CHAINS.join(', ')}`, language
+      });
+      return;
+    }
+
+    const senderProfile = await getProfileByXUsername(author.username);
+    if (!senderProfile) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `@${author.username} is not registered. Sign up at monipay.xyz to change preferences.`, language
+      });
+      return;
+    }
+
+    const normalized = normalizeChain(requestedChain);
+    const { updateUserPreferredNetwork } = await import('./database.js');
+    const success = await updateUserPreferredNetwork(senderProfile.id, senderProfile.source, normalized);
+
+    if (success) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'SET_CHAIN_SUCCESS', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: normalized,
+        error_reason: normalized, language
+      });
+    } else {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SET_CHAIN_DB', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: 'Database error updating network preference.', language
+      });
+    }
+
+  } catch (err) {
+    console.error('❌ handleSetChainCommand exception:', err.message);
+  }
+}
+
+// ============ Feature 4: Aura Leaderboard Command ============
+
+export async function handleLeaderboardCommand(tweet, author, language) {
+  try {
+    const senderProfile = await getProfileByXUsername(author.username);
+    const { getTwitterLeaderboard } = await import('./database.js');
+    const topSigmas = await getTwitterLeaderboard(3);
+
+    await logTransaction({
+      sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+      receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
+      amount: 0, fee: 0, tx_hash: 'LEADERBOARD_SHOW', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      error_reason: JSON.stringify({ topSigmas }), language
+    });
+
+  } catch (err) {
+    console.error('❌ handleLeaderboardCommand exception:', err.message);
+  }
+}
+
+// ============ World Cup Promo: Conditional Sports Payments ============
+
+export function isSportsConditionCommand(text) {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  
+  // Must have a conditional keyword
+  const conditionalKeywords = ['if', 'sake of', 'sake say', 'sake'];
+  const hasIf = conditionalKeywords.some(kw => new RegExp(`\\b${kw}\\b`, 'i').test(lower));
+  if (!hasIf) return false;
+
+  // Split at the conditional keyword to check if there is a condition text
+  let conditionText = '';
+  for (const kw of conditionalKeywords) {
+    const idx = lower.lastIndexOf(` ${kw} `);
+    if (idx !== -1) {
+      conditionText = text.slice(idx + kw.length + 2);
+      break;
+    }
+  }
+
+  if (!conditionText) return false;
+  
+  try {
+    // We do a soft check by requiring at least one WC team name in TEAM_ALIASES to exist in conditionText
+    const lowerCond = conditionText.toLowerCase();
+    // Since we import parseConditionClause dynamically or look at aliases,
+    // let's do a quick regex check for any team name or alias
+    return lowerCond.split(/\s+/).some(word => {
+      const cleanWord = word.replace(/[^a-z0-9]/g, '');
+      return cleanWord.length >= 2; 
+    });
