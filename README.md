@@ -342,12 +342,6 @@ G$ (GoodDollar) is a Celo-native UBI token that shares its primary user base wit
 
 ---
 
-## What Comes Next
-
-The immediate roadmap for Celo and MiniPay centers on enabling P2P transfers directly inside social chats. MiniPay users will be able to send stablecoins to anyone on WhatsApp inside active chat threads, and when WhatsApp usernames roll out more broadly, to any contact by username alone. This makes Monipay the payment layer for conversations that are already happening, without requiring the recipient to download anything or open a separate app.
-
----
-
 ## Links
 
 | | |
@@ -367,5 +361,5 @@ The immediate roadmap for Celo and MiniPay centers on enabling P2P transfers dir
 ---
 
 <div align="center">
-Built for Celo. Built for MiniPay. Built for the social internet.
+Built on Celo.For MiniPay.
 </div>
