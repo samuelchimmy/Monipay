@@ -82,4 +82,54 @@ export async function executeCreateMagicPay({ chain, fromAddress, amount, platfo
   });
 
   if (allowance < amountUnits) {
-    throw new Error(`ERROR_MAGIC_PAY_ALLOWANCE:Approve MagicPay on ${chain} for at least ${amount} ${config.symbol}`);
+    throw new Error(`ERROR_MAGIC_PAY_ALLOWANCE:Approve MagicPay on ${chain} for at least ${amount} ${config.symbol}`);
+  }
+
+  const balance = await publicClient.readContract({
+    address: config.tokenAddress,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [fromAddress],
+  });
+
+  if (balance < amountUnits) {
+    throw new Error(`ERROR_MAGIC_PAY_BALANCE:Insufficient ${config.symbol} balance on ${chain}`);
+  }
+
+  const data = encodeFunctionData({
+    abi: MAGIC_PAY_ABI,
+    functionName: 'executeCreate',
+    args: [fromAddress, amountUnits, recipientId],
+  });
+
+  let gas;
+  try {
+    gas = await publicClient.estimateGas({ account: account.address, to: registry, data });
+  } catch (e) {
+    throw new Error(`ERROR_MAGIC_PAY_GAS:${e.message}`);
+  }
+
+  const txHash = await sendTransactionWithNonce(chain, publicClient, walletClient, { to: registry, data, gas: gas + gas / 5n });
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+  if (receipt.status === 'reverted') {
+    throw new Error(`ERROR_MAGIC_PAY_REVERTED:On-chain create reverted (${txHash})`);
+  }
+
+  // Decode IOUCreated event to capture iouId + netAmount
+  let iouId = null;
+  let netAmount = null;
+  for (const log of receipt.logs) {
+    if (log.address.toLowerCase() !== registry.toLowerCase()) continue;
+    try {
+      const decoded = decodeEventLog({ abi: MAGIC_PAY_ABI, data: log.data, topics: log.topics });
+      if (decoded.eventName === 'IOUCreated') {
+        iouId = decoded.args.iouId.toString();
+        netAmount = Number(decoded.args.netAmount) / 10 ** config.decimals;
+        break;
+      }
+    } catch (_) { /* not a MagicPay event */ }
+  }
+
+  return { iouId, txHash, netAmount, recipientId, registry };
+}
