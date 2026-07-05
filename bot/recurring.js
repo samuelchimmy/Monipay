@@ -1227,3 +1227,113 @@ export async function handleSportsConditionCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount, fee: 0, tx_hash: 'ERROR_SPORTS_DB_FAILED', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+        error_reason: `Database error scheduling bet. Try again.`, language
+      });
+      return;
+    }
+
+    // Success! Log the conditional creation
+    const condDesc = outcomeResolution.requiredOutcome === 'exact_score' 
+      ? `score is ${rawScore.home}-${rawScore.away}`
+      : `${team1} ${outcomeResolution.requiredOutcome === 'draw' ? 'draws' : 'wins'}${team2 ? ' ' + team2 : ''}`;
+
+    await logTransaction({
+      sender_id: senderProfile.id,
+      receiver_id: recipientProfile ? recipientProfile.id : senderProfile.id,
+      amount, fee: 0, tx_hash: 'SPORTS_CREATE', type: 'p2p_command',
+      tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+      error_reason: JSON.stringify({ jobId, amount, targetTag, chain, condDesc, match: `${fixture.home_team} vs ${fixture.away_team}`, balanceWarning }),
+      language
+    });
+
+  } catch (err) {
+    console.error('❌ Sports condition creation exception:', err.message);
+  }
+}
+
+export function isSportsBetManagementCommand(text) {
+  const lower = text.toLowerCase();
+  return lower.includes('cancel bet') || lower.includes('stop bet') || lower.includes('bet status');
+}
+
+export async function handleSportsBetManagement(tweet, author, language) {
+  try {
+    const text = tweet.text;
+    const supabase = getSupabase();
+    const lower = text.toLowerCase();
+
+    if (lower.includes('cancel') || lower.includes('stop')) {
+      const match = text.match(/(?:cancel|stop|delete|remove)\s+(?:bet|conditional payment|conditional job)?\s*([a-f0-9-]+)/i);
+      const jobId = match ? match[1] : null;
+      
+      if (!jobId) {
+        await logTransaction({
+          sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+          amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_SYNTAX', type: 'p2p_command',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          error_reason: 'Please specify the Bet ID, e.g. cancel bet abc12345.', language
+        });
+        return;
+      }
+
+      const { data: checkJobs, error: checkError } = await supabase
+        .from('scheduled_jobs').select('*')
+        .eq('id', jobId).limit(1);
+
+      if (checkError || !checkJobs || checkJobs.length === 0) {
+        await logTransaction({
+          sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+          amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_NOT_FOUND', type: 'p2p_command',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          error_reason: `Bet ID ${jobId} not found.`, language
+        });
+        return;
+      }
+
+      const checkJob = checkJobs[0];
+      if (String(checkJob.source_author_id) !== String(author.id)) {
+        await logTransaction({
+          sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+          amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_OWNER', type: 'p2p_command',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          error_reason: "That's not your bet, chief 🚫", language
+        });
+        return;
+      }
+
+      if (checkJob.status !== 'pending') {
+        await logTransaction({
+          sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+          amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_STATE', type: 'p2p_command',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          error_reason: `Bet is already ${checkJob.status} and cannot be cancelled.`, language
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('scheduled_jobs').update({ status: 'failed', error_message: 'Cancelled by user' })
+        .eq('id', jobId);
+
+      if (error) {
+        await logTransaction({
+          sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+          amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_DB', type: 'p2p_command',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          error_reason: 'Database error cancelling bet. Try again.', language
+        });
+        return;
+      }
+
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'SPORTS_CANCEL', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: JSON.stringify({ jobId }), language
+      });
+    }
+  } catch (err) {
+    console.error('❌ handleSportsBetManagement exception:', err.message);
+  }
+}
