@@ -75,4 +75,18 @@ export function useMiniPay(): MiniPayInit {
           }
           // Any other error means we're already on Celo — safe to ignore
         }
-
+
+        setIsReady(true);
+      } catch (err: any) {
+        console.error('[useMiniPay] Init failed:', err);
+        setInitError(err?.message ?? 'Failed to connect MiniPay wallet');
+        // Still set isReady so the page can show an error state
+        setIsReady(true);
+      }
+    }
+
+    init();
+  }, []);
+
+  return { isMiniPay, address, isReady, initError };
+}
