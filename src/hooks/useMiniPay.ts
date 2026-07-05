@@ -44,4 +44,19 @@ export function useMiniPay(): MiniPayInit {
         return;
       }
 
-      setIsMiniPay(true);
+      setIsMiniPay(true);
+
+      try {
+        // MiniPay injects the wallet — eth_requestAccounts returns it immediately
+        const accounts: string[] = await eth.request({ method: 'eth_requestAccounts' });
+        if (!accounts?.length) throw new Error('MiniPay returned no accounts');
+
+        setAddress(accounts[0] as `0x${string}`);
+
+        // Switch to Celo Mainnet (MiniPay should already be there, but be explicit)
+        try {
+          await eth.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: CELO_CHAIN_ID_HEX }],
+          });
+        } catch (switchErr: any) {
