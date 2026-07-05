@@ -30,4 +30,21 @@ export default function TelegramCallback() {
       const parsed = JSON.parse(atob(stateParam));
       profileId = parsed.profileId;
       walletAddress = parsed.walletAddress;
-      if (!profileId || !walletAddress) throw new Error("Missing fields");
+      if (!profileId || !walletAddress) throw new Error("Missing fields");
+    } catch {
+      setStatus("error");
+      setMessage("Invalid session state. Please close this tab and try again.");
+      return;
+    }
+
+    // Forward the entire widget payload to the edge function for HMAC verification.
+    const widgetPayload: Record<string, string> = {};
+    searchParams.forEach((value, key) => {
+      if (key !== "state") widgetPayload[key] = value;
+    });
+
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("social-identity", {
+          body: {
+            action: "link-telegram",
