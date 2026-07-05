@@ -14,4 +14,20 @@ export default function TelegramCallback() {
     // id, first_name, last_name, username, photo_url, auth_date, hash
     // Plus our own `state` param (base64 of { profileId, walletAddress }).
     const stateParam = searchParams.get("state");
-    const id = searchParams.get("id");
+    const id = searchParams.get("id");
+    const hash = searchParams.get("hash");
+    const auth_date = searchParams.get("auth_date");
+
+    if (!stateParam || !id || !hash || !auth_date) {
+      setStatus("error");
+      setMessage("Missing Telegram authorization parameters.");
+      return;
+    }
+
+    let profileId: string;
+    let walletAddress: string;
+    try {
+      const parsed = JSON.parse(atob(stateParam));
+      profileId = parsed.profileId;
+      walletAddress = parsed.walletAddress;
+      if (!profileId || !walletAddress) throw new Error("Missing fields");
