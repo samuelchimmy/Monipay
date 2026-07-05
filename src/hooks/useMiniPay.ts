@@ -13,4 +13,19 @@
  * Used by MiniPay.tsx (the /minipay route) to gate rendering.
  * Has zero effect on any other page/route.
  */
-
+
+import { useState, useEffect } from 'react';
+import { CELO_CHAIN_ID_HEX } from '@/lib/celoWallet';
+
+export interface MiniPayInit {
+  /** null = detecting, false = not MiniPay, true = confirmed MiniPay */
+  isMiniPay: boolean | null;
+  /** Injected wallet address. null until eth_requestAccounts resolves. */
+  address: `0x${string}` | null;
+  /** True once address is available and chain switch was attempted */
+  isReady: boolean;
+  /** Non-null if something went wrong during init */
+  initError: string | null;
+}
+
+export function useMiniPay(): MiniPayInit {
