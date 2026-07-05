@@ -59,4 +59,20 @@ export function useMiniPay(): MiniPayInit {
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: CELO_CHAIN_ID_HEX }],
           });
-        } catch (switchErr: any) {
+        } catch (switchErr: any) {
+          if (switchErr?.code === 4902) {
+            // Chain not in wallet yet — add it
+            await eth.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: CELO_CHAIN_ID_HEX,
+                chainName: 'Celo Mainnet',
+                nativeCurrency: { name: 'CELO', symbol: 'CELO', decimals: 18 },
+                rpcUrls: ['https://forno.celo.org'],
+                blockExplorerUrls: ['https://celoscan.io'],
+              }],
+            });
+          }
+          // Any other error means we're already on Celo — safe to ignore
+        }
+
