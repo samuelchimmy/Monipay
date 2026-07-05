@@ -88,4 +88,34 @@ export function MiniPayWebChoice({
             className="flex items-center justify-between gap-2 rounded-full pl-2 pr-2 py-2 backdrop-blur-xl"
             style={{
               background: '#FCFF52',
-              border: '1px solid #000',
+              border: '1px solid #000',
+              boxShadow: '0 8px 32px -12px rgba(0,0,0,0.25)',
+            }}
+          >
+            <button
+              type="button"
+              aria-label="Back"
+              onClick={onBack}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-black hover:bg-black/10 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <div className="flex items-center gap-2">
+              <MoniPayLogo size={26} color="#000" animationMode="header" entranceOnMount />
+              <span className="font-bold tracking-tight text-[15px] text-black">Monipay</span>
+            </div>
+            <button
+              type="button"
+              aria-label="Toggle theme"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-black hover:bg-black/10 transition-colors"
+            >
+              <Sun className="h-4 w-4 dark:hidden" />
+              <Moon className="h-4 w-4 hidden dark:block" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex-1 overflow-y-auto px-4 sm:px-6">
