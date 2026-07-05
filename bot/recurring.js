@@ -1003,3 +1003,115 @@ export function isSportsConditionCommand(text) {
       const cleanWord = word.replace(/[^a-z0-9]/g, '');
       return cleanWord.length >= 2; 
     });
+  } catch (e) {
+    return false;
+  }
+}
+
+export async function handleSportsConditionCreation(tweet, author, language) {
+  try {
+    const text = tweet.text;
+    const cleanText = text.replace(/@monibot/gi, '').trim();
+
+    // 1. Resolve Sender
+    const senderProfile = await getProfileByXUsername(author.username);
+    if (!senderProfile) {
+      await logTransaction({
+        sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        error_reason: `@${author.username} is not registered. Sign up at monipay.xyz and link X in Settings.`, language
+      });
+      return;
+    }
+
+    // 2. Extract Condition Clause
+    const conditionalKeywords = ['if', 'sake of', 'sake say', 'sake'];
+    let conditionText = '';
+    let baseCommandText = cleanText;
+
+    for (const kw of conditionalKeywords) {
+      const idx = cleanText.toLowerCase().lastIndexOf(` ${kw} `);
+      if (idx !== -1) {
+        conditionText = cleanText.slice(idx + kw.length + 2).trim();
+        baseCommandText = cleanText.slice(0, idx).trim();
+        break;
+      }
+    }
+
+    if (!conditionText) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: `Missing condition. E.g. "... send $5 to @username if France wins Brazil"`, language
+      });
+      return;
+    }
+
+    // 3. Parse condition using parseConditionClause from sportsOracle.js
+    const { parseConditionClause, findMatchFromTeams, resolveRequiredOutcome } = await import('./sportsOracle.js');
+    const parsedCond = parseConditionClause(conditionText);
+    if (parsedCond.error) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: parsedCond.error, language
+      });
+      return;
+    }
+
+    const { team1, team2, outcomeType, rawScore } = parsedCond;
+
+    // 4. Find matching World Cup 2026 fixture
+    const fixture = await findMatchFromTeams(team1, team2);
+    if (!fixture) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_MATCH_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: `No World Cup 2026 match found between ${team1} and ${team2}.`, language
+      });
+      return;
+    }
+
+    // 5. Resolve canonical required outcome
+    const outcomeResolution = resolveRequiredOutcome(team1, team2, outcomeType, fixture);
+    if (outcomeResolution.error) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: outcomeResolution.error, language
+      });
+      return;
+    }
+
+    // 6. Parse base command (e.g. "send $5 to @alice")
+    const P2P_PATTERN = new RegExp(
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)@([a-zA-Z0-9_-]+)(?:[^@$]*?)\\$?([\\d.]+)|` +
+      `(?:bless|slide|tip|give|transfer|pay|send)(?:[^@$]*?)\\$?([\\d.]+)(?:[^@$]*?)@([a-zA-Z0-9_-]+)`,
+      'i'
+    );
+    const match = baseCommandText.match(P2P_PATTERN);
+    if (!match) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SYNTAX', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: `Could not parse payment details from command. Format: send $5 to @username if France beats Brazil.`, language
+      });
+      return;
+    }
+
+    let amount, targetTag;
+    if (match[1] !== undefined) {
+      targetTag = match[1].toLowerCase();
+      amount    = parseFloat(match[2]);
+    } else {
+      amount    = parseFloat(match[3]);
+      targetTag = match[4].toLowerCase();
+    }
+
+    if (targetTag === 'monibot' || targetTag === 'monipay') return;
