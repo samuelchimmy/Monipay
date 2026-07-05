@@ -28,4 +28,20 @@ export interface MiniPayInit {
   initError: string | null;
 }
 
-export function useMiniPay(): MiniPayInit {
+export function useMiniPay(): MiniPayInit {
+  const [isMiniPay, setIsMiniPay] = useState<boolean | null>(null);
+  const [address, setAddress]     = useState<`0x${string}` | null>(null);
+  const [isReady, setIsReady]     = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function init() {
+      const eth = (window as any).ethereum;
+
+      // Not inside MiniPay
+      if (!eth || !eth.isMiniPay) {
+        setIsMiniPay(false);
+        return;
+      }
+
+      setIsMiniPay(true);
