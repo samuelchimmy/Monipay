@@ -1115,3 +1115,115 @@ export async function handleSportsConditionCreation(tweet, author, language) {
     }
 
     if (targetTag === 'monibot' || targetTag === 'monipay') return;
+    if (isNaN(amount) || amount <= 0) return;
+
+    // Self send guard
+    if (targetTag === senderProfile.pay_tag?.toLowerCase() || targetTag === author.username.toLowerCase()) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SELF', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        error_reason: "Blud tried to bet on self-send. Stop the cap 🧢", language
+      });
+      return;
+    }
+
+    // Network detection
+    const NETWORK_KEYWORDS = {
+      celo:   ['on celo', 'celo', 'minipay'],
+      ink:    ['on ink', 'ink chain', 'ink network', 'inkonchain'],
+      solana: ['on solana', 'solana', 'sol ', 'spl'],
+      tempo:  ['on tempo', 'tempo', 'alphausd', 'αusd'],
+      bsc:    ['usdt', 'bnb', 'bsc', 'binance'],
+    };
+    let chain = senderProfile.preferred_network || 'base';
+    const lowerText = baseCommandText.toLowerCase();
+    for (const [ch, keywords] of Object.entries(NETWORK_KEYWORDS)) {
+      if (keywords.some(kw => lowerText.includes(kw))) {
+        chain = ch;
+        break;
+      }
+    }
+    chain = normalizeChain(chain);
+
+    // 7. Resolve Recipient & Fetch Twitter Numeric ID
+    let recipientProfile = await getProfileByMonitag(targetTag) || await getProfileByXUsername(targetTag);
+    const recipientTwitterId = await fetchTwitterNumericId(targetTag);
+    const isMagicPay = !recipientProfile && !!recipientTwitterId;
+
+    if (!recipientProfile && !recipientTwitterId) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount, fee: 0, tx_hash: 'ERROR_TARGET_NOT_FOUND', type: 'p2p_command',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, recipient_pay_tag: targetTag, chain,
+        error_reason: `@${targetTag} does not exist on Twitter. Double-check username.`, language
+      });
+      return;
+    }
+
+    // Pre-flight check: sender balance & allowance check
+    const { getUSDCBalance, getAllowance } = await import('./blockchain.js');
+    const { balance } = await getUSDCBalance(senderProfile.wallet_address, chain);
+    const { allowance } = await getAllowance(senderProfile.wallet_address, chain, isMagicPay ? 'magicpay' : 'router');
+
+    const preferredChain = chain;
+    let balanceWarning = '';
+
+    if (balance < amount || allowance < amount) {
+      const { findAlternateChain } = await import('./crossChainCheck.js');
+      const alt = await findAlternateChain(senderProfile.wallet_address, amount, preferredChain, isMagicPay ? 'magicpay' : 'p2p');
+      
+      if (alt && !alt.needsAllowance) {
+        balanceWarning = ` (Auto-rerouted from ${preferredChain.toUpperCase()} to ${alt.chain.toUpperCase()})`;
+        chain = alt.chain; // Update target chain for scheduling!
+      } else if (alt && alt.needsAllowance) {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} to ${alt.chain.toUpperCase()} but it lacks allowance. Go to MoniPay Settings > MoniBot > Set Allowance > ${isMagicPay ? 'MagicPay' : 'CasualPay'} to approve allowance on ${alt.chain.toUpperCase()} before the match ends!)`;
+      } else if (balance < amount) {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} but found no way to do so because of insufficient funds on all chains. Top up your wallet before the match ends!)`;
+      } else {
+        balanceWarning = ` (Warning: Tried rerouting from ${preferredChain.toUpperCase()} but found no way to do so because MoniBot allowance is too low. Go to Settings > MoniBot > Set Allowance to approve spending before the match ends!)`;
+      }
+    }
+
+
+    // Create the conditional_sports_p2p job
+    const jobId = randomUUID();
+    const job = {
+      id: jobId,
+      type: 'conditional_sports_p2p',
+      status: 'pending',
+      scheduled_at: new Date().toISOString(),
+      source_author_id: author.id,
+      source_author_username: author.username,
+      source_tweet_id: tweet.id,
+      max_attempts: 1, // Only try once for sport bets
+      attempts: 0,
+      payload: {
+        platform: 'twitter',
+        senderId: senderProfile.id,
+        senderPayTag: senderProfile.pay_tag,
+        senderWallet: senderProfile.wallet_address,
+        receiverId: recipientProfile ? recipientProfile.id : null,
+        recipientPayTag: targetTag,
+        recipientTwitterId,
+        recipientWallet: recipientProfile ? recipientProfile.wallet_address : null,
+        matchId: fixture.id,
+        condition: {
+          requiredOutcome: outcomeResolution.requiredOutcome,
+          requiredWinner: outcomeResolution.requiredWinner || null,
+          rawScore,
+        },
+        amount,
+        chain,
+        tweetId: tweet.id,
+        language,
+      }
+    };
+
+    const supabase = getSupabase();
+    const { error } = await supabase.from('scheduled_jobs').insert([job]);
+
+    if (error) {
+      await logTransaction({
+        sender_id: senderProfile.id, receiver_id: senderProfile.id,
+        amount, fee: 0, tx_hash: 'ERROR_SPORTS_DB_FAILED', type: 'p2p_command',
