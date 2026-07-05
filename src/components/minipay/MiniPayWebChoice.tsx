@@ -178,4 +178,34 @@ export function MiniPayWebChoice({
                 </p>
                 <p className="text-[12px] mt-0.5" style={{ color: 'hsl(var(--mp-muted))' }}>
                   Use MetaMask, Rabby, Coinbase, or WalletConnect
-                </p>
+                </p>
+              </div>
+            </button>
+
+            {/* Sign in with Google — restore from encrypted Drive backup */}
+            <button
+              onClick={handle(onGoogleRestore)}
+              className="mp-card w-full p-4 flex items-center gap-3 text-left transition-transform hover:scale-[1.01] active:scale-[0.99]"
+              style={{ minHeight: 72 }}
+            >
+              <div className="w-11 h-11 rounded-2xl bg-white border border-black/10 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <GoogleG size={22} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-[15px] leading-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+                  Sign in with Google
+                </p>
+                <p className="text-[12px] mt-0.5" style={{ color: 'hsl(var(--mp-muted))' }}>
+                  Restore from your encrypted Drive backup
+                </p>
+              </div>
+            </button>
+
+            {/* Create MoniPay Account */}
+            <button
+              onClick={handle(onCreateAccount)}
+              className="mp-card w-full p-4 flex items-center gap-3 text-left transition-transform hover:scale-[1.01] active:scale-[0.99]"
+              style={{ minHeight: 72 }}
+            >
+              <div className="mp-icon-frame w-11 h-11 flex-shrink-0">
+                <UserRoundPlus className="w-5 h-5" />
