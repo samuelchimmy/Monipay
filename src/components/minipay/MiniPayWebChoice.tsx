@@ -148,4 +148,34 @@ export function MiniPayWebChoice({
             <button
               onClick={handle(onCreateMoniTag)}
               className="mp-cta w-full p-4 flex items-center gap-3 text-left !rounded-2xl"
-              style={{ minHeight: 72 }}
+              style={{ minHeight: 72 }}
+            >
+              <div
+                className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-[inset_0_0_0_1px_hsl(var(--primary-foreground)/0.18)]"
+                style={{ background: 'hsl(var(--primary-foreground) / 0.15)' }}
+              >
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-[15px] leading-tight">Create MoniTag</p>
+                <p className="text-[12px] opacity-80 mt-0.5">Get a payment username in seconds</p>
+              </div>
+              <ArrowUpRight className="h-5 w-5 opacity-90 flex-shrink-0" />
+            </button>
+
+            {/* Login with wallet */}
+            <button
+              onClick={handle(onLoginWithWallet)}
+              className="mp-card w-full p-4 flex items-center gap-3 text-left transition-transform hover:scale-[1.01] active:scale-[0.99]"
+              style={{ minHeight: 72 }}
+            >
+              <div className="mp-icon-frame w-11 h-11 flex-shrink-0">
+                <Wallet className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-[15px] leading-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+                  Login with Wallet
+                </p>
+                <p className="text-[12px] mt-0.5" style={{ color: 'hsl(var(--mp-muted))' }}>
+                  Use MetaMask, Rabby, Coinbase, or WalletConnect
+                </p>
