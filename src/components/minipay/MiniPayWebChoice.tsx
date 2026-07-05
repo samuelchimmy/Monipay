@@ -118,4 +118,34 @@ export function MiniPayWebChoice({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex-1 overflow-y-auto px-4 sm:px-6">
+      <div className="relative z-10 flex-1 overflow-y-auto px-4 sm:px-6">
+        <div className="max-w-md mx-auto w-full flex flex-col h-full justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center pb-7"
+          >
+            <h1
+              className="text-[28px] sm:text-[34px] font-extrabold tracking-tight leading-[1.05]"
+              style={{ color: 'hsl(var(--mp-ink))' }}
+            >
+              Welcome to{' '}
+              <span style={{ color: 'hsl(var(--mp-primary))' }}>Monipay</span>
+            </h1>
+            <p className="mt-3 text-[13px]" style={{ color: 'hsl(var(--mp-muted))' }}>
+              Pick how you want to get started.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-3"
+          >
+            {/* Create MoniTag — primary CTA */}
+            <button
+              onClick={handle(onCreateMoniTag)}
+              className="mp-cta w-full p-4 flex items-center gap-3 text-left !rounded-2xl"
+              style={{ minHeight: 72 }}
