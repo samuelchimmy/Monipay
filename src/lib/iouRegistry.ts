@@ -36,4 +36,24 @@ export const IOU_REGISTRY_ABI = [
       { name: "amount", type: "uint256" },
       { name: "recipientId", type: "bytes32" },
     ],
-    outputs: [{ name: "iouId", type: "uint256" }],
+    outputs: [{ name: "iouId", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "batchClaim",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "iouIds", type: "uint256[]" },
+      { name: "claimant", type: "address" },
+      { name: "recipientId", type: "bytes32" },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "batchRefund",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "iouIds", type: "uint256[]" }],
+    outputs: [],
+  },
+  {
