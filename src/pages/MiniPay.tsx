@@ -77,4 +77,44 @@ function MiniPayLegacyApp() {
       const stored = sessionStorage.getItem('minipay_onboarding_flow');
       if (stored === 'import' || stored === 'create') return stored;
     } catch {}
-    return 'create';
+    return 'create';
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('minipay_show_landing', showLanding ? '1' : '0');
+    } catch {}
+  }, [showLanding]);
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('minipay_onboarding_flow', onboardingFlow);
+    } catch {}
+  }, [onboardingFlow]);
+
+  const returnToLanding = () => {
+    setShowLanding(true);
+    setCurrentScreen('lock');
+    setIsUnlocked(false);
+    setShowWebChooser(true);
+    setWebChoice('none');
+  };
+
+  // In-app back from Onboarding (Celo mode) signals via this event.
+  useEffect(() => {
+    const onBack = () => returnToLanding();
+    window.addEventListener('monipay:back-to-landing', onBack as EventListener);
+    return () => window.removeEventListener('monipay:back-to-landing', onBack as EventListener);
+  }, []);
+
+  // On mount, if we previously skipped the landing but don't yet have a
+  // saved profile (e.g. refresh during onboarding or while returning from a
+  // social-linking redirect), restore the onboarding screen rather than
+  // dropping the user onto a blank LockScreen.
+  useEffect(() => {
+    if (showLanding) return;
+    const hasProfile = !!localStorage.getItem('paytag_profile');
+    if (!hasProfile && currentScreen !== 'onboarding') {
+      setCurrentScreen('onboarding');
+      setIsUnlocked(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
