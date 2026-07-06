@@ -153,4 +153,394 @@ function MiniPayHeader({ onSignIn }: { onSignIn: () => void }) {
   );
 }
 
-/* ── Hero halo ── */
+/* ── Hero halo ── */
+const SOCIAL_BUBBLES = [
+  { id: 'x',        Icon: XIcon,       label: 'X',        color: 'hsl(var(--mp-ink))' },
+  { id: 'discord',  Icon: DiscordIcon, label: 'Discord',  color: '#5865F2' },
+  { id: 'telegram', Icon: TelegramIcon,label: 'Telegram', color: '#229ED9' },
+  { id: 'bluesky',  Icon: BlueskyIcon, label: 'Bluesky',  color: '#1185FE' },
+];
+
+function SocialHaloPhone() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(containerRef, { once: true, margin: '-80px' });
+  const phoneX = 300;
+  const phoneTopY = 240;
+  // Geometric arc: 4 points evenly distributed across a 120° arc
+  // centered above the phone notch. Position = polar(center, radius, angle).
+  // Arc center sits BELOW the icons (and just above the phone notch). Lowering
+  // arcCenter.y while keeping radius lifts every icon UP by the same amount,
+  // so they balance precisely on top of the connector tips without breaking
+  // the equal-angular spacing.
+  const arcCenter = { x: 264, y: 200 };
+  const arcRadius = 175;
+  const arcAngles = [-48, -16, 16, 48]; // evenly spaced across a 96° arc
+  const bubblePositions = arcAngles.map((deg) => {
+    const rad = (deg * Math.PI) / 180;
+    return {
+      x: arcCenter.x + arcRadius * Math.sin(rad),
+      y: arcCenter.y - arcRadius * Math.cos(rad),
+    };
+  });
+  // Dotted reference arc — extends ~10° past the outer icons so they sit cleanly on the curve.
+  const arcStart = {
+    x: arcCenter.x + arcRadius * Math.sin((-58 * Math.PI) / 180),
+    y: arcCenter.y - arcRadius * Math.cos((-58 * Math.PI) / 180),
+  };
+  const arcEnd = {
+    x: arcCenter.x + arcRadius * Math.sin((58 * Math.PI) / 180),
+    y: arcCenter.y - arcRadius * Math.cos((58 * Math.PI) / 180),
+  };
+  const arcPath = `M ${arcStart.x},${arcStart.y} A ${arcRadius},${arcRadius} 0 0 1 ${arcEnd.x},${arcEnd.y}`;
+
+  return (
+    <div ref={containerRef} className="relative w-full max-w-[640px] mx-auto select-none pb-[460px] sm:pb-[560px] md:pb-[660px]">
+      {/* Arc layer — sized to the SVG's intrinsic 600:720 ratio so the bubble overlay
+          uses the SAME coordinate space as the SVG (otherwise % top of the outer
+          container — which includes the phone padding — pushes bubbles off the arc). */}
+      <div className="relative w-full" style={{ aspectRatio: '600 / 720' }}>
+      <svg viewBox="0 0 600 720" className="absolute inset-0 w-full h-full" aria-hidden>
+        <path
+          d={arcPath}
+          fill="none"
+          stroke="hsl(var(--mp-border))"
+          strokeWidth="1.2"
+          strokeDasharray="3 6"
+          opacity="0.7"
+        />
+        {bubblePositions.map((p, i) => {
+          // Connector tip starts at the BOTTOM EDGE of the icon bubble (~32px
+          // radius) so the icon visually balances on the tip of the line.
+          const dx = (phoneX - p.x) * 0.45;
+          const d = `M ${p.x} ${p.y + 32} C ${p.x + dx} ${p.y + 120}, ${phoneX - dx * 0.3} ${phoneTopY - 60}, ${phoneX} ${phoneTopY}`;
+          return (
+            <g key={i}>
+              <path
+                d={d}
+                fill="none"
+                stroke="hsl(var(--mp-primary))"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeDasharray="400"
+                strokeDashoffset={inView ? 0 : 400}
+                style={{ transition: `stroke-dashoffset 1.1s cubic-bezier(0.22,1,0.36,1) ${0.2 + i * 0.12}s` }}
+              />
+              <circle
+                r="3.5"
+                fill="hsl(var(--mp-primary))"
+                style={{
+                  offsetPath: `path('${d}')`,
+                  // @ts-ignore vendor
+                  WebkitOffsetPath: `path('${d}')`,
+                  animation: inView ? `mp-pulse-dot 2.4s ${1.4 + i * 0.25}s linear infinite` : undefined,
+                  opacity: 0,
+                }}
+              />
+            </g>
+          );
+        })}
+      </svg>
+      <div className="absolute inset-0 pointer-events-none">
+        {bubblePositions.map((p, i) => {
+          const b = SOCIAL_BUBBLES[i];
+          return (
+            <motion.div
+              key={b.id}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={{
+                type: 'spring',
+                stiffness: 380,
+                damping: 12,
+                mass: 0.7,
+                delay: 0.25 + i * 0.12,
+              }}
+              className="absolute"
+              style={{
+                left: `${(p.x / 600) * 100}%`,
+                top: `${(p.y / 720) * 100}%`,
+                transform: 'translate(-50%, -50%)',
+              }}
+              aria-hidden="true"
+            >
+              <div
+                className="h-12 w-12 sm:h-16 sm:w-16 rounded-full flex items-center justify-center pointer-events-auto bg-white dark:bg-black shadow-[0_0_0_2px_hsl(var(--mp-primary)),0_0_0_3.5px_#fff,0_14px_30px_-10px_hsl(var(--mp-ink)/0.28)] dark:shadow-[0_0_0_2px_hsl(var(--mp-primary)),0_14px_30px_-10px_hsl(var(--mp-ink)/0.6)]"
+              >
+                <span className="text-black dark:text-white">
+                  <b.Icon className="h-5 w-5 sm:h-7 sm:w-7" />
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+      </div>
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-x-0 flex justify-center"
+          style={{ top: 'calc((min(100vw - 32px, 640px) * 0.3667) - 24px)' }}
+        >
+          <div className="relative flex justify-center">
+            <img
+              src={phoneMockupLight}
+              alt="MoniBot social payments shown inside a phone"
+              className="block dark:hidden h-auto max-w-none select-none"
+              style={{ width: 'min(98vw, 620px)' }}
+              width="620"
+              height="1102"
+              fetchPriority="high"
+            />
+            <img
+              src={phoneMockupDark}
+              alt="MoniBot social payments shown inside a phone"
+              className="hidden dark:block h-auto max-w-none select-none"
+              style={{ width: 'min(98vw, 620px)' }}
+              width="620"
+              height="1102"
+              fetchPriority="high"
+            />
+            {/* Cloud fade — soft gradient in the EXACT page bg color so the phone's
+                bottom edge dissolves into the surface. Short height, no blur halo. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[12%]"
+              style={{
+                background:
+                  'linear-gradient(to bottom, hsl(var(--mp-surface) / 0) 0%, hsl(var(--mp-surface) / 0.85) 65%, hsl(var(--mp-surface)) 100%)',
+              }}
+            />
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function MiniPayHero({ onGetStarted }: { onGetStarted: () => void }) {
+  const { t } = useTranslation();
+  const isMiniPayContext = typeof window !== 'undefined' && !!(window as any).ethereum?.isMiniPay;
+
+  const badgeText = isMiniPayContext ? "Transact in Conversations" : t('minipay_hero_badge');
+  const title1 = isMiniPayContext ? "Social Payments" : t('minipay_hero_title_1');
+  const title2 = isMiniPayContext ? "Native to MiniPay." : t('minipay_hero_title_2');
+  const descText = isMiniPayContext
+    ? "Claim your MoniTag and link your social handles. Send and receive money instantly using usernames (@MoniTag) directly in chats on X, Telegram, and Discord. Zero gas fees, fully sponsored."
+    : t('minipay_hero_desc');
+  const ctaText = "Launch Agent";
+
+  return (
+    <section className="relative px-4 sm:px-6 pt-10 sm:pt-16 pb-12">
+      <div className="relative z-10 mx-auto max-w-5xl text-center">
+        <Reveal>
+          <span
+            className="inline-flex items-center gap-2 rounded-full pl-1 pr-4 py-1 text-[12px] font-bold tracking-tight"
+            style={{
+              background: 'hsl(var(--mp-surface))',
+              color: 'hsl(var(--mp-ink))',
+              border: '1px solid hsl(var(--mp-border))',
+              boxShadow: '0 6px 18px -8px hsl(var(--mp-ink) / 0.18)',
+            }}
+          >
+            <img
+              src={AVATAR_MAP['ai-pill']}
+              alt=""
+              className="h-5 w-5 rounded-full object-cover bg-white"
+              style={{ boxShadow: '0 0 0 1.25px #fff, 0 0 0 2.25px hsl(var(--mp-primary))' }}
+            />
+            {badgeText}
+          </span>
+        </Reveal>
+        <Reveal delay={0.05}>
+          <h1
+            className="mt-5 text-[30px] sm:text-[44px] md:text-[54px] leading-[1.04] font-extrabold tracking-tight"
+            style={{ color: 'hsl(var(--mp-ink))' }}
+          >
+            {title1}
+            <br />
+            <span style={{ color: 'hsl(var(--mp-primary))' }}>{title2}</span>
+          </h1>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <p
+            className="mx-auto mt-4 max-w-[600px] text-[15px] sm:text-base"
+            style={{ color: 'hsl(var(--mp-muted))' }}
+          >
+            {descText}
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.15} className="mt-6 flex justify-center">
+          <button
+            onClick={onGetStarted}
+            className="inline-flex items-center gap-2 rounded-full px-7 h-12 text-sm font-bold text-white dark:text-zinc-950 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            style={{
+              background: 'hsl(var(--mp-primary))',
+              boxShadow: '0 14px 32px -10px hsl(var(--mp-primary) / 0.55)',
+            }}
+          >
+            {ctaText}
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </Reveal>
+
+        <Reveal delay={0.2} className="mt-10 sm:mt-14 flex justify-center">
+          <div className="w-full max-w-[640px] mx-auto">
+            <SocialHaloPhone />
+          </div>
+        </Reveal>
+
+        {!isMiniPayContext && (
+          <Reveal delay={0.25} className="mt-12 flex justify-center">
+            <XExhibitBadge variant="card" className="max-w-[640px] w-full" />
+          </Reveal>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ── Avatar helper: real pfp with theme frame ── */
+const AVATAR_MAP: Record<string, string> = {
+  'alex-x': avatar1,
+  'mara-d': avatar2,
+  'nora-t': avatar6,
+  'monibot': avatar4,
+  'ai-pill': avatar3,
+  'extra-1': avatar5,
+};
+
+function Pfp({ seed, size = 28 }: { seed: string; size?: number }) {
+  const url = AVATAR_MAP[seed] ?? avatar5;
+  return (
+    <img
+      src={url}
+      alt={seed}
+      width={size}
+      height={size}
+      className="rounded-full shrink-0 bg-white object-cover"
+      style={{
+        width: size,
+        height: size,
+        boxShadow: '0 0 0 2px #fff, 0 0 0 3.5px hsl(var(--mp-primary))',
+      }}
+    />
+  );
+}
+
+/* ── Phone mockup shell (theme-aware) ── */
+function PhoneMockup({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mx-auto w-full max-w-[380px] sm:max-w-[420px]">
+      <div
+        className="relative rounded-[3rem] p-3 shadow-2xl"
+        style={{
+          background: 'linear-gradient(160deg, #2a2f3a 0%, #14171d 60%, #0a0c10 100%)',
+          boxShadow: '0 40px 80px -30px rgba(0,0,0,0.55), 0 8px 24px -12px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05)',
+        }}
+      >
+        {/* side buttons */}
+        <span aria-hidden className="absolute left-[-2px] top-[110px] h-7 w-[3px] rounded-l bg-zinc-700" />
+        <span aria-hidden className="absolute left-[-2px] top-[160px] h-12 w-[3px] rounded-l bg-zinc-700" />
+        <span aria-hidden className="absolute left-[-2px] top-[220px] h-12 w-[3px] rounded-l bg-zinc-700" />
+        <span aria-hidden className="absolute right-[-2px] top-[180px] h-16 w-[3px] rounded-r bg-zinc-700" />
+
+        <div
+          className="relative rounded-[2.4rem] overflow-hidden"
+          style={{ background: 'hsl(var(--mp-surface))' }}
+        >
+          {/* dynamic island */}
+          <div className="absolute left-1/2 top-2 -translate-x-1/2 z-10 h-[26px] w-[110px] rounded-full bg-black flex items-center justify-end pr-2.5">
+            <span className="h-2 w-2 rounded-full bg-zinc-700" />
+          </div>
+          <div className="px-4 pt-12 pb-6">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Chat demos ── */
+const CHAT_DEMOS = [
+  {
+    network: 'X',
+    Icon: XIcon,
+    handle: '@alex',
+    userKey: 'minipay_chat_x_user',
+    botKey: 'minipay_chat_x_bot',
+    seed: 'alex-x',
+  },
+  {
+    network: 'Discord',
+    img: discordSvg,
+    handle: '#design-team',
+    userKey: 'minipay_chat_discord_user',
+    botKey: 'minipay_chat_discord_bot',
+    seed: 'mara-d',
+  },
+  {
+    network: 'Telegram',
+    img: telegramSvg,
+    handle: '@nora',
+    userKey: 'minipay_chat_telegram_user',
+    botKey: 'minipay_chat_telegram_bot',
+    seed: 'nora-t',
+  },
+];
+
+function ChatDemos() {
+  const { t } = useTranslation();
+  return (
+    <section className="relative px-4 sm:px-6 py-16 sm:py-24" style={{ background: 'hsl(var(--mp-surface))' }}>
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="text-center mb-6 sm:mb-8">
+          <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: 'hsl(var(--mp-primary-strong))' }}>
+            {t('minipay_chat_eyebrow')}
+          </span>
+          <h2 className="mt-2 text-[22px] sm:text-[34px] font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_chat_title')}
+          </h2>
+          <p className="mt-2 max-w-xl mx-auto text-sm" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_chat_subtitle')}
+          </p>
+        </Reveal>
+
+        <Reveal>
+          <PhoneMockup>
+            <div className="space-y-5">
+              {CHAT_DEMOS.map((c) => (
+                <div
+                  key={c.network}
+                  className="rounded-2xl overflow-hidden"
+                  style={{
+                    background: 'hsl(var(--mp-surface-elev))',
+                    border: '1px solid hsl(var(--mp-border))',
+                  }}
+                >
+                  <div
+                    className="flex items-center gap-2 px-3 py-2 border-b"
+                    style={{ borderColor: 'hsl(var(--mp-border))' }}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-red-400" />
+                    <span className="h-2 w-2 rounded-full bg-amber-400" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <div className="ml-1.5 flex items-center gap-1.5 text-[10px] font-semibold" style={{ color: 'hsl(var(--mp-muted))' }}>
+                      {c.img ? (
+                        <img src={c.img} alt={c.network} className={`h-3 w-3 ${c.network === 'Discord' ? 'dark:[filter:invert(1)_brightness(2)]' : ''}`} />
+                      ) : (
+                        c.Icon && <c.Icon className="h-3 w-3" />
+                      )}
+                      {c.network} · {c.handle}
+                    </div>
+                  </div>
+                  <div className="p-3 space-y-2.5">
+                    <div className="flex items-end gap-2">
+                      <Pfp seed={c.seed} size={26} />
+                      <div
+                        className="rounded-2xl rounded-bl-sm px-3 py-2 text-[12px] leading-snug max-w-[82%]"
+                        style={{ background: 'hsl(var(--mp-faint))', color: 'hsl(var(--mp-ink))' }}
+                      >
