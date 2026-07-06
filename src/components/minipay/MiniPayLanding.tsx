@@ -543,4 +543,392 @@ function ChatDemos() {
                       <div
                         className="rounded-2xl rounded-bl-sm px-3 py-2 text-[12px] leading-snug max-w-[82%]"
                         style={{ background: 'hsl(var(--mp-faint))', color: 'hsl(var(--mp-ink))' }}
-                      >
+                      >
+                        {t(c.userKey)}
+                      </div>
+                    </div>
+                    <div className="flex items-end gap-2 justify-end">
+                      <div
+                        className="rounded-2xl rounded-br-sm px-3 py-2 text-[12px] leading-snug max-w-[82%] text-white"
+                        style={{ background: 'hsl(var(--mp-primary))' }}
+                      >
+                        <div className="flex items-center gap-1.5 mb-1 text-[9px] font-bold uppercase tracking-wider opacity-90">
+                          <Check className="h-2.5 w-2.5" /> MoniBot
+                        </div>
+                        {t(c.botKey)}
+                      </div>
+                      <img
+                        src={AVATAR_MAP['monibot']}
+                        alt="MoniBot"
+                        className="h-6 w-6 rounded-full shrink-0 bg-white object-cover"
+                        style={{ boxShadow: '0 0 0 2px #fff, 0 0 0 3px hsl(var(--mp-primary))' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </PhoneMockup>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ── Social payment cards (6) ── */
+const SOCIAL_CARDS = [
+  { Icon: Send,          name: 'CasualPay',       headlineKey: 'minipay_card_casualpay_headline',       descKey: 'minipay_card_casualpay_desc' },
+  { Icon: Wand2,         name: 'MagicPay',        headlineKey: 'minipay_card_magicpay_headline',        descKey: 'minipay_card_magicpay_desc' },
+  { Icon: Users,         name: 'GroupPay',        headlineKey: 'minipay_card_grouppay_headline',        descKey: 'minipay_card_grouppay_desc' },
+  { Icon: AtSign,        name: 'TagPay',          headlineKey: 'minipay_card_tagpay_headline',          descKey: 'minipay_card_tagpay_desc' },
+  { Icon: CalendarClock, name: 'SchedulePay',     headlineKey: 'minipay_card_schedulepay_headline',     descKey: 'minipay_card_schedulepay_desc' },
+  { Icon: Repeat2,       name: 'SubscriptionPay', headlineKey: 'minipay_card_subscriptionpay_headline', descKey: 'minipay_card_subscriptionpay_desc' },
+];
+
+function SocialPaymentCards() {
+  const { t } = useTranslation();
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24">
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="text-center mb-10 sm:mb-14">
+          <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: 'hsl(var(--mp-primary-strong))' }}>
+            {t('minipay_cards_eyebrow')}
+          </span>
+          <h2 className="mt-3 text-3xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_cards_title')}
+          </h2>
+          <p className="mt-4 max-w-xl mx-auto text-base" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_cards_subtitle')}
+          </p>
+        </Reveal>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          {SOCIAL_CARDS.map((c, i) => (
+            <Reveal key={c.name} delay={i * 0.06}>
+              <div
+                className="group h-full rounded-3xl p-6 sm:p-7 transition-all hover:-translate-y-1"
+                style={{
+                  background: 'hsl(var(--mp-surface-elev))',
+                  border: '1px solid hsl(var(--mp-border))',
+                  boxShadow: '0 1px 0 hsl(var(--mp-border) / 0.5)',
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="h-11 w-11 rounded-2xl flex items-center justify-center"
+                    style={{
+                      background: 'hsl(var(--mp-primary))',
+                      boxShadow: '0 8px 22px -10px hsl(var(--mp-primary) / 0.7)',
+                    }}
+                  >
+                    <c.Icon className="h-[18px] w-[18px] text-white" strokeWidth={2.4} />
+                  </div>
+                  <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: 'hsl(var(--mp-muted))' }}>
+                    {c.name}
+                  </span>
+                </div>
+                <h3 className="mt-5 text-xl sm:text-2xl font-extrabold tracking-tight leading-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+                  {t(c.headlineKey)}
+                </h3>
+                <p className="mt-3 text-[14.5px] leading-relaxed" style={{ color: 'hsl(var(--mp-muted))' }}>
+                  {t(c.descKey)}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Chain stats ── */
+const STATS = [
+  { Icon: Zap,        titleKey: 'minipay_stats_instant_title', stat: '~5s',   descKey: 'minipay_stats_instant_desc' },
+  { Icon: Leaf,       titleKey: 'minipay_stats_carbon_title',  statKey: 'minipay_stats_carbon_stat', descKey: 'minipay_stats_carbon_desc' },
+  { Icon: DollarSign, titleKey: 'minipay_stats_usdt_title',    stat: 'USDT',  descKey: 'minipay_stats_usdt_desc' },
+  { Icon: Smartphone, titleKey: 'minipay_stats_mobile_title',  stat: '6B+',   descKey: 'minipay_stats_mobile_desc' },
+];
+
+function ChainStats() {
+  const { t } = useTranslation();
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24" style={{ background: 'hsl(var(--mp-surface-elev))' }}>
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_stats_title')}
+          </h2>
+          <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_stats_subtitle')}
+          </p>
+        </Reveal>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {STATS.map((s, i) => (
+            <Reveal key={s.titleKey} delay={i * 0.06}>
+              <div
+                className="rounded-2xl p-5 h-full"
+                style={{ background: 'hsl(var(--mp-surface))', border: '1px solid hsl(var(--mp-border))' }}
+              >
+                <s.Icon className="h-5 w-5" style={{ color: 'hsl(var(--mp-primary))' }} />
+                <div className="mt-4 text-2xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>{s.statKey ? t(s.statKey) : s.stat}</div>
+                <div className="mt-1 text-xs font-bold uppercase tracking-wider" style={{ color: 'hsl(var(--mp-muted))' }}>{t(s.titleKey)}</div>
+                <p className="mt-3 text-[13px] leading-relaxed" style={{ color: 'hsl(var(--mp-muted))' }}>{t(s.descKey)}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Fee compare ── */
+function FeeCompare() {
+  const { t } = useTranslation();
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24">
+      <div className="mx-auto max-w-3xl">
+        <Reveal className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_fee_title')}
+          </h2>
+          <p className="mt-3 text-base" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_fee_subtitle')}
+          </p>
+        </Reveal>
+        <Reveal>
+          <div
+            className="grid sm:grid-cols-2 rounded-3xl overflow-hidden"
+            style={{ border: '1px solid hsl(var(--mp-border))' }}
+          >
+            <div className="p-7" style={{ background: 'hsl(var(--mp-surface-elev))' }}>
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest" style={{ color: 'hsl(var(--mp-muted))' }}>
+                <X className="h-3 w-3" /> {t('minipay_fee_typical')}
+              </div>
+              <div className="mt-5 space-y-2 text-sm" style={{ color: 'hsl(var(--mp-ink))' }}>
+                <Row label={t('minipay_fee_send')} value="$10.00" />
+                <Row label={t('minipay_fee_gas')} value="−$0.001" />
+                <Row label={t('minipay_fee_needs_eth')} value={t('minipay_fee_yes')} />
+              </div>
+              <div className="mt-5 pt-4 border-t" style={{ borderColor: 'hsl(var(--mp-border))' }}>
+                <div className="text-xs uppercase tracking-wider" style={{ color: 'hsl(var(--mp-muted))' }}>{t('minipay_fee_recipient')}</div>
+                <div className="text-3xl font-extrabold mt-1" style={{ color: 'hsl(var(--mp-ink))' }}>$9.999</div>
+              </div>
+            </div>
+            <div className="p-7" style={{ background: 'hsl(var(--mp-primary))', color: 'white' }}>
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest opacity-90">
+                <Check className="h-3 w-3" /> {t('minipay_fee_on_celo')}
+              </div>
+              <div className="mt-5 space-y-2 text-sm">
+                <Row label={t('minipay_fee_send')} value="$10.00" tone="dark" />
+                <Row label={t('minipay_fee_gas')} value={t('minipay_fee_sponsored')} tone="dark" />
+                <Row label={t('minipay_fee_needs_eth')} value={t('minipay_fee_never')} tone="dark" />
+              </div>
+              <div className="mt-5 pt-4 border-t border-white/20">
+                <div className="text-xs uppercase tracking-wider opacity-80">{t('minipay_fee_recipient')}</div>
+                <div className="text-3xl font-extrabold mt-1">$10.00</div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+function Row({ label, value, tone }: { label: string; value: string; tone?: 'dark' }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className={tone === 'dark' ? 'opacity-80' : ''} style={tone === 'dark' ? {} : { color: 'hsl(var(--mp-muted))' }}>{label}</span>
+      <span className="font-bold">{value}</span>
+    </div>
+  );
+}
+
+/* ── Platform features (Celo only) ── */
+const PLATFORM = [
+  { Icon: Bot,        titleKey: 'minipay_platform_bot_title',     descKey: 'minipay_platform_bot_desc' },
+  { Icon: Store,      titleKey: 'minipay_platform_suite_title',   descKey: 'minipay_platform_suite_desc' },
+  { Icon: Users,      titleKey: 'minipay_platform_p2p_title',     descKey: 'minipay_platform_p2p_desc' },
+  { Icon: Smartphone, titleKey: 'minipay_platform_minipay_title', descKey: 'minipay_platform_minipay_desc' },
+  { Icon: CreditCard, titleKey: 'minipay_platform_gateway_title', descKey: 'minipay_platform_gateway_desc' },
+  { Icon: AtSign,     titleKey: 'minipay_platform_tag_title',     descKey: 'minipay_platform_tag_desc' },
+];
+
+function PlatformGrid() {
+  const { t } = useTranslation();
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24" style={{ background: 'hsl(var(--mp-surface-elev))' }}>
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_platform_title')}
+          </h2>
+          <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_platform_subtitle')}
+          </p>
+        </Reveal>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {PLATFORM.map((f, i) => (
+            <Reveal key={f.titleKey} delay={i * 0.05}>
+              <div className="rounded-2xl p-5 sm:p-6 h-full transition-colors hover:bg-[hsl(var(--mp-faint))]"
+                style={{ background: 'hsl(var(--mp-surface))', border: '1px solid hsl(var(--mp-border))' }}>
+                <div
+                  className="h-11 w-11 rounded-2xl flex items-center justify-center"
+                  style={{
+                    background: 'hsl(var(--mp-primary))',
+                    boxShadow: '0 8px 22px -10px hsl(var(--mp-primary) / 0.7)',
+                  }}
+                >
+                  <f.Icon className="h-[18px] w-[18px] text-white" strokeWidth={2.4} />
+                </div>
+                <h3 className="mt-4 text-lg font-bold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>{t(f.titleKey)}</h3>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: 'hsl(var(--mp-muted))' }}>{t(f.descKey)}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── How it works ── */
+const STEPS = [
+  { num: '01', titleKey: 'minipay_step_1_title', descKey: 'minipay_step_1_desc' },
+  { num: '02', titleKey: 'minipay_step_2_title', descKey: 'minipay_step_2_desc' },
+  { num: '03', titleKey: 'minipay_step_3_title', descKey: 'minipay_step_3_desc' },
+  { num: '04', titleKey: 'minipay_step_4_title', descKey: 'minipay_step_4_desc' },
+];
+
+function HowItWorks() {
+  const { t } = useTranslation();
+  return (
+    <section id="how-it-works" className="px-4 sm:px-6 py-16 sm:py-24">
+      <div className="mx-auto max-w-5xl">
+        <Reveal className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_steps_title')}
+          </h2>
+        </Reveal>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {STEPS.map((s, i) => (
+            <Reveal key={s.num} delay={i * 0.07}>
+              <div className="rounded-3xl p-6 sm:p-7 h-full"
+                style={{ background: 'hsl(var(--mp-surface-elev))', border: '1px solid hsl(var(--mp-border))' }}>
+                <div className="text-[11px] font-bold tracking-widest" style={{ color: 'hsl(var(--mp-primary-strong))' }}>{s.num}</div>
+                <h3 className="mt-2 text-xl font-bold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>{t(s.titleKey)}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed" style={{ color: 'hsl(var(--mp-muted))' }}>{t(s.descKey)}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Final CTA ── */
+function FinalCTA({ onGetStarted }: { onGetStarted: () => void }) {
+  const { t } = useTranslation();
+  const isMiniPayContext = typeof window !== 'undefined' && !!(window as any).ethereum?.isMiniPay;
+
+  const ctaTitle = isMiniPayContext ? "Supercharge Your Wallet" : t('minipay_cta_title');
+  const ctaDesc = isMiniPayContext
+    ? "Claim your MoniTag and connect your social accounts to start using plain language social payments in your chats."
+    : t('minipay_cta_desc');
+  const ctaBtnText = "Launch Agent";
+
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24">
+      <Reveal className="mx-auto max-w-5xl">
+        <div
+          className="relative overflow-hidden rounded-[32px] p-8 sm:p-14 text-center"
+          style={{ background: 'hsl(var(--mp-primary))' }}
+        >
+          <div className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{ background: 'radial-gradient(600px circle at 20% 0%, white, transparent 60%)' }} />
+          <h2 className="relative text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            {ctaTitle}
+          </h2>
+          <p className="relative mt-3 text-white/85 max-w-md mx-auto">
+            {ctaDesc}
+          </p>
+          <div className="relative mt-7 flex flex-row gap-3 items-center justify-center flex-wrap">
+            <button
+              onClick={onGetStarted}
+              className="inline-flex items-center gap-2 rounded-full px-6 h-12 text-sm font-semibold transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background: 'white', color: 'hsl(var(--mp-primary-strong))' }}
+            >
+              {ctaBtnText} <ArrowRight className="h-4 w-4" />
+            </button>
+            <a
+              href="https://docs.monipay.xyz"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 rounded-full px-5 h-12 text-sm font-semibold text-white border border-white/40 hover:bg-white/10"
+            >
+              {t('minipay_cta_docs')} <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ── Footer (Celo-only, no chain cross-links) ── */
+function MiniPayFooter() {
+  const { t } = useTranslation();
+  const year = new Date().getFullYear();
+  return (
+    <footer className="px-6 lg:px-16 py-10 border-t" style={{ borderColor: 'hsl(var(--mp-border))' }}>
+      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <MoniPayLogo size={22} color="hsl(var(--mp-ink))" animationMode="idle" />
+          <span className="font-bold tracking-tight text-[13px]" style={{ color: 'hsl(var(--mp-ink))' }}>Monipay</span>
+          <span className="mx-1" style={{ color: 'hsl(var(--mp-muted))' }}>|</span>
+          <CeloLogo className="h-4 dark:invert" size={16} />
+        </div>
+        <div className="flex items-center gap-5 text-[12px]" style={{ color: 'hsl(var(--mp-muted))' }}>
+          <Link to="/privacy" className="hover:text-[hsl(var(--mp-ink))] transition-colors">{t('minipay_footer_privacy')}</Link>
+          <Link to="/terms" className="hover:text-[hsl(var(--mp-ink))] transition-colors">{t('minipay_footer_terms')}</Link>
+          <a href="https://discord.gg/kSAwXzeRDB" target="_blank" rel="noreferrer" className="hover:text-[hsl(var(--mp-ink))] transition-colors">{t('minipay_footer_support')}</a>
+        </div>
+        <LanguageSelector variant="compact" />
+        <span className="text-[11px]" style={{ color: 'hsl(var(--mp-muted))' }}>© {year} MoniPay</span>
+      </div>
+    </footer>
+  );
+}
+
+/* ── Root ── */
+export function MiniPayLanding({
+  onGetStarted,
+  onSignIn,
+}: {
+  onGetStarted: () => void;
+  onSignIn: () => void;
+}) {
+  useEffect(() => {
+    document.documentElement.setAttribute('data-minipay-route', 'true');
+    return () => document.documentElement.removeAttribute('data-minipay-route');
+  }, []);
+
+  return (
+    <main data-minipay className="relative min-h-screen overflow-x-hidden">
+      <MiniPayBackdrop />
+      <MiniPayHeader onSignIn={onSignIn} />
+      <MiniPayHero onGetStarted={onGetStarted} />
+      <SocialPaymentCards />
+      <ChainStats />
+      <FeeCompare />
+      <PlatformGrid />
+      <HowItWorks />
+      <FinalCTA onGetStarted={onGetStarted} />
+      <MiniPayFooter />
+    </main>
+  );
+}
+
+export default MiniPayLanding;
