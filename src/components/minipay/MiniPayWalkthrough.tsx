@@ -322,4 +322,143 @@ function computeBubble(
     left = Math.max(PAD, vw - width - PAD);
   }
 
-  return {
+  return {
+    top,
+    left,
+    width,
+    cx: left + width / 2,
+    cy: top + 40,
+  };
+}
+
+function Connector({
+  rect,
+  bubble,
+}: {
+  rect: Rect;
+  bubble: { top: number; left: number; width: number; cx: number; cy: number };
+}) {
+  const tx = rect.left + rect.width / 2;
+  const ty = rect.top + rect.height / 2;
+  const bx = bubble.cx;
+  const by = bubble.top + 60;
+  // Curved path: quadratic bezier with control point offset.
+  const mx = (bx + tx) / 2;
+  const my = (by + ty) / 2 + (ty > by ? -40 : 40);
+  const d = `M ${bx},${by} Q ${mx},${my} ${tx},${ty}`;
+  return (
+    <svg
+      className="absolute inset-0 w-full h-full pointer-events-none text-black dark:text-white"
+      style={{ overflow: 'visible' }}
+    >
+      <motion.path
+        d={d}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        strokeDasharray="6 5"
+        strokeLinecap="round"
+        markerEnd="url(#mp-arrow)"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 0.55, ease: 'easeInOut' }}
+      />
+    </svg>
+  );
+}
+
+/* ── Completion screen ──────────────────────────────────────── */
+
+function CompletionScreen({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[210] flex items-center justify-center px-4 py-6 bg-black/50 backdrop-blur-sm overflow-y-auto"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.85, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-sm rounded-3xl bg-background text-foreground border border-border shadow-2xl p-6 my-auto"
+      >
+        {/* Circle + checkmark */}
+        <div className="flex justify-center">
+          <div className="relative w-24 h-24 flex items-center justify-center">
+            <motion.div
+              className="absolute inset-0 rounded-full border-[3px] border-dashed border-primary/60"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 6, ease: 'linear' }}
+            />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.15, type: 'spring', stiffness: 320, damping: 18 }}
+              className="w-16 h-16 rounded-full bg-primary flex items-center justify-center"
+            >
+              <svg viewBox="0 0 24 24" className="w-9 h-9 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <motion.path
+                  d="M5 12.5l4.5 4.5L19 7.5"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ delay: 0.35, duration: 0.5, ease: 'easeOut' }}
+                />
+              </svg>
+            </motion.div>
+          </div>
+        </div>
+
+        <h2 className="mt-5 text-xl font-semibold text-center">You're all set</h2>
+        <p className="text-sm text-muted-foreground text-center mt-1">Welcome to MoniPay on Celo</p>
+
+        <ul className="mt-5 space-y-2 text-sm">
+          {['Claimed your MoniTag™', 'Approved MoniBot allowance', 'Linked a social account'].map((s) => (
+            <li key={s} className="flex items-center gap-2.5">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-[11px] flex-shrink-0">✓</span>
+              <span>{s}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-5 rounded-2xl border border-border bg-muted/40 p-4">
+          <p className="text-sm font-semibold">Use MoniBot</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Add the bot to Discord, Telegram, or X</p>
+          <div className="mt-3 grid gap-1.5">
+            <CompoLink href="https://discord.com/oauth2/authorize?client_id=1473815294022520964&permissions=2147483648&scope=bot" label="Add to Discord" sub="Invite the bot to your guild" />
+            <CompoLink href="https://t.me/monipaybot?startgroup=new" label="Add to Telegram" sub="Open in Telegram" />
+            <CompoLink href="https://x.com/intent/tweet?text=%40monibot%20" label="Tweet at MoniBot" sub="Send a public command" />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-5 w-full rounded-full bg-primary text-primary-foreground px-6 py-3 text-sm font-semibold hover:opacity-90 active:translate-y-[1px] transition"
+        >
+          Let's go
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function CompoLink({ href, label, sub }: { href: string; label: string; sub: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2 hover:bg-accent transition"
+    >
+      <div className="min-w-0">
+        <p className="text-sm font-medium leading-tight">{label}</p>
+        <p className="text-xs text-muted-foreground leading-tight truncate mt-0.5">{sub}</p>
+      </div>
+      <span className="text-base text-muted-foreground">→</span>
+    </a>
+  );
+}
