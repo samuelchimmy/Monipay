@@ -699,4 +699,82 @@ function FeeCompare() {
         </Reveal>
         <Reveal>
           <div
-            className="grid sm:grid-cols-2 rounded-3xl overflow-hidden"
+            className="grid sm:grid-cols-2 rounded-3xl overflow-hidden"
+            style={{ border: '1px solid hsl(var(--mp-border))' }}
+          >
+            <div className="p-7" style={{ background: 'hsl(var(--mp-surface-elev))' }}>
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest" style={{ color: 'hsl(var(--mp-muted))' }}>
+                <X className="h-3 w-3" /> {t('minipay_fee_typical')}
+              </div>
+              <div className="mt-5 space-y-2 text-sm" style={{ color: 'hsl(var(--mp-ink))' }}>
+                <Row label={t('minipay_fee_send')} value="$10.00" />
+                <Row label={t('minipay_fee_gas')} value="−$0.001" />
+                <Row label={t('minipay_fee_needs_eth')} value={t('minipay_fee_yes')} />
+              </div>
+              <div className="mt-5 pt-4 border-t" style={{ borderColor: 'hsl(var(--mp-border))' }}>
+                <div className="text-xs uppercase tracking-wider" style={{ color: 'hsl(var(--mp-muted))' }}>{t('minipay_fee_recipient')}</div>
+                <div className="text-3xl font-extrabold mt-1" style={{ color: 'hsl(var(--mp-ink))' }}>$9.999</div>
+              </div>
+            </div>
+            <div className="p-7" style={{ background: 'hsl(var(--mp-primary))', color: 'white' }}>
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest opacity-90">
+                <Check className="h-3 w-3" /> {t('minipay_fee_on_celo')}
+              </div>
+              <div className="mt-5 space-y-2 text-sm">
+                <Row label={t('minipay_fee_send')} value="$10.00" tone="dark" />
+                <Row label={t('minipay_fee_gas')} value={t('minipay_fee_sponsored')} tone="dark" />
+                <Row label={t('minipay_fee_needs_eth')} value={t('minipay_fee_never')} tone="dark" />
+              </div>
+              <div className="mt-5 pt-4 border-t border-white/20">
+                <div className="text-xs uppercase tracking-wider opacity-80">{t('minipay_fee_recipient')}</div>
+                <div className="text-3xl font-extrabold mt-1">$10.00</div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+function Row({ label, value, tone }: { label: string; value: string; tone?: 'dark' }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className={tone === 'dark' ? 'opacity-80' : ''} style={tone === 'dark' ? {} : { color: 'hsl(var(--mp-muted))' }}>{label}</span>
+      <span className="font-bold">{value}</span>
+    </div>
+  );
+}
+
+/* ── Platform features (Celo only) ── */
+const PLATFORM = [
+  { Icon: Bot,        titleKey: 'minipay_platform_bot_title',     descKey: 'minipay_platform_bot_desc' },
+  { Icon: Store,      titleKey: 'minipay_platform_suite_title',   descKey: 'minipay_platform_suite_desc' },
+  { Icon: Users,      titleKey: 'minipay_platform_p2p_title',     descKey: 'minipay_platform_p2p_desc' },
+  { Icon: Smartphone, titleKey: 'minipay_platform_minipay_title', descKey: 'minipay_platform_minipay_desc' },
+  { Icon: CreditCard, titleKey: 'minipay_platform_gateway_title', descKey: 'minipay_platform_gateway_desc' },
+  { Icon: AtSign,     titleKey: 'minipay_platform_tag_title',     descKey: 'minipay_platform_tag_desc' },
+];
+
+function PlatformGrid() {
+  const { t } = useTranslation();
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24" style={{ background: 'hsl(var(--mp-surface-elev))' }}>
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_platform_title')}
+          </h2>
+          <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_platform_subtitle')}
+          </p>
+        </Reveal>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {PLATFORM.map((f, i) => (
+            <Reveal key={f.titleKey} delay={i * 0.05}>
+              <div className="rounded-2xl p-5 sm:p-6 h-full transition-colors hover:bg-[hsl(var(--mp-faint))]"
+                style={{ background: 'hsl(var(--mp-surface))', border: '1px solid hsl(var(--mp-border))' }}>
+                <div
+                  className="h-11 w-11 rounded-2xl flex items-center justify-center"
+                  style={{
+                    background: 'hsl(var(--mp-primary))',
+                    boxShadow: '0 8px 22px -10px hsl(var(--mp-primary) / 0.7)',
