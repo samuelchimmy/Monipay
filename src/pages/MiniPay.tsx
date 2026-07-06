@@ -117,4 +117,44 @@ function MiniPayLegacyApp() {
       setCurrentScreen('onboarding');
       setIsUnlocked(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Show landing first on /minipay, same pattern as Tempo.tsx
+  if (showLanding && currentScreen !== 'dashboard') {
+    return (
+      <MiniPayLanding
+        onGetStarted={() => {
+          setShowLanding(false);
+          setShowWebChooser(true);
+        }}
+        onSignIn={() => {
+          setShowLanding(false);
+          setShowWebChooser(true);
+        }}
+      />
+    );
+  }
+
+  // 3-option chooser for web users on /minipay (Create MoniTag / Login with Wallet / Create Account).
+  if (showWebChooser && currentScreen !== 'dashboard' && webChoice === 'none') {
+    return (
+      <MiniPayWebChoice
+        onCreateMoniTag={() => {
+          setOnboardingFlow('create');
+          setShowWebChooser(false);
+          setCurrentScreen('onboarding');
+          setIsUnlocked(true);
+        }}
+        onLoginWithWallet={() => {
+          setWebChoice('wallet');
+          setShowWebChooser(false);
+        }}
+        onCreateAccount={() => {
+          const hasProfile = !!localStorage.getItem('paytag_profile');
+          setShowWebChooser(false);
+          if (hasProfile) {
+            setCurrentScreen('lock');
+            setIsUnlocked(false);
+          } else {
+            setOnboardingFlow('import');
