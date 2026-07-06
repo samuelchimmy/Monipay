@@ -41,4 +41,18 @@ export async function ensureGasForApproval(
   network: SupportedNetwork,
   walletAddress: string,
 ): Promise<GasGuardResult> {
-  const chain = toFundChain(network);
+  const chain = toFundChain(network);
+  if (!chain) return { funded: true };           // tempo / solana
+  if (!walletAddress) return { funded: false, reason: "missing wallet" };
+
+  try {
+    const { getDeviceId } = await import("@/lib/deviceId");
+    const deviceId = getDeviceId();
+
+    // 1) Quick balance check.
+    const check = await supabase.functions.invoke<any>("activation-funder", {
+      body: { action: "checkGasBalance", walletAddress, chain },
+    });
+    if (!check.error && check.data?.hasEnoughForActivation) {
+      return { funded: true, alreadyFunded: true };
+    }
