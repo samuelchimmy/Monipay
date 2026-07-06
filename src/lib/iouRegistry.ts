@@ -17,4 +17,23 @@ export type IOUPlatform = "discord" | "telegram" | "twitter" | "x";
  * Mirrors `keccak256(abi.encodePacked(platform, ":", userId))` in Solidity.
  */
 export function getRecipientId(platform: IOUPlatform | string, userId: string | number): `0x${string}` {
-  const normalized = `${String(platform).toLowerCase()}:${String(userId)}`;
+  const normalized = `${String(platform).toLowerCase()}:${String(userId)}`;
+  return keccak256(toBytes(normalized));
+}
+
+/**
+ * Minimal IOURegistry ABI used by the frontend.
+ * Includes the new batched executeCreate / batchClaim / batchRefund / getPendingIOUs
+ * surface plus the `ious(uint256)` getter and IOU events.
+ */
+export const IOU_REGISTRY_ABI = [
+  {
+    type: "function",
+    name: "executeCreate",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "from", type: "address" },
+      { name: "amount", type: "uint256" },
+      { name: "recipientId", type: "bytes32" },
+    ],
+    outputs: [{ name: "iouId", type: "uint256" }],
