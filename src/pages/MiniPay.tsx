@@ -37,4 +37,44 @@ import { MiniPayLanding } from '@/components/minipay/MiniPayLanding';
 import { useWalletSession } from '@/hooks/useWalletSession';
 
 /** Legacy MoniPay-account flow (Path A) — unchanged behaviour. */
-function MiniPayLegacyApp() {
+function MiniPayLegacyApp() {
+  const { currentScreen, isUnlocked, setCurrentScreen, setIsUnlocked } = usePayTag();
+  const { sessionType, address } = useWalletSession();
+  // Web chooser state: which path did the user pick on /minipay (outside MiniPay)?
+  const [webChoice, setWebChoice] = useState<'none' | 'wallet'>(() => {
+    try {
+      const stored = sessionStorage.getItem('minipay_web_choice');
+      if (stored === 'wallet') return 'wallet';
+    } catch {}
+    return 'none';
+  });
+  useEffect(() => {
+    try { sessionStorage.setItem('minipay_web_choice', webChoice); } catch {}
+  }, [webChoice]);
+  const [showWebChooser, setShowWebChooser] = useState<boolean>(() => {
+    try { return sessionStorage.getItem('minipay_web_chooser') !== '0'; } catch { return true; }
+  });
+  useEffect(() => {
+    try { sessionStorage.setItem('minipay_web_chooser', showWebChooser ? '1' : '0'); } catch {}
+  }, [showWebChooser]);
+  // Persist landing/flow state across refreshes and OAuth round-trips so
+  // pressing refresh, returning from social-linking popups/redirects, or
+  // using the device back button does not reset users to the landing view.
+  const [showLanding, setShowLanding] = useState<boolean>(() => {
+    try {
+      const stored = sessionStorage.getItem('minipay_show_landing');
+      if (stored === '0') return false;
+      if (stored === '1') return true;
+    } catch {}
+    // Default: skip landing if the user already has a profile on this device.
+    try {
+      if (localStorage.getItem('paytag_profile')) return false;
+    } catch {}
+    return true;
+  });
+  const [onboardingFlow, setOnboardingFlow] = useState<'create' | 'import'>(() => {
+    try {
+      const stored = sessionStorage.getItem('minipay_onboarding_flow');
+      if (stored === 'import' || stored === 'create') return stored;
+    } catch {}
+    return 'create';
