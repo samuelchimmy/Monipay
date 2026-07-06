@@ -55,4 +55,19 @@ export async function ensureGasForApproval(
     });
     if (!check.error && check.data?.hasEnoughForActivation) {
       return { funded: true, alreadyFunded: true };
-    }
+    }
+
+    // 2) Request top-up. `fund` already handles top-ups for existing wallets.
+    const topup = await supabase.functions.invoke<any>("activation-funder", {
+      body: { action: "fund", walletAddress, chain, deviceId },
+    });
+
+    if (topup.error) {
+      console.warn("[gasGuard] fund call errored:", topup.error);
+      return { funded: false, reason: "Top-up request failed" };
+    }
+    const data = topup.data;
+    if (data?.alreadyFunded) return { funded: true, alreadyFunded: true };
+    if (data?.success) {
+      // Wait briefly for the tx to land. Celo ~5s block time, others ~2-3s.
+      await new Promise((r) => setTimeout(r, chain === "CELO" ? 8000 : 6000));
