@@ -777,4 +777,82 @@ function PlatformGrid() {
                   className="h-11 w-11 rounded-2xl flex items-center justify-center"
                   style={{
                     background: 'hsl(var(--mp-primary))',
-                    boxShadow: '0 8px 22px -10px hsl(var(--mp-primary) / 0.7)',
+                    boxShadow: '0 8px 22px -10px hsl(var(--mp-primary) / 0.7)',
+                  }}
+                >
+                  <f.Icon className="h-[18px] w-[18px] text-white" strokeWidth={2.4} />
+                </div>
+                <h3 className="mt-4 text-lg font-bold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>{t(f.titleKey)}</h3>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: 'hsl(var(--mp-muted))' }}>{t(f.descKey)}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── How it works ── */
+const STEPS = [
+  { num: '01', titleKey: 'minipay_step_1_title', descKey: 'minipay_step_1_desc' },
+  { num: '02', titleKey: 'minipay_step_2_title', descKey: 'minipay_step_2_desc' },
+  { num: '03', titleKey: 'minipay_step_3_title', descKey: 'minipay_step_3_desc' },
+  { num: '04', titleKey: 'minipay_step_4_title', descKey: 'minipay_step_4_desc' },
+];
+
+function HowItWorks() {
+  const { t } = useTranslation();
+  return (
+    <section id="how-it-works" className="px-4 sm:px-6 py-16 sm:py-24">
+      <div className="mx-auto max-w-5xl">
+        <Reveal className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_steps_title')}
+          </h2>
+        </Reveal>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {STEPS.map((s, i) => (
+            <Reveal key={s.num} delay={i * 0.07}>
+              <div className="rounded-3xl p-6 sm:p-7 h-full"
+                style={{ background: 'hsl(var(--mp-surface-elev))', border: '1px solid hsl(var(--mp-border))' }}>
+                <div className="text-[11px] font-bold tracking-widest" style={{ color: 'hsl(var(--mp-primary-strong))' }}>{s.num}</div>
+                <h3 className="mt-2 text-xl font-bold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>{t(s.titleKey)}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed" style={{ color: 'hsl(var(--mp-muted))' }}>{t(s.descKey)}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Final CTA ── */
+function FinalCTA({ onGetStarted }: { onGetStarted: () => void }) {
+  const { t } = useTranslation();
+  const isMiniPayContext = typeof window !== 'undefined' && !!(window as any).ethereum?.isMiniPay;
+
+  const ctaTitle = isMiniPayContext ? "Supercharge Your Wallet" : t('minipay_cta_title');
+  const ctaDesc = isMiniPayContext
+    ? "Claim your MoniTag and connect your social accounts to start using plain language social payments in your chats."
+    : t('minipay_cta_desc');
+  const ctaBtnText = "Launch Agent";
+
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24">
+      <Reveal className="mx-auto max-w-5xl">
+        <div
+          className="relative overflow-hidden rounded-[32px] p-8 sm:p-14 text-center"
+          style={{ background: 'hsl(var(--mp-primary))' }}
+        >
+          <div className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{ background: 'radial-gradient(600px circle at 20% 0%, white, transparent 60%)' }} />
+          <h2 className="relative text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            {ctaTitle}
+          </h2>
+          <p className="relative mt-3 text-white/85 max-w-md mx-auto">
+            {ctaDesc}
+          </p>
+          <div className="relative mt-7 flex flex-row gap-3 items-center justify-center flex-wrap">
+            <button
