@@ -12,4 +12,18 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
-import type { SupportedNetwork } from "@/config/chains";
+import type { SupportedNetwork } from "@/config/chains";
+
+type FundChain = "BASE" | "BSC" | "CELO" | "INK";
+
+function toFundChain(network: SupportedNetwork): FundChain | null {
+  if (network === "base") return "BASE";
+  if (network === "bsc") return "BSC";
+  if (network === "celo") return "CELO";
+  if (network === "ink") return "INK";
+  return null; // tempo (fee-sponsored) and solana don't need native gas
+}
+
+export interface GasGuardResult {
+  funded: boolean;
+  reason?: string;
