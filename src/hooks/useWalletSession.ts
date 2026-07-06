@@ -55,4 +55,100 @@ export function useWalletSession(): WalletSession {
 
     async function detect() {
       const eth = (typeof window !== "undefined" ? (window as any).ethereum : null) as any;
-
+
+      if (eth?.isMiniPay) {
+        try {
+          const accounts: string[] = await eth.request({ method: "eth_requestAccounts" });
+          if (!accounts?.length) throw new Error("MiniPay returned no accounts");
+          if (cancelled) return;
+
+          // Best-effort Celo switch — ignore errors, MiniPay defaults to Celo.
+          try {
+            await eth.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: CELO_CHAIN_ID_HEX }],
+            });
+          } catch (switchErr: any) {
+            if (switchErr?.code === 4902) {
+              try {
+                await eth.request({
+                  method: "wallet_addEthereumChain",
+                  params: [{
+                    chainId: CELO_CHAIN_ID_HEX,
+                    chainName: "Celo Mainnet",
+                    nativeCurrency: { name: "CELO", symbol: "CELO", decimals: 18 },
+                    rpcUrls: ["https://forno.celo.org"],
+                    blockExplorerUrls: ["https://celoscan.io"],
+                  }],
+                });
+              } catch { /* ignore */ }
+            }
+          }
+
+          if (cancelled) return;
+          setMiniPayAddress((accounts[0] as `0x${string}`).toLowerCase() as `0x${string}`);
+          setSessionType("minipay");
+          setIsReady(true);
+          return;
+        } catch (err: any) {
+          if (cancelled) return;
+          setInitError(err?.message ?? "MiniPay init failed");
+          setSessionType("minipay");
+          setIsReady(true);
+          return;
+        }
+      }
+
+      // Not MiniPay. Resolve between external_wallet and legacy.
+      if (cancelled) return;
+      if (isConnected && wagmiAddress) {
+        setSessionType("external_wallet");
+      } else {
+        setSessionType(hasLegacyProfile() ? "legacy" : "legacy");
+      }
+      setIsReady(true);
+    }
+
+    detect();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // React to wagmi connect/disconnect after initial detection (skip MiniPay).
+  useEffect(() => {
+    if (!isReady) return;
+    if (sessionType === "minipay") return;
+    if (isConnected && wagmiAddress) {
+      setSessionType("external_wallet");
+    } else if (sessionType === "external_wallet") {
+      setSessionType("legacy");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, wagmiAddress]);
+
+  const address: `0x${string}` | null =
+    sessionType === "minipay"
+      ? miniPayAddress
+      : sessionType === "external_wallet" && wagmiAddress
+        ? (wagmiAddress.toLowerCase() as `0x${string}`)
+        : null;
+
+  const sendTransaction = useMemo(() => {
+    if (sessionType === "minipay") {
+      return async (params: unknown): Promise<`0x${string}`> => {
+        const eth = (window as any).ethereum;
+        try {
+          // CIP-64 Fee Abstraction: Remove EIP-1559 fields for MiniPay
+          const txParams = { ...(params as any) };
+          delete txParams.maxFeePerGas;
+          delete txParams.maxPriorityFeePerGas;
+          
+          // Inject USDm as the default fee currency if none provided
+          if (!txParams.feeCurrency) {
+            txParams.feeCurrency = '0x765DE816845861e75A25fCA122bb6898B8B1282a';
+          }
+
+          return await eth.request({ method: "eth_sendTransaction", params: [txParams] });
+        } catch (err: any) {
+          const errMsg = err?.message?.toLowerCase() || '';
+          if (errMsg.includes('insufficient funds') || errMsg.includes('gas required exceeds allowance') || errMsg.includes('insufficient balance')) {
