@@ -63,4 +63,21 @@ export default function TelegramCallback() {
               type: "social-link-conflict",
               platform: "telegram",
               message: data.error,
-              payTag: m ? m[1] : null,
+              payTag: m ? m[1] : null,
+            }, window.location.origin);
+            setTimeout(() => window.close(), 400);
+            return;
+          }
+          setStatus("error");
+          setMessage(data.error);
+          return;
+        }
+
+        setStatus("success");
+        setMessage(`Connected as @${data.telegram_username || data.telegram_id}!`);
+
+        if (window.opener) {
+          window.opener.postMessage(
+            {
+              type: "telegram-oauth-success",
+              telegram_id: data.telegram_id,
