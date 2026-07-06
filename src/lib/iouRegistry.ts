@@ -56,4 +56,23 @@ export const IOU_REGISTRY_ABI = [
     inputs: [{ name: "iouIds", type: "uint256[]" }],
     outputs: [],
   },
-  {
+  {
+    type: "function",
+    name: "getPendingIOUs",
+    stateMutability: "view",
+    inputs: [{ name: "recipientId", type: "bytes32" }],
+    outputs: [
+      { name: "ids", type: "uint256[]" },
+      { name: "count", type: "uint256" },
+    ],
+  },
+  {
+    type: "function",
+    name: "ious",
+    stateMutability: "view",
+    inputs: [{ name: "iouId", type: "uint256" }],
+    outputs: [
+      { name: "sender", type: "address" },
+      { name: "grossAmount", type: "uint256" },
+      { name: "netAmount", type: "uint256" },
+      { name: "recipientId", type: "bytes32" },
