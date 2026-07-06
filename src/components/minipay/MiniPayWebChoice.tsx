@@ -208,4 +208,34 @@ export function MiniPayWebChoice({
               style={{ minHeight: 72 }}
             >
               <div className="mp-icon-frame w-11 h-11 flex-shrink-0">
-                <UserRoundPlus className="w-5 h-5" />
+                <UserRoundPlus className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-[15px] leading-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+                  Create MoniPay Account
+                </p>
+                <p className="text-[12px] mt-0.5" style={{ color: 'hsl(var(--mp-muted))' }}>
+                  Full account with PIN, recovery, cross-device sync
+                </p>
+              </div>
+            </button>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+            className="text-[11px] text-center mt-8 mb-6 max-w-[320px] mx-auto leading-relaxed"
+            style={{ color: 'hsl(var(--mp-muted))' }}
+          >
+            You own your keys. MoniPay can't access your funds.
+          </motion.p>
+        </div>
+      </div>
+
+      <div className="relative z-10">
+        <Footer variant="minimal" />
+      </div>
+    </div>
+  );
+}
