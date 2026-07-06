@@ -47,4 +47,20 @@ export default function TelegramCallback() {
       try {
         const { data, error } = await supabase.functions.invoke("social-identity", {
           body: {
-            action: "link-telegram",
+            action: "link-telegram",
+            profileId,
+            walletAddress,
+            widgetPayload,
+          },
+        });
+
+        if (error) throw error;
+        if (data?.error) {
+          // Cross-context conflict (also linked on legacy/wallet side).
+          if (/already linked/i.test(data.error) && window.opener && !window.opener.closed) {
+            const m = data.error.match(/@([a-z0-9_]+)/i);
+            window.opener.postMessage({
+              type: "social-link-conflict",
+              platform: "telegram",
+              message: data.error,
+              payTag: m ? m[1] : null,
