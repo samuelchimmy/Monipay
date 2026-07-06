@@ -170,4 +170,23 @@ export function useWalletSession(): WalletSession {
     return null;
   }, [sessionType, walletClient]);
 
-  const signMessage = useMemo(() => {
+  const signMessage = useMemo(() => {
+    if (sessionType === "minipay" && miniPayAddress) {
+      return async (message: string): Promise<`0x${string}`> => {
+        const eth = (window as any).ethereum;
+        return await eth.request({
+          method: "personal_sign",
+          params: [message, miniPayAddress],
+        });
+      };
+    }
+    if (sessionType === "external_wallet" && walletClient) {
+      return async (message: string): Promise<`0x${string}`> => {
+        return await (walletClient as any).signMessage({ message });
+      };
+    }
+    return null;
+  }, [sessionType, miniPayAddress, walletClient]);
+
+  return { sessionType, address, isReady, initError, sendTransaction, signMessage };
+}
