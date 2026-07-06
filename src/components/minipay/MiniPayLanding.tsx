@@ -855,4 +855,80 @@ function FinalCTA({ onGetStarted }: { onGetStarted: () => void }) {
             {ctaDesc}
           </p>
           <div className="relative mt-7 flex flex-row gap-3 items-center justify-center flex-wrap">
-            <button
+            <button
+              onClick={onGetStarted}
+              className="inline-flex items-center gap-2 rounded-full px-6 h-12 text-sm font-semibold transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background: 'white', color: 'hsl(var(--mp-primary-strong))' }}
+            >
+              {ctaBtnText} <ArrowRight className="h-4 w-4" />
+            </button>
+            <a
+              href="https://docs.monipay.xyz"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 rounded-full px-5 h-12 text-sm font-semibold text-white border border-white/40 hover:bg-white/10"
+            >
+              {t('minipay_cta_docs')} <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ── Footer (Celo-only, no chain cross-links) ── */
+function MiniPayFooter() {
+  const { t } = useTranslation();
+  const year = new Date().getFullYear();
+  return (
+    <footer className="px-6 lg:px-16 py-10 border-t" style={{ borderColor: 'hsl(var(--mp-border))' }}>
+      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <MoniPayLogo size={22} color="hsl(var(--mp-ink))" animationMode="idle" />
+          <span className="font-bold tracking-tight text-[13px]" style={{ color: 'hsl(var(--mp-ink))' }}>Monipay</span>
+          <span className="mx-1" style={{ color: 'hsl(var(--mp-muted))' }}>|</span>
+          <CeloLogo className="h-4 dark:invert" size={16} />
+        </div>
+        <div className="flex items-center gap-5 text-[12px]" style={{ color: 'hsl(var(--mp-muted))' }}>
+          <Link to="/privacy" className="hover:text-[hsl(var(--mp-ink))] transition-colors">{t('minipay_footer_privacy')}</Link>
+          <Link to="/terms" className="hover:text-[hsl(var(--mp-ink))] transition-colors">{t('minipay_footer_terms')}</Link>
+          <a href="https://discord.gg/kSAwXzeRDB" target="_blank" rel="noreferrer" className="hover:text-[hsl(var(--mp-ink))] transition-colors">{t('minipay_footer_support')}</a>
+        </div>
+        <LanguageSelector variant="compact" />
+        <span className="text-[11px]" style={{ color: 'hsl(var(--mp-muted))' }}>© {year} MoniPay</span>
+      </div>
+    </footer>
+  );
+}
+
+/* ── Root ── */
+export function MiniPayLanding({
+  onGetStarted,
+  onSignIn,
+}: {
+  onGetStarted: () => void;
+  onSignIn: () => void;
+}) {
+  useEffect(() => {
+    document.documentElement.setAttribute('data-minipay-route', 'true');
+    return () => document.documentElement.removeAttribute('data-minipay-route');
+  }, []);
+
+  return (
+    <main data-minipay className="relative min-h-screen overflow-x-hidden">
+      <MiniPayBackdrop />
+      <MiniPayHeader onSignIn={onSignIn} />
+      <MiniPayHero onGetStarted={onGetStarted} />
+      <SocialPaymentCards />
+      <ChainStats />
+      <FeeCompare />
+      <PlatformGrid />
+      <HowItWorks />
+      <FinalCTA onGetStarted={onGetStarted} />
+      <MiniPayFooter />
+    </main>
+  );
+}
+
+export default MiniPayLanding;
