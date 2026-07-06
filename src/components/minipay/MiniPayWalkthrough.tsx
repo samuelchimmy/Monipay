@@ -44,4 +44,50 @@ const STEPS: StepDef[] = [
     text: 'First, claim your MoniTag™ — your name across MoniPay.',
     side: 'left',
   },
-  {
+  {
+    id: 'allowance',
+    target: 'allowance-row',
+    text: 'Next, approve a spending allowance so MoniBot can pay on your behalf.',
+    side: 'bottom-right',
+  },
+  {
+    id: 'socials',
+    target: 'socials-row',
+    text: 'Finally, link a social account so people can pay you by handle.',
+    side: 'right',
+  },
+];
+
+interface Props {
+  walletAddress: `0x${string}`;
+  payTag: string | null;
+  socialCount: number;
+}
+
+export function MiniPayWalkthrough({ walletAddress, payTag, socialCount }: Props) {
+  const [active, setActive] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(LS_KEY) !== '1';
+    } catch {
+      return true;
+    }
+  });
+  const [stepIdx, setStepIdx] = useState(0);
+  const [transitioning, setTransitioning] = useState(false);
+  const [done, setDone] = useState(false);
+  const [rect, setRect] = useState<Rect | null>(null);
+  const [allowanceOk, setAllowanceOk] = useState(false);
+  const [, force] = useState(0);
+
+  useEffect(() => {
+    ensureCaveat();
+  }, []);
+
+  // Poll allowance state from wallet-session.
+  useEffect(() => {
+    if (!active || done) return;
+    let cancelled = false;
+    const check = async () => {
+      try {
+        const { data } = await supabase.functions.invoke('wallet-session', {
+          body: { action: 'get', walletAddress },
