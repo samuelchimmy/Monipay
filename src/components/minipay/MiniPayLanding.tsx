@@ -543,4 +543,82 @@ function ChatDemos() {
                       <div
                         className="rounded-2xl rounded-bl-sm px-3 py-2 text-[12px] leading-snug max-w-[82%]"
                         style={{ background: 'hsl(var(--mp-faint))', color: 'hsl(var(--mp-ink))' }}
-                      >
+                      >
+                        {t(c.userKey)}
+                      </div>
+                    </div>
+                    <div className="flex items-end gap-2 justify-end">
+                      <div
+                        className="rounded-2xl rounded-br-sm px-3 py-2 text-[12px] leading-snug max-w-[82%] text-white"
+                        style={{ background: 'hsl(var(--mp-primary))' }}
+                      >
+                        <div className="flex items-center gap-1.5 mb-1 text-[9px] font-bold uppercase tracking-wider opacity-90">
+                          <Check className="h-2.5 w-2.5" /> MoniBot
+                        </div>
+                        {t(c.botKey)}
+                      </div>
+                      <img
+                        src={AVATAR_MAP['monibot']}
+                        alt="MoniBot"
+                        className="h-6 w-6 rounded-full shrink-0 bg-white object-cover"
+                        style={{ boxShadow: '0 0 0 2px #fff, 0 0 0 3px hsl(var(--mp-primary))' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </PhoneMockup>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ── Social payment cards (6) ── */
+const SOCIAL_CARDS = [
+  { Icon: Send,          name: 'CasualPay',       headlineKey: 'minipay_card_casualpay_headline',       descKey: 'minipay_card_casualpay_desc' },
+  { Icon: Wand2,         name: 'MagicPay',        headlineKey: 'minipay_card_magicpay_headline',        descKey: 'minipay_card_magicpay_desc' },
+  { Icon: Users,         name: 'GroupPay',        headlineKey: 'minipay_card_grouppay_headline',        descKey: 'minipay_card_grouppay_desc' },
+  { Icon: AtSign,        name: 'TagPay',          headlineKey: 'minipay_card_tagpay_headline',          descKey: 'minipay_card_tagpay_desc' },
+  { Icon: CalendarClock, name: 'SchedulePay',     headlineKey: 'minipay_card_schedulepay_headline',     descKey: 'minipay_card_schedulepay_desc' },
+  { Icon: Repeat2,       name: 'SubscriptionPay', headlineKey: 'minipay_card_subscriptionpay_headline', descKey: 'minipay_card_subscriptionpay_desc' },
+];
+
+function SocialPaymentCards() {
+  const { t } = useTranslation();
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24">
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="text-center mb-10 sm:mb-14">
+          <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: 'hsl(var(--mp-primary-strong))' }}>
+            {t('minipay_cards_eyebrow')}
+          </span>
+          <h2 className="mt-3 text-3xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_cards_title')}
+          </h2>
+          <p className="mt-4 max-w-xl mx-auto text-base" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_cards_subtitle')}
+          </p>
+        </Reveal>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          {SOCIAL_CARDS.map((c, i) => (
+            <Reveal key={c.name} delay={i * 0.06}>
+              <div
+                className="group h-full rounded-3xl p-6 sm:p-7 transition-all hover:-translate-y-1"
+                style={{
+                  background: 'hsl(var(--mp-surface-elev))',
+                  border: '1px solid hsl(var(--mp-border))',
+                  boxShadow: '0 1px 0 hsl(var(--mp-border) / 0.5)',
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="h-11 w-11 rounded-2xl flex items-center justify-center"
+                    style={{
+                      background: 'hsl(var(--mp-primary))',
+                      boxShadow: '0 8px 22px -10px hsl(var(--mp-primary) / 0.7)',
+                    }}
+                  >
+                    <c.Icon className="h-[18px] w-[18px] text-white" strokeWidth={2.4} />
