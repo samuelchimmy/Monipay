@@ -95,4 +95,22 @@ export const IOU_REGISTRY_ABI = [
       { name: "iouId", type: "uint256", indexed: true },
       { name: "sender", type: "address", indexed: true },
       { name: "recipientId", type: "bytes32", indexed: true },
-      { name: "grossAmount", type: "uint256", indexed: false },
+      { name: "grossAmount", type: "uint256", indexed: false },
+      { name: "netAmount", type: "uint256", indexed: false },
+      { name: "fee", type: "uint256", indexed: false },
+      { name: "expiry", type: "uint64", indexed: false },
+    ],
+    anonymous: false,
+  },
+] as const;
+
+/**
+ * Returns the IOURegistry address for the given chain (or empty string if
+ * the chain has not been deployed to yet).
+ */
+export function getIOURegistryAddress(chain: EvmNetwork): `0x${string}` | "" {
+  return CHAIN_CONFIGS[chain]?.iouRegistry ?? "";
+}
+
+/** Chains where MagicPay/IOURegistry is currently live. */
+export const IOU_SUPPORTED_CHAINS: EvmNetwork[] = ["base", "bsc", "celo", "ink"];
