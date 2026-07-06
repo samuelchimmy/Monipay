@@ -26,4 +26,19 @@ function toFundChain(network: SupportedNetwork): FundChain | null {
 
 export interface GasGuardResult {
   funded: boolean;
-  reason?: string;
+  reason?: string;
+  alreadyFunded?: boolean;
+  pending?: boolean;
+}
+
+/**
+ * Ensure the wallet has enough native gas to sign one approval on `network`.
+ * Returns `{ funded: true }` if the wallet already has enough OR if a top-up
+ * succeeded. Returns `{ funded: false, reason }` otherwise — caller should
+ * surface a toast instead of attempting the on-chain write blindly.
+ */
+export async function ensureGasForApproval(
+  network: SupportedNetwork,
+  walletAddress: string,
+): Promise<GasGuardResult> {
+  const chain = toFundChain(network);
