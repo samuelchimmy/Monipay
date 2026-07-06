@@ -621,4 +621,82 @@ function SocialPaymentCards() {
                       boxShadow: '0 8px 22px -10px hsl(var(--mp-primary) / 0.7)',
                     }}
                   >
-                    <c.Icon className="h-[18px] w-[18px] text-white" strokeWidth={2.4} />
+                    <c.Icon className="h-[18px] w-[18px] text-white" strokeWidth={2.4} />
+                  </div>
+                  <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: 'hsl(var(--mp-muted))' }}>
+                    {c.name}
+                  </span>
+                </div>
+                <h3 className="mt-5 text-xl sm:text-2xl font-extrabold tracking-tight leading-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+                  {t(c.headlineKey)}
+                </h3>
+                <p className="mt-3 text-[14.5px] leading-relaxed" style={{ color: 'hsl(var(--mp-muted))' }}>
+                  {t(c.descKey)}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Chain stats ── */
+const STATS = [
+  { Icon: Zap,        titleKey: 'minipay_stats_instant_title', stat: '~5s',   descKey: 'minipay_stats_instant_desc' },
+  { Icon: Leaf,       titleKey: 'minipay_stats_carbon_title',  statKey: 'minipay_stats_carbon_stat', descKey: 'minipay_stats_carbon_desc' },
+  { Icon: DollarSign, titleKey: 'minipay_stats_usdt_title',    stat: 'USDT',  descKey: 'minipay_stats_usdt_desc' },
+  { Icon: Smartphone, titleKey: 'minipay_stats_mobile_title',  stat: '6B+',   descKey: 'minipay_stats_mobile_desc' },
+];
+
+function ChainStats() {
+  const { t } = useTranslation();
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24" style={{ background: 'hsl(var(--mp-surface-elev))' }}>
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_stats_title')}
+          </h2>
+          <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_stats_subtitle')}
+          </p>
+        </Reveal>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {STATS.map((s, i) => (
+            <Reveal key={s.titleKey} delay={i * 0.06}>
+              <div
+                className="rounded-2xl p-5 h-full"
+                style={{ background: 'hsl(var(--mp-surface))', border: '1px solid hsl(var(--mp-border))' }}
+              >
+                <s.Icon className="h-5 w-5" style={{ color: 'hsl(var(--mp-primary))' }} />
+                <div className="mt-4 text-2xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>{s.statKey ? t(s.statKey) : s.stat}</div>
+                <div className="mt-1 text-xs font-bold uppercase tracking-wider" style={{ color: 'hsl(var(--mp-muted))' }}>{t(s.titleKey)}</div>
+                <p className="mt-3 text-[13px] leading-relaxed" style={{ color: 'hsl(var(--mp-muted))' }}>{t(s.descKey)}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Fee compare ── */
+function FeeCompare() {
+  const { t } = useTranslation();
+  return (
+    <section className="px-4 sm:px-6 py-16 sm:py-24">
+      <div className="mx-auto max-w-3xl">
+        <Reveal className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_fee_title')}
+          </h2>
+          <p className="mt-3 text-base" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_fee_subtitle')}
+          </p>
+        </Reveal>
+        <Reveal>
+          <div
+            className="grid sm:grid-cols-2 rounded-3xl overflow-hidden"
