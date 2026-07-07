@@ -96,4 +96,21 @@ export default function TelegramCallback() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <PageMeta title="Telegram Linking" description="Linking your Telegram account to MoniPay." path="/telegram-callback" noIndex noIndexFollow />
+      <PageMeta title="Telegram Linking" description="Linking your Telegram account to MoniPay." path="/telegram-callback" noIndex noIndexFollow />
+      <div className="text-center space-y-4 max-w-sm">
+        {status === "loading" && (
+          <>
+            <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+            <p className="text-lg font-semibold text-foreground">{message}</p>
+          </>
+        )}
+        {status === "success" && (
+          <>
+            <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
+            <p className="text-lg font-semibold text-foreground">Telegram Linked!</p>
+            <p className="text-sm text-muted-foreground">{message}</p>
+            <p className="text-sm text-muted-foreground">This window will close automatically.</p>
+          </>
+        )}
+        {status === "error" && (
+          <>
