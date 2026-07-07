@@ -90,4 +90,51 @@ export function MiniPayWalkthrough({ walletAddress, payTag, socialCount }: Props
     const check = async () => {
       try {
         const { data } = await supabase.functions.invoke('wallet-session', {
-          body: { action: 'get', walletAddress },
+          body: { action: 'get', walletAddress },
+        });
+        const amt = Number((data as any)?.profile?.bot_allowance_amount ?? 0);
+        if (!cancelled && amt > 0) setAllowanceOk(true);
+      } catch {
+        /* non-fatal */
+      }
+    };
+    check();
+    const id = setInterval(check, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [walletAddress, active, done]);
+
+  // Track step completion → auto-advance.
+  const completed = useMemo(
+    () => ({
+      monitag: !!payTag,
+      allowance: allowanceOk,
+      socials: socialCount > 0,
+    }),
+    [payTag, allowanceOk, socialCount],
+  );
+
+  useEffect(() => {
+    if (!active || done || transitioning) return;
+    const cur = STEPS[stepIdx];
+    if (cur && completed[cur.id]) advance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completed, stepIdx, active, done, transitioning]);
+
+  // Re-read target rect on step change, resize, scroll.
+  useLayoutEffect(() => {
+    if (!active || done || transitioning) return;
+    const cur = STEPS[stepIdx];
+    if (!cur) return;
+    let raf = 0;
+    const update = () => {
+      const r = readRect(cur.target);
+      setRect(r);
+    };
+    update();
+    // Retry a few times — target may mount after deps load.
+    let tries = 0;
+    const t = setInterval(() => {
+      update();
