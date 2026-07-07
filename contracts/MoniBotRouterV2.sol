@@ -73,3 +73,41 @@ contract MoniBotRouterV2 is Ownable, ReentrancyGuard, Pausable {
 
     constructor(
         address _treasury,
+        uint256 _feeBps,
+        address _initialExecutor
+    ) Ownable(msg.sender) {
+        if (_treasury == address(0)) revert InvalidAddress();
+        if (_feeBps > MAX_FEE_BPS) revert FeeTooHigh();
+
+        platformTreasury = _treasury;
+        platformFeeBps = _feeBps;
+
+        if (_initialExecutor != address(0)) {
+            executors[_initialExecutor] = true;
+            emit ExecutorAdded(_initialExecutor);
+        }
+    }
+
+    /**
+     * @dev Centralized fee calculation logic.
+     * Precedence: globalFeeExempt > isFeeExempt[user] > standard fee calculation.
+     */
+    function _calculateFee(address user, address token, uint256 amount) internal view returns (uint256) {
+        if (globalFeeExempt || isFeeExempt[user]) {
+            return 0;
+        }
+        uint256 calculatedFee = (amount * platformFeeBps) / BPS_DENOMINATOR;
+        uint256 minFee = minFeeByToken[token];
+        return calculatedFee > minFee ? calculatedFee : minFee;
+    }
+
+    // ============ Core Functions ============
+
+    function executeP2P(
+        address from,
+        address to,
+        address token,
+        uint256 amount,
+        uint256 nonce,
+        string calldata tweetId
+    ) external onlyExecutor nonReentrant whenNotPaused returns (bool) {
