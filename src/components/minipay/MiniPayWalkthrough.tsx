@@ -183,4 +183,50 @@ export function MiniPayWalkthrough({ walletAddress, payTag, socialCount }: Props
   const cur = STEPS[stepIdx];
 
   // Compute bubble position from target rect.
-  const bubble = computeBubble(rect, cur.side);
+  const bubble = computeBubble(rect, cur.side);
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] pointer-events-none"
+      style={{ fontFamily: '"Caveat", cursive' }}
+      aria-live="polite"
+    >
+      {/* Soft scrim so the highlighted area pops */}
+      <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+
+      <svg aria-hidden width="0" height="0" className="absolute">
+        <defs>
+          <filter id="mp-wobble">
+            <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" />
+            <feDisplacementMap in="SourceGraphic" scale="1.6" />
+          </filter>
+          <marker
+            id="mp-arrow"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L9,5 L0,10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </marker>
+        </defs>
+      </svg>
+
+      {/* Skip — always tappable */}
+      <button
+        type="button"
+        onClick={dismiss}
+        className="pointer-events-auto absolute top-3 right-3 z-10 rounded-full bg-black/85 text-white dark:bg-white dark:text-black text-xs px-3 py-1.5 flex items-center gap-1 shadow"
+        style={{ fontFamily: 'inherit', fontSize: 16 }}
+      >
+        Skip <X className="w-3.5 h-3.5" />
+      </button>
+
+      {/* Target pulse */}
+      <AnimatePresence>
+        {rect && !transitioning && (
+          <motion.div
+            key={`pulse-${cur.id}`}
+            initial={{ opacity: 0, scale: 0.6 }}
