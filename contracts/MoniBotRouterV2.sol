@@ -36,3 +36,40 @@ contract MoniBotRouterV2 is Ownable, ReentrancyGuard, Pausable {
     
     /**
      * @notice Sequential nonces for replay protection. 
+     * The bot must track and pass the current nonce for a user to execute a transaction.
+     * Once a transaction succeeds, the user's nonce is incremented.
+     * This prevents a hacker or rogue bot from taking a signed API payload and executing it twice.
+     */
+    mapping(address => uint256) public nonces;
+    
+    mapping(string => bool) public usedTweetIds;
+
+    // ============ Events ============
+    event P2PExecuted(address indexed from, address indexed to, address indexed token, uint256 amount, uint256 fee, uint256 nonce, string tweetId);
+    event TokenSupportUpdated(address indexed token, bool isSupported, uint256 minFee, uint256 maxAmountPerTx);
+    event ExecutorAdded(address indexed executor);
+    event ExecutorRemoved(address indexed executor);
+    event PlatformFeeUpdated(uint256 oldFeeBps, uint256 newFeeBps);
+    event PlatformTreasuryUpdated(address indexed oldTreasury, address indexed newTreasury);
+    event FeeExemptionUpdated(address indexed user, bool isExempt);
+    event GlobalFeeExemptionUpdated(bool isExempt);
+
+    // ============ Errors ============
+    error NotExecutor();
+    error InvalidAddress();
+    error InvalidAmount();
+    error InvalidNonce();
+    error InsufficientAllowance();
+    error InsufficientBalance();
+    error TweetIdAlreadyUsed();
+    error FeeTooHigh();
+    error UnsupportedToken();
+    error AmountExceedsLimit();
+
+    modifier onlyExecutor() {
+        if (!executors[msg.sender]) revert NotExecutor();
+        _;
+    }
+
+    constructor(
+        address _treasury,
