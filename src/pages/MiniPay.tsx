@@ -237,4 +237,44 @@ function MiniPayAppContent() {
   const [showLanding, setShowLanding] = useState<boolean>(() => {
     try {
       const stored = sessionStorage.getItem('minipay_b_show_landing');
-      if (stored === '0') return false;
+      if (stored === '0') return false;
+      if (stored === '1') return true;
+    } catch {}
+    return true;
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('minipay_b_show_landing', showLanding ? '1' : '0');
+    } catch {}
+  }, [showLanding]);
+  useEffect(() => {
+    const onBack = () => setShowLanding(true);
+    window.addEventListener('monipay:back-to-landing', onBack as EventListener);
+    return () => window.removeEventListener('monipay:back-to-landing', onBack as EventListener);
+  }, []);
+
+  if (!isReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // Path B: inside the MiniPay WebView — skip MoniPay account creation entirely.
+  if (sessionType === 'minipay' && address) {
+    if (showLanding) {
+      return (
+        <MiniPayLanding
+          onGetStarted={() => setShowLanding(false)}
+          onSignIn={() => setShowLanding(false)}
+        />
+      );
+    }
+    return <MiniPayWalletApp address={address} />;
+  }
+
+  if (sessionType === 'minipay' && initError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-6">
+        <div className="max-w-sm text-center space-y-3">
