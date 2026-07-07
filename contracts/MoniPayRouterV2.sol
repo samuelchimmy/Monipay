@@ -118,3 +118,43 @@ contract MoniPayRouterV2 is EIP712, Ownable, ReentrancyGuard, Pausable {
                     keccak256(
                         abi.encode(
                             PAYMENT_TYPEHASH,
+                            from,
+                            to,
+                            token,
+                            amount,
+                            fee,
+                            nonce,
+                            deadline
+                        )
+                    )
+                ),
+                signature
+            );
+            
+            if (signer != from) revert InvalidSignature();
+        }
+
+        usedNonces[from][nonce] = true;
+
+        { // Scope token transfers to avoid stack too deep
+            IERC20 tokenContract = IERC20(token);
+            uint256 totalAmount = amount + fee;
+
+            if (tokenContract.allowance(from, address(this)) < totalAmount) revert InsufficientAllowance();
+            if (tokenContract.balanceOf(from) < totalAmount) revert InsufficientBalance();
+
+            tokenContract.safeTransferFrom(from, to, amount);
+            if (fee > 0) {
+                tokenContract.safeTransferFrom(from, platformTreasury, fee);
+            }
+        }
+
+        totalVolumeByToken[token] += amount;
+        totalFeesCollectedByToken[token] += fee;
+
+        emit PaymentRelayed(from, to, token, amount, fee, nonce, keccak256(abi.encodePacked(from, to, token, amount, nonce, block.timestamp)));
+    }
+
+    // ============ View Functions ============
+
+    /**
