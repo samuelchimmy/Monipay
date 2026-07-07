@@ -78,3 +78,43 @@ contract MoniPayRouterV2 is EIP712, Ownable, ReentrancyGuard, Pausable {
     }
 
     /**
+     * @dev Centralized fee calculation logic.
+     * Precedence: globalFeeExempt > isFeeExempt[user] > standard fee calculation.
+     * If either exemption is true, fee is 0.
+     */
+    function _calculateFee(address user, uint256 amount) internal view returns (uint256) {
+        if (globalFeeExempt || isFeeExempt[user]) {
+            return 0;
+        }
+        return (amount * platformFeeBps) / BPS_DENOMINATOR;
+    }
+
+    function relayPayment(
+        address from,
+        address to,
+        address token,
+        uint256 amount,
+        uint256 fee,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) external nonReentrant whenNotPaused {
+        if (!supportedTokens[token]) revert UnsupportedToken();
+        if (block.timestamp > deadline) revert ExpiredDeadline();
+        if (usedNonces[from][nonce]) revert NonceAlreadyUsed();
+        if (amount == 0) revert InvalidAmount();
+        if (to == address(0)) revert ZeroAddress();
+        
+        { // Scope signature and fee verification to avoid stack too deep
+            uint256 expectedFee = _calculateFee(from, amount);
+            
+            // Fee tolerance check allows for minor precision rounding discrepancies
+            if (fee > expectedFee + feeTolerance || fee < (expectedFee > feeTolerance ? expectedFee - feeTolerance : 0)) {
+                revert InvalidFee();
+            }
+
+            address signer = ECDSA.recover(
+                _hashTypedDataV4(
+                    keccak256(
+                        abi.encode(
+                            PAYMENT_TYPEHASH,
