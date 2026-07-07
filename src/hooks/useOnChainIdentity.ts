@@ -52,4 +52,58 @@ function readCache(address: string): OnChainName[] | null {
 
 function writeCache(address: string, names: OnChainName[]) {
   try {
-    localStorage.setItem(cacheKey(address), JSON.stringify({ ts: Date.now(), names }));
+    localStorage.setItem(cacheKey(address), JSON.stringify({ ts: Date.now(), names }));
+  } catch { /* ignore */ }
+}
+
+export function useOnChainIdentity(address: `0x${string}` | null) {
+  const [names, setNames] = useState<OnChainName[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!address) {
+      setNames([]);
+      return;
+    }
+
+    const cached = readCache(address);
+    if (cached) {
+      setNames(cached);
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoading(true);
+
+    (async () => {
+      const results: OnChainName[] = [];
+
+      // Run both lookups in parallel with a hard 4s timeout so the UI never
+      // hangs waiting on slow public RPCs (cloudflare-eth, base default).
+      const ethClient = createPublicClient({
+        chain: mainnet,
+        transport: http("https://eth.drpc.org"),
+      });
+      const baseClient = createPublicClient({
+        chain: base,
+        transport: http("https://base.drpc.org"),
+      });
+      const [ens, baseName] = await Promise.all([
+        withTimeout(ethClient.getEnsName({ address }), LOOKUP_TIMEOUT_MS),
+        withTimeout((baseClient as any).getEnsName?.({ address }) ?? Promise.resolve(null), LOOKUP_TIMEOUT_MS),
+      ]);
+      if (ens) results.push({ name: ens, type: "ens", chain: "ethereum" });
+      if (baseName) results.push({ name: baseName as string, type: "basename", chain: "base" });
+
+      if (cancelled) return;
+      setNames(results);
+      setIsLoading(false);
+      // Cache even empty results so we don't re-spin on every mount.
+      writeCache(address, results);
+    })();
+
+    return () => { cancelled = true; };
+  }, [address]);
+
+  return { names, isLoading };
+}
