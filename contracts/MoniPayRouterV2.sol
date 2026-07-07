@@ -198,3 +198,41 @@ contract MoniPayRouterV2 is EIP712, Ownable, ReentrancyGuard, Pausable {
 
     function setTreasury(address newTreasury) external onlyOwner {
         if (newTreasury == address(0)) revert ZeroAddress();
+        emit TreasuryUpdated(platformTreasury, newTreasury);
+        platformTreasury = newTreasury;
+    }
+
+    function setPlatformFee(uint256 _newFeeBps) external onlyOwner {
+        if (_newFeeBps > MAX_FEE_BPS) revert FeeExceedsMaximum();
+        emit FeeUpdated(platformFeeBps, _newFeeBps);
+        platformFeeBps = _newFeeBps;
+    }
+    
+    function setFeeTolerance(uint256 _newTolerance) external onlyOwner {
+        if (_newTolerance > MAX_FEE_TOLERANCE) revert ToleranceExceedsMaximum();
+        emit FeeToleranceUpdated(feeTolerance, _newTolerance);
+        feeTolerance = _newTolerance;
+    }
+
+    function setFeeExempt(address user, bool exempt) external onlyOwner {
+        isFeeExempt[user] = exempt;
+        emit FeeExemptionUpdated(user, exempt);
+    }
+
+    function setGlobalFeeExempt(bool exempt) external onlyOwner {
+        globalFeeExempt = exempt;
+        emit GlobalFeeExemptionUpdated(exempt);
+    }
+
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+
+    function emergencyWithdrawToken(address token, uint256 amount) external onlyOwner {
+        IERC20(token).safeTransfer(owner(), amount);
+    }
+}
