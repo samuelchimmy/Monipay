@@ -70,4 +70,22 @@ export function useOnChainIdentity(address: `0x${string}` | null) {
     if (cached) {
       setNames(cached);
       return;
-    }
+    }
+
+    let cancelled = false;
+    setIsLoading(true);
+
+    (async () => {
+      const results: OnChainName[] = [];
+
+      // Run both lookups in parallel with a hard 4s timeout so the UI never
+      // hangs waiting on slow public RPCs (cloudflare-eth, base default).
+      const ethClient = createPublicClient({
+        chain: mainnet,
+        transport: http("https://eth.drpc.org"),
+      });
+      const baseClient = createPublicClient({
+        chain: base,
+        transport: http("https://base.drpc.org"),
+      });
+      const [ens, baseName] = await Promise.all([
