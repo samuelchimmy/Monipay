@@ -55,4 +55,23 @@ export function useWalletSession(): WalletSession {
 
     async function detect() {
       const eth = (typeof window !== "undefined" ? (window as any).ethereum : null) as any;
-
+
+      if (eth?.isMiniPay) {
+        try {
+          const accounts: string[] = await eth.request({ method: "eth_requestAccounts" });
+          if (!accounts?.length) throw new Error("MiniPay returned no accounts");
+          if (cancelled) return;
+
+          // Best-effort Celo switch — ignore errors, MiniPay defaults to Celo.
+          try {
+            await eth.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: CELO_CHAIN_ID_HEX }],
+            });
+          } catch (switchErr: any) {
+            if (switchErr?.code === 4902) {
+              try {
+                await eth.request({
+                  method: "wallet_addEthereumChain",
+                  params: [{
+                    chainId: CELO_CHAIN_ID_HEX,
