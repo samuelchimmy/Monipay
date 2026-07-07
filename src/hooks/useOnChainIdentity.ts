@@ -34,4 +34,22 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
   return new Promise((resolve) => {
     const t = setTimeout(() => resolve(null), ms);
     p.then((v) => { clearTimeout(t); resolve(v); })
-     .catch(() => { clearTimeout(t); resolve(null); });
+     .catch(() => { clearTimeout(t); resolve(null); });
+  });
+}
+
+function readCache(address: string): OnChainName[] | null {
+  try {
+    const raw = localStorage.getItem(cacheKey(address));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as CacheEntry;
+    if (Date.now() - parsed.ts > CACHE_TTL_MS) return null;
+    return parsed.names;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(address: string, names: OnChainName[]) {
+  try {
+    localStorage.setItem(cacheKey(address), JSON.stringify({ ts: Date.now(), names }));
