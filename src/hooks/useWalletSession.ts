@@ -36,4 +36,23 @@ const hasLegacyProfile = (): boolean => {
   try {
     return !!localStorage.getItem("paytag_profile");
   } catch {
-    return false;
+    return false;
+  }
+};
+
+export function useWalletSession(): WalletSession {
+  const [sessionType, setSessionType] = useState<SessionType>("detecting");
+  const [miniPayAddress, setMiniPayAddress] = useState<`0x${string}` | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
+
+  const { address: wagmiAddress, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
+
+  // MiniPay detection runs once on mount. Wagmi state is layered on top.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function detect() {
+      const eth = (typeof window !== "undefined" ? (window as any).ethereum : null) as any;
+
