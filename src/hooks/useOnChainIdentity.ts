@@ -16,4 +16,22 @@ import { mainnet, base } from "viem/chains";
 export type NameSource = "ens" | "basename" | "celoname" | "lens" | "farcaster";
 
 export interface OnChainName {
-  name: string;
+  name: string;
+  type: NameSource;
+  chain: string;
+}
+
+interface CacheEntry {
+  ts: number;
+  names: OnChainName[];
+}
+
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const cacheKey = (addr: string) => `monipay_onchain_names:${addr.toLowerCase()}`;
+const LOOKUP_TIMEOUT_MS = 4000;
+
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
+  return new Promise((resolve) => {
+    const t = setTimeout(() => resolve(null), ms);
+    p.then((v) => { clearTimeout(t); resolve(v); })
+     .catch(() => { clearTimeout(t); resolve(null); });
