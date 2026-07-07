@@ -88,4 +88,22 @@ export function useOnChainIdentity(address: `0x${string}` | null) {
         chain: base,
         transport: http("https://base.drpc.org"),
       });
-      const [ens, baseName] = await Promise.all([
+      const [ens, baseName] = await Promise.all([
+        withTimeout(ethClient.getEnsName({ address }), LOOKUP_TIMEOUT_MS),
+        withTimeout((baseClient as any).getEnsName?.({ address }) ?? Promise.resolve(null), LOOKUP_TIMEOUT_MS),
+      ]);
+      if (ens) results.push({ name: ens, type: "ens", chain: "ethereum" });
+      if (baseName) results.push({ name: baseName as string, type: "basename", chain: "base" });
+
+      if (cancelled) return;
+      setNames(results);
+      setIsLoading(false);
+      // Cache even empty results so we don't re-spin on every mount.
+      writeCache(address, results);
+    })();
+
+    return () => { cancelled = true; };
+  }, [address]);
+
+  return { names, isLoading };
+}
