@@ -111,3 +111,40 @@ contract MoniBotRouterV2 is Ownable, ReentrancyGuard, Pausable {
         uint256 nonce,
         string calldata tweetId
     ) external onlyExecutor nonReentrant whenNotPaused returns (bool) {
+        if (from == address(0) || to == address(0)) revert InvalidAddress();
+        if (!supportedTokens[token]) revert UnsupportedToken();
+        if (amount == 0) revert InvalidAmount();
+        if (amount > maxAmountPerTxByToken[token]) revert AmountExceedsLimit();
+        if (nonce != nonces[from]) revert InvalidNonce();
+        if (bytes(tweetId).length > 0 && usedTweetIds[tweetId]) revert TweetIdAlreadyUsed();
+
+        uint256 fee = _calculateFee(from, token, amount);
+        uint256 totalRequired = amount + fee;
+
+        IERC20 tokenContract = IERC20(token);
+        if (tokenContract.allowance(from, address(this)) < totalRequired) revert InsufficientAllowance();
+        if (tokenContract.balanceOf(from) < totalRequired) revert InsufficientBalance();
+
+        nonces[from] = nonce + 1;
+
+        if (bytes(tweetId).length > 0) {
+            usedTweetIds[tweetId] = true;
+        }
+
+        tokenContract.safeTransferFrom(from, to, amount);
+        if (fee > 0) {
+            tokenContract.safeTransferFrom(from, platformTreasury, fee);
+        }
+
+        emit P2PExecuted(from, to, token, amount, fee, nonce, tweetId);
+        return true;
+    }
+
+    // ============ View Functions ============
+
+    /**
+     * @notice Aggregated view function for frontend/bot integration
+     */
+    function getConfig() external view returns (
+        address treasury,
+        uint256 feeBps,
