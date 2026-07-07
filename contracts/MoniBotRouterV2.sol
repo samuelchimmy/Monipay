@@ -185,3 +185,40 @@ contract MoniBotRouterV2 is Ownable, ReentrancyGuard, Pausable {
         executors[executor] = false;
         emit ExecutorRemoved(executor);
     }
+
+    function setPlatformFee(uint256 newFeeBps) external onlyOwner {
+        if (newFeeBps > MAX_FEE_BPS) revert FeeTooHigh();
+        uint256 oldFeeBps = platformFeeBps;
+        platformFeeBps = newFeeBps;
+        emit PlatformFeeUpdated(oldFeeBps, newFeeBps);
+    }
+
+    function setPlatformTreasury(address newTreasury) external onlyOwner {
+        if (newTreasury == address(0)) revert InvalidAddress();
+        address oldTreasury = platformTreasury;
+        platformTreasury = newTreasury;
+        emit PlatformTreasuryUpdated(oldTreasury, newTreasury);
+    }
+
+    function setFeeExempt(address user, bool exempt) external onlyOwner {
+        isFeeExempt[user] = exempt;
+        emit FeeExemptionUpdated(user, exempt);
+    }
+
+    function setGlobalFeeExempt(bool exempt) external onlyOwner {
+        globalFeeExempt = exempt;
+        emit GlobalFeeExemptionUpdated(exempt);
+    }
+
+    function emergencyWithdraw(address token, uint256 amount) external onlyOwner {
+        IERC20(token).safeTransfer(owner(), amount);
+    }
+
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+}
