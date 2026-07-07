@@ -52,4 +52,22 @@ function readCache(address: string): OnChainName[] | null {
 
 function writeCache(address: string, names: OnChainName[]) {
   try {
-    localStorage.setItem(cacheKey(address), JSON.stringify({ ts: Date.now(), names }));
+    localStorage.setItem(cacheKey(address), JSON.stringify({ ts: Date.now(), names }));
+  } catch { /* ignore */ }
+}
+
+export function useOnChainIdentity(address: `0x${string}` | null) {
+  const [names, setNames] = useState<OnChainName[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!address) {
+      setNames([]);
+      return;
+    }
+
+    const cached = readCache(address);
+    if (cached) {
+      setNames(cached);
+      return;
+    }
