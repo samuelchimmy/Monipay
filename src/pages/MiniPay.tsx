@@ -157,4 +157,44 @@ function MiniPayLegacyApp() {
             setCurrentScreen('lock');
             setIsUnlocked(false);
           } else {
-            setOnboardingFlow('import');
+            setOnboardingFlow('import');
+            setCurrentScreen('onboarding');
+            setIsUnlocked(true);
+          }
+        }}
+        onGoogleRestore={() => {
+          // Route into the import flow; Onboarding auto-triggers the
+          // Google Drive restore screen when this session flag is set.
+          try { sessionStorage.setItem('mp_auto_google_restore', '1'); } catch {}
+          setShowWebChooser(false);
+          setOnboardingFlow('import');
+          setCurrentScreen('onboarding');
+          setIsUnlocked(true);
+        }}
+        onBack={() => {
+          setShowWebChooser(false);
+          setShowLanding(true);
+        }}
+      />
+    );
+  }
+
+  // Path C on /minipay — external wallet flow.
+  if (webChoice === 'wallet' && currentScreen !== 'dashboard') {
+    if (sessionType === 'external_wallet' && address) {
+      return <ExternalWalletApp address={address} />;
+    }
+    return (
+      <WalletConnectGate
+        onCreateMoniPayAccount={() => {
+          setWebChoice('none');
+          setShowWebChooser(true);
+        }}
+      />
+    );
+  }
+
+  return (
+    <AnimatePresence mode="wait">
+      {currentScreen === 'lock' && !isUnlocked && (
+        <LockScreen key="lock" />
