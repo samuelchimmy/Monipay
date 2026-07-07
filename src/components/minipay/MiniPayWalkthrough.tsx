@@ -137,4 +137,50 @@ export function MiniPayWalkthrough({ walletAddress, payTag, socialCount }: Props
     // Retry a few times — target may mount after deps load.
     let tries = 0;
     const t = setInterval(() => {
-      update();
+      update();
+      if (++tries > 20) clearInterval(t);
+    }, 200);
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onScroll);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [stepIdx, active, done, transitioning]);
+
+  function advance() {
+    setTransitioning(true);
+    setTimeout(() => {
+      if (stepIdx >= STEPS.length - 1) {
+        setDone(true);
+        setTransitioning(false);
+      } else {
+        setStepIdx((i) => i + 1);
+        setTransitioning(false);
+      }
+    }, 600);
+  }
+
+  function dismiss() {
+    try {
+      localStorage.setItem(LS_KEY, '1');
+    } catch {
+      /* ignore */
+    }
+    setActive(false);
+  }
+
+  if (!active) return null;
+
+  if (done) return <CompletionScreen onClose={dismiss} />;
+
+  const cur = STEPS[stepIdx];
+
+  // Compute bubble position from target rect.
+  const bubble = computeBubble(rect, cur.side);
