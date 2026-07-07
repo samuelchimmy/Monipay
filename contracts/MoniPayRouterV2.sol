@@ -37,3 +37,44 @@ contract MoniPayRouterV2 is EIP712, Ownable, ReentrancyGuard, Pausable {
      */
     uint256 public feeTolerance = 1;
     uint256 public constant MAX_FEE_TOLERANCE = 100; // Hard cap on admin tolerance
+
+    mapping(address => bool) public supportedTokens;
+    mapping(address => mapping(uint256 => bool)) public usedNonces;
+    
+    // Analytics
+    mapping(address => uint256) public totalVolumeByToken;
+    mapping(address => uint256) public totalFeesCollectedByToken;
+
+    bytes32 public constant PAYMENT_TYPEHASH = keccak256(
+        "PaymentAuthorization(address from,address to,address token,uint256 amount,uint256 fee,uint256 nonce,uint256 deadline)"
+    );
+
+    event PaymentRelayed(address indexed from, address indexed to, address indexed token, uint256 amount, uint256 fee, uint256 nonce, bytes32 txHash);
+    event TreasuryUpdated(address oldTreasury, address newTreasury);
+    event FeeUpdated(uint256 oldFeeBps, uint256 newFeeBps);
+    event FeeToleranceUpdated(uint256 oldTolerance, uint256 newTolerance);
+    event TokenSupportUpdated(address indexed token, bool isSupported);
+    event FeeExemptionUpdated(address indexed user, bool isExempt);
+    event GlobalFeeExemptionUpdated(bool isExempt);
+
+    error InvalidSignature();
+    error ExpiredDeadline();
+    error NonceAlreadyUsed();
+    error InvalidAmount();
+    error InvalidFee();
+    error InsufficientAllowance();
+    error InsufficientBalance();
+    error ZeroAddress();
+    error UnsupportedToken();
+    error FeeExceedsMaximum();
+    error ToleranceExceedsMaximum();
+
+    constructor(address _platformTreasury) 
+        EIP712("MoniPay Router", "2") 
+        Ownable(msg.sender) 
+    {
+        if (_platformTreasury == address(0)) revert ZeroAddress();
+        platformTreasury = _platformTreasury;
+    }
+
+    /**
