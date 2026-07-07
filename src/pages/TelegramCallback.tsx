@@ -80,4 +80,20 @@ export default function TelegramCallback() {
           window.opener.postMessage(
             {
               type: "telegram-oauth-success",
-              telegram_id: data.telegram_id,
+              telegram_id: data.telegram_id,
+              telegram_username: data.telegram_username,
+            },
+            window.location.origin,
+          );
+          setTimeout(() => window.close(), 1500);
+        }
+      } catch (e: any) {
+        setStatus("error");
+        setMessage(e.message || "Failed to link Telegram account. Please try again.");
+      }
+    })();
+  }, [searchParams]);
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <PageMeta title="Telegram Linking" description="Linking your Telegram account to MoniPay." path="/telegram-callback" noIndex noIndexFollow />
