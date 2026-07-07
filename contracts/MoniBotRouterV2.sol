@@ -148,3 +148,40 @@ contract MoniBotRouterV2 is Ownable, ReentrancyGuard, Pausable {
     function getConfig() external view returns (
         address treasury,
         uint256 feeBps,
+        uint256 maxFeeBps,
+        bool isGlobalFeeExempt,
+        bool isPaused
+    ) {
+        return (
+            platformTreasury,
+            platformFeeBps,
+            MAX_FEE_BPS,
+            globalFeeExempt,
+            paused()
+        );
+    }
+
+    function calculateFee(address user, address token, uint256 amount) external view returns (uint256) {
+        return _calculateFee(user, token, amount);
+    }
+
+    // ============ Admin Functions ============
+
+    function setSupportedToken(address token, bool isSupported, uint256 minFee, uint256 maxAmountPerTx) external onlyOwner {
+        if (token == address(0)) revert InvalidAddress();
+        supportedTokens[token] = isSupported;
+        minFeeByToken[token] = minFee;
+        maxAmountPerTxByToken[token] = maxAmountPerTx;
+        emit TokenSupportUpdated(token, isSupported, minFee, maxAmountPerTx);
+    }
+
+    function addExecutor(address executor) external onlyOwner {
+        if (executor == address(0)) revert InvalidAddress();
+        executors[executor] = true;
+        emit ExecutorAdded(executor);
+    }
+
+    function removeExecutor(address executor) external onlyOwner {
+        executors[executor] = false;
+        emit ExecutorRemoved(executor);
+    }
