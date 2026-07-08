@@ -93,4 +93,24 @@ export function useWalletSession(): WalletSession {
         } catch (err: any) {
           if (cancelled) return;
           setInitError(err?.message ?? "MiniPay init failed");
-          setSessionType("minipay");
+          setSessionType("minipay");
+          setIsReady(true);
+          return;
+        }
+      }
+
+      // Not MiniPay. Resolve between external_wallet and legacy.
+      if (cancelled) return;
+      if (isConnected && wagmiAddress) {
+        setSessionType("external_wallet");
+      } else {
+        setSessionType(hasLegacyProfile() ? "legacy" : "legacy");
+      }
+      setIsReady(true);
+    }
+
+    detect();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
