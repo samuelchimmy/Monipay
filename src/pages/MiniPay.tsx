@@ -277,4 +277,43 @@ function MiniPayAppContent() {
   if (sessionType === 'minipay' && initError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-6">
-        <div className="max-w-sm text-center space-y-3">
+        <div className="max-w-sm text-center space-y-3">
+          <h1 className="text-lg font-semibold">MiniPay wallet unavailable</h1>
+          <p className="text-sm text-muted-foreground">{initError}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Path A: legacy MoniPay account flow — unchanged.
+  return <MiniPayLegacyApp />;
+}
+
+const MiniPayPage = () => {
+  return (
+    <WagmiWrapper>
+      <PayTagProvider defaultNetwork="celo">
+        <PageMeta
+          title="MoniPay for MiniPay. Send USDm on Celo by Username"
+          description="Gasless USDm payments on Celo. MoniBot AI agent, merchant suite, and MiniPay native support."
+          path="/minipay"
+          ogImage="https://monipay.xyz/og/minipay.png"
+          jsonLd={getSoftwareApplicationSchema('celo')}
+          breadcrumbs={[
+            { name: 'Home', url: 'https://monipay.xyz/' },
+            { name: 'MiniPay', url: 'https://monipay.xyz/minipay' },
+          ]}
+        />
+        <Helmet>
+          <link rel="preload" as="image" href={phoneMockupLight} fetchPriority="high" />
+          <link rel="preload" as="image" href={phoneMockupDark} fetchPriority="high" />
+        </Helmet>
+        <div className="min-h-screen overflow-x-hidden">
+          <MiniPayAppContent />
+        </div>
+      </PayTagProvider>
+    </WagmiWrapper>
+  );
+};
+
+export default MiniPayPage;
