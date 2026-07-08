@@ -276,4 +276,50 @@ export function MiniPayWalkthrough({ walletAddress, payTag, socialCount }: Props
           >
             <div
               className="relative rounded-3xl border-2 border-black bg-white text-black dark:bg-black dark:text-white dark:border-white px-4 py-3 shadow-[6px_6px_0_0_rgba(0,0,0,0.18)]"
-              style={{
+              style={{
+                filter: 'url(#mp-wobble)',
+                fontFamily: 'inherit',
+                fontSize: 20,
+                lineHeight: 1.25,
+              }}
+            >
+              <p className="font-bold italic">{cur.text}</p>
+              <div className="mt-1 flex items-center justify-between text-[14px] opacity-70 italic">
+                <span>Step {stepIdx + 1} of {STEPS.length}</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ── Geometry helpers ───────────────────────────────────────── */
+
+function computeBubble(
+  rect: Rect | null,
+  side: StepDef['side'],
+): { top: number; left: number; width: number; cx: number; cy: number } | null {
+  if (!rect) return null;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const width = Math.min(260, vw - 32);
+  const PAD = 18;
+
+  let top = 0;
+  let left = 0;
+
+  if (side === 'left') {
+    top = Math.max(PAD + 40, rect.top - 16);
+    left = PAD;
+  } else if (side === 'right') {
+    top = Math.max(PAD + 40, rect.top - 130);
+    left = Math.max(PAD, vw - width - PAD);
+  } else {
+    // bottom-right
+    top = Math.min(vh - 140, rect.top + rect.height + 14);
+    left = Math.max(PAD, vw - width - PAD);
+  }
+
+  return {
