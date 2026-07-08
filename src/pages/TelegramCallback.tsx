@@ -113,4 +113,19 @@ export default function TelegramCallback() {
           </>
         )}
         {status === "error" && (
-          <>
+          <>
+            <XCircle className="w-12 h-12 text-destructive mx-auto" />
+            <p className="text-lg font-semibold text-foreground">Linking Failed</p>
+            <p className="text-sm text-muted-foreground">{message}</p>
+            <button
+              onClick={() => window.close()}
+              className="text-sm text-primary underline mt-2"
+            >
+              Close this window
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
