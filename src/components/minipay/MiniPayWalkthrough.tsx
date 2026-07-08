@@ -229,4 +229,51 @@ export function MiniPayWalkthrough({ walletAddress, payTag, socialCount }: Props
         {rect && !transitioning && (
           <motion.div
             key={`pulse-${cur.id}`}
-            initial={{ opacity: 0, scale: 0.6 }}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.6 }}
+            className="absolute"
+            style={{
+              top: rect.top + rect.height / 2 - 28,
+              left: rect.left + rect.width / 2 - 28,
+              width: 56,
+              height: 56,
+            }}
+          >
+            <span className="absolute inset-0 rounded-full border-2 border-black dark:border-white animate-ping opacity-40" />
+            <span className="absolute inset-2 rounded-full border-2 border-black dark:border-white opacity-90" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Connector */}
+      {rect && bubble && !transitioning && (
+        <Connector rect={rect} bubble={bubble} />
+      )}
+
+      {/* Bubble */}
+      <AnimatePresence>
+        {!transitioning && bubble && (
+          <motion.div
+            key={`bubble-${cur.id}`}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{
+              opacity: 0,
+              scale: 0.4,
+              x: 80,
+              y: -120,
+              rotate: 18,
+              transition: { duration: 0.48, ease: [0.4, 0, 0.2, 1] },
+            }}
+            transition={{ type: 'spring', stiffness: 320, damping: 22, mass: 0.7 }}
+            className="absolute pointer-events-auto"
+            style={{
+              top: bubble.top,
+              left: bubble.left,
+              width: bubble.width,
+            }}
+          >
+            <div
+              className="relative rounded-3xl border-2 border-black bg-white text-black dark:bg-black dark:text-white dark:border-white px-4 py-3 shadow-[6px_6px_0_0_rgba(0,0,0,0.18)]"
+              style={{
