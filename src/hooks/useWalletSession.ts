@@ -113,4 +113,23 @@ export function useWalletSession(): WalletSession {
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // React to wagmi connect/disconnect after initial detection (skip MiniPay).
+  useEffect(() => {
+    if (!isReady) return;
+    if (sessionType === "minipay") return;
+    if (isConnected && wagmiAddress) {
+      setSessionType("external_wallet");
+    } else if (sessionType === "external_wallet") {
+      setSessionType("legacy");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, wagmiAddress]);
+
+  const address: `0x${string}` | null =
+    sessionType === "minipay"
+      ? miniPayAddress
+      : sessionType === "external_wallet" && wagmiAddress
+        ? (wagmiAddress.toLowerCase() as `0x${string}`)
+        : null;
 
