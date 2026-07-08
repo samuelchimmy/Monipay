@@ -74,4 +74,23 @@ export function useWalletSession(): WalletSession {
                 await eth.request({
                   method: "wallet_addEthereumChain",
                   params: [{
-                    chainId: CELO_CHAIN_ID_HEX,
+                    chainId: CELO_CHAIN_ID_HEX,
+                    chainName: "Celo Mainnet",
+                    nativeCurrency: { name: "CELO", symbol: "CELO", decimals: 18 },
+                    rpcUrls: ["https://forno.celo.org"],
+                    blockExplorerUrls: ["https://celoscan.io"],
+                  }],
+                });
+              } catch { /* ignore */ }
+            }
+          }
+
+          if (cancelled) return;
+          setMiniPayAddress((accounts[0] as `0x${string}`).toLowerCase() as `0x${string}`);
+          setSessionType("minipay");
+          setIsReady(true);
+          return;
+        } catch (err: any) {
+          if (cancelled) return;
+          setInitError(err?.message ?? "MiniPay init failed");
+          setSessionType("minipay");
