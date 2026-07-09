@@ -13,4 +13,20 @@ export default function DiscordCallback() {
   useEffect(() => {
     const code = searchParams.get("code");
     const state = searchParams.get("state");
-
+
+    if (!code) {
+      setStatus("error");
+      setMessage("No authorization code received from Discord.");
+      return;
+    }
+
+    // Parse state (contains profileId + walletAddress)
+    let profileId: string, walletAddress: string;
+    try {
+      const parsed = JSON.parse(atob(state || ""));
+      profileId = parsed.profileId;
+      walletAddress = parsed.walletAddress;
+    } catch {
+      setStatus("error");
+      setMessage("Invalid session state. Please try again.");
+      return;
