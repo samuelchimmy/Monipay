@@ -151,4 +151,23 @@ export function useWalletSession(): WalletSession {
           return await eth.request({ method: "eth_sendTransaction", params: [txParams] });
         } catch (err: any) {
           const errMsg = err?.message?.toLowerCase() || '';
-          if (errMsg.includes('insufficient funds') || errMsg.includes('gas required exceeds allowance') || errMsg.includes('insufficient balance')) {
+          if (errMsg.includes('insufficient funds') || errMsg.includes('gas required exceeds allowance') || errMsg.includes('insufficient balance')) {
+            // Low-Balance Redirect Rule for MiniPay Grant
+            window.location.href = 'https://link.minipay.xyz/add_cash?tokens=USDm,USDC,USDT';
+            await new Promise(() => {}); // Prevent resolution/further execution
+          }
+          throw err;
+        }
+      };
+    }
+    if (sessionType === "external_wallet" && walletClient) {
+      return async (params: unknown): Promise<`0x${string}`> => {
+        // wagmi/viem signature differs from raw eth_sendTransaction; pass through.
+        // Callers should construct a viem-compatible request object.
+        return await (walletClient as any).sendTransaction(params);
+      };
+    }
+    return null;
+  }, [sessionType, walletClient]);
+
+  const signMessage = useMemo(() => {
