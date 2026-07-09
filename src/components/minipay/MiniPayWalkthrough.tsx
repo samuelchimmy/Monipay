@@ -369,4 +369,50 @@ function Connector({
 
 /* ── Completion screen ──────────────────────────────────────── */
 
-function CompletionScreen({ onClose }: { onClose: () => void }) {
+function CompletionScreen({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[210] flex items-center justify-center px-4 py-6 bg-black/50 backdrop-blur-sm overflow-y-auto"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.85, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-sm rounded-3xl bg-background text-foreground border border-border shadow-2xl p-6 my-auto"
+      >
+        {/* Circle + checkmark */}
+        <div className="flex justify-center">
+          <div className="relative w-24 h-24 flex items-center justify-center">
+            <motion.div
+              className="absolute inset-0 rounded-full border-[3px] border-dashed border-primary/60"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 6, ease: 'linear' }}
+            />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.15, type: 'spring', stiffness: 320, damping: 18 }}
+              className="w-16 h-16 rounded-full bg-primary flex items-center justify-center"
+            >
+              <svg viewBox="0 0 24 24" className="w-9 h-9 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <motion.path
+                  d="M5 12.5l4.5 4.5L19 7.5"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ delay: 0.35, duration: 0.5, ease: 'easeOut' }}
+                />
+              </svg>
+            </motion.div>
+          </div>
+        </div>
+
+        <h2 className="mt-5 text-xl font-semibold text-center">You're all set</h2>
+        <p className="text-sm text-muted-foreground text-center mt-1">Welcome to MoniPay on Celo</p>
+
+        <ul className="mt-5 space-y-2 text-sm">
