@@ -32,4 +32,22 @@ export function MiniPayWalletApp({ address }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error: invokeErr } = await supabase.functions.invoke<WalletSessionResponse>(
+          "wallet-session",
+          { body: { action: "upsert", walletAddress: address, source: "minipay" } },
+        );
+        if (cancelled) return;
+        if (invokeErr) throw invokeErr;
+        if (!data) throw new Error("No response from wallet-session");
+        setProfileId(data.profileId);
+        setIsLegacy(data.isLegacy);
+      } catch (e: any) {
+        if (cancelled) return;
+        console.error("[MiniPayWalletApp] upsert failed:", e);
+        setError(e?.message ?? "Failed to initialise wallet session");
+      } finally {
+        if (!cancelled) setIsReady(true);
+      }
