@@ -15,4 +15,21 @@ interface Props {
   address: `0x${string}`;
 }
 
-interface WalletSessionResponse {
+interface WalletSessionResponse {
+  profileId: string;
+  payTag?: string | null;
+  walletAddress: string;
+  isLegacy: boolean;
+  isNew: boolean;
+  preferredName?: string | null;
+  preferredNetwork?: string;
+}
+
+export function MiniPayWalletApp({ address }: Props) {
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [isLegacy, setIsLegacy] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
