@@ -132,4 +132,23 @@ export function useWalletSession(): WalletSession {
       : sessionType === "external_wallet" && wagmiAddress
         ? (wagmiAddress.toLowerCase() as `0x${string}`)
         : null;
-
+
+  const sendTransaction = useMemo(() => {
+    if (sessionType === "minipay") {
+      return async (params: unknown): Promise<`0x${string}`> => {
+        const eth = (window as any).ethereum;
+        try {
+          // CIP-64 Fee Abstraction: Remove EIP-1559 fields for MiniPay
+          const txParams = { ...(params as any) };
+          delete txParams.maxFeePerGas;
+          delete txParams.maxPriorityFeePerGas;
+          
+          // Inject USDm as the default fee currency if none provided
+          if (!txParams.feeCurrency) {
+            txParams.feeCurrency = '0x765DE816845861e75A25fCA122bb6898B8B1282a';
+          }
+
+          return await eth.request({ method: "eth_sendTransaction", params: [txParams] });
+        } catch (err: any) {
+          const errMsg = err?.message?.toLowerCase() || '';
+          if (errMsg.includes('insufficient funds') || errMsg.includes('gas required exceeds allowance') || errMsg.includes('insufficient balance')) {
