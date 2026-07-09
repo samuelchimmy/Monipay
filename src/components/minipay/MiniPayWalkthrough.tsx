@@ -322,4 +322,51 @@ function computeBubble(
     left = Math.max(PAD, vw - width - PAD);
   }
 
-  return {
+  return {
+    top,
+    left,
+    width,
+    cx: left + width / 2,
+    cy: top + 40,
+  };
+}
+
+function Connector({
+  rect,
+  bubble,
+}: {
+  rect: Rect;
+  bubble: { top: number; left: number; width: number; cx: number; cy: number };
+}) {
+  const tx = rect.left + rect.width / 2;
+  const ty = rect.top + rect.height / 2;
+  const bx = bubble.cx;
+  const by = bubble.top + 60;
+  // Curved path: quadratic bezier with control point offset.
+  const mx = (bx + tx) / 2;
+  const my = (by + ty) / 2 + (ty > by ? -40 : 40);
+  const d = `M ${bx},${by} Q ${mx},${my} ${tx},${ty}`;
+  return (
+    <svg
+      className="absolute inset-0 w-full h-full pointer-events-none text-black dark:text-white"
+      style={{ overflow: 'visible' }}
+    >
+      <motion.path
+        d={d}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        strokeDasharray="6 5"
+        strokeLinecap="round"
+        markerEnd="url(#mp-arrow)"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 0.55, ease: 'easeInOut' }}
+      />
+    </svg>
+  );
+}
+
+/* ── Completion screen ──────────────────────────────────────── */
+
+function CompletionScreen({ onClose }: { onClose: () => void }) {
