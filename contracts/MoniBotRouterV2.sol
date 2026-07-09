@@ -36,3 +36,189 @@ contract MoniBotRouterV2 is Ownable, ReentrancyGuard, Pausable {
     
     /**
      * @notice Sequential nonces for replay protection. 
+     * The bot must track and pass the current nonce for a user to execute a transaction.
+     * Once a transaction succeeds, the user's nonce is incremented.
+     * This prevents a hacker or rogue bot from taking a signed API payload and executing it twice.
+     */
+    mapping(address => uint256) public nonces;
+    
+    mapping(string => bool) public usedTweetIds;
+
+    // ============ Events ============
+    event P2PExecuted(address indexed from, address indexed to, address indexed token, uint256 amount, uint256 fee, uint256 nonce, string tweetId);
+    event TokenSupportUpdated(address indexed token, bool isSupported, uint256 minFee, uint256 maxAmountPerTx);
+    event ExecutorAdded(address indexed executor);
+    event ExecutorRemoved(address indexed executor);
+    event PlatformFeeUpdated(uint256 oldFeeBps, uint256 newFeeBps);
+    event PlatformTreasuryUpdated(address indexed oldTreasury, address indexed newTreasury);
+    event FeeExemptionUpdated(address indexed user, bool isExempt);
+    event GlobalFeeExemptionUpdated(bool isExempt);
+
+    // ============ Errors ============
+    error NotExecutor();
+    error InvalidAddress();
+    error InvalidAmount();
+    error InvalidNonce();
+    error InsufficientAllowance();
+    error InsufficientBalance();
+    error TweetIdAlreadyUsed();
+    error FeeTooHigh();
+    error UnsupportedToken();
+    error AmountExceedsLimit();
+
+    modifier onlyExecutor() {
+        if (!executors[msg.sender]) revert NotExecutor();
+        _;
+    }
+
+    constructor(
+        address _treasury,
+        uint256 _feeBps,
+        address _initialExecutor
+    ) Ownable(msg.sender) {
+        if (_treasury == address(0)) revert InvalidAddress();
+        if (_feeBps > MAX_FEE_BPS) revert FeeTooHigh();
+
+        platformTreasury = _treasury;
+        platformFeeBps = _feeBps;
+
+        if (_initialExecutor != address(0)) {
+            executors[_initialExecutor] = true;
+            emit ExecutorAdded(_initialExecutor);
+        }
+    }
+
+    /**
+     * @dev Centralized fee calculation logic.
+     * Precedence: globalFeeExempt > isFeeExempt[user] > standard fee calculation.
+     */
+    function _calculateFee(address user, address token, uint256 amount) internal view returns (uint256) {
+        if (globalFeeExempt || isFeeExempt[user]) {
+            return 0;
+        }
+        uint256 calculatedFee = (amount * platformFeeBps) / BPS_DENOMINATOR;
+        uint256 minFee = minFeeByToken[token];
+        return calculatedFee > minFee ? calculatedFee : minFee;
+    }
+
+    // ============ Core Functions ============
+
+    function executeP2P(
+        address from,
+        address to,
+        address token,
+        uint256 amount,
+        uint256 nonce,
+        string calldata tweetId
+    ) external onlyExecutor nonReentrant whenNotPaused returns (bool) {
+        if (from == address(0) || to == address(0)) revert InvalidAddress();
+        if (!supportedTokens[token]) revert UnsupportedToken();
+        if (amount == 0) revert InvalidAmount();
+        if (amount > maxAmountPerTxByToken[token]) revert AmountExceedsLimit();
+        if (nonce != nonces[from]) revert InvalidNonce();
+        if (bytes(tweetId).length > 0 && usedTweetIds[tweetId]) revert TweetIdAlreadyUsed();
+
+        uint256 fee = _calculateFee(from, token, amount);
+        uint256 totalRequired = amount + fee;
+
+        IERC20 tokenContract = IERC20(token);
+        if (tokenContract.allowance(from, address(this)) < totalRequired) revert InsufficientAllowance();
+        if (tokenContract.balanceOf(from) < totalRequired) revert InsufficientBalance();
+
+        nonces[from] = nonce + 1;
+
+        if (bytes(tweetId).length > 0) {
+            usedTweetIds[tweetId] = true;
+        }
+
+        tokenContract.safeTransferFrom(from, to, amount);
+        if (fee > 0) {
+            tokenContract.safeTransferFrom(from, platformTreasury, fee);
+        }
+
+        emit P2PExecuted(from, to, token, amount, fee, nonce, tweetId);
+        return true;
+    }
+
+    // ============ View Functions ============
+
+    /**
+     * @notice Aggregated view function for frontend/bot integration
+     */
+    function getConfig() external view returns (
+        address treasury,
+        uint256 feeBps,
+        uint256 maxFeeBps,
+        bool isGlobalFeeExempt,
+        bool isPaused
+    ) {
+        return (
+            platformTreasury,
+            platformFeeBps,
+            MAX_FEE_BPS,
+            globalFeeExempt,
+            paused()
+        );
+    }
+
+    function calculateFee(address user, address token, uint256 amount) external view returns (uint256) {
+        return _calculateFee(user, token, amount);
+    }
+
+    // ============ Admin Functions ============
+
+    function setSupportedToken(address token, bool isSupported, uint256 minFee, uint256 maxAmountPerTx) external onlyOwner {
+        if (token == address(0)) revert InvalidAddress();
+        supportedTokens[token] = isSupported;
+        minFeeByToken[token] = minFee;
+        maxAmountPerTxByToken[token] = maxAmountPerTx;
+        emit TokenSupportUpdated(token, isSupported, minFee, maxAmountPerTx);
+    }
+
+    function addExecutor(address executor) external onlyOwner {
+        if (executor == address(0)) revert InvalidAddress();
+        executors[executor] = true;
+        emit ExecutorAdded(executor);
+    }
+
+    function removeExecutor(address executor) external onlyOwner {
+        executors[executor] = false;
+        emit ExecutorRemoved(executor);
+    }
+
+    function setPlatformFee(uint256 newFeeBps) external onlyOwner {
+        if (newFeeBps > MAX_FEE_BPS) revert FeeTooHigh();
+        uint256 oldFeeBps = platformFeeBps;
+        platformFeeBps = newFeeBps;
+        emit PlatformFeeUpdated(oldFeeBps, newFeeBps);
+    }
+
+    function setPlatformTreasury(address newTreasury) external onlyOwner {
+        if (newTreasury == address(0)) revert InvalidAddress();
+        address oldTreasury = platformTreasury;
+        platformTreasury = newTreasury;
+        emit PlatformTreasuryUpdated(oldTreasury, newTreasury);
+    }
+
+    function setFeeExempt(address user, bool exempt) external onlyOwner {
+        isFeeExempt[user] = exempt;
+        emit FeeExemptionUpdated(user, exempt);
+    }
+
+    function setGlobalFeeExempt(bool exempt) external onlyOwner {
+        globalFeeExempt = exempt;
+        emit GlobalFeeExemptionUpdated(exempt);
+    }
+
+    function emergencyWithdraw(address token, uint256 amount) external onlyOwner {
+        IERC20(token).safeTransfer(owner(), amount);
+    }
+
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+}
