@@ -50,4 +50,21 @@ export function MiniPayWalletApp({ address }: Props) {
         setError(e?.message ?? "Failed to initialise wallet session");
       } finally {
         if (!cancelled) setIsReady(true);
-      }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [address]);
+
+  if (!isReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6 bg-background">
+        <div className="max-w-sm text-center space-y-3">
+          <h1 className="text-lg font-semibold">Couldn't start your session</h1>
