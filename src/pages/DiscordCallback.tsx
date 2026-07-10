@@ -29,4 +29,20 @@ export default function DiscordCallback() {
     } catch {
       setStatus("error");
       setMessage("Invalid session state. Please try again.");
-      return;
+      return;
+    }
+
+    const redirectUri = `${window.location.origin}/discord-callback`;
+
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("discord-oauth", {
+          body: { code, redirectUri, profileId, walletAddress },
+        });
+
+        if (error) throw error;
+        if (data?.error) {
+          setStatus("error");
+          setMessage(data.error);
+          return;
+        }
