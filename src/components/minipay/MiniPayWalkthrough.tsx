@@ -415,4 +415,50 @@ function CompletionScreen({ onClose }: { onClose: () => void }) {
         <h2 className="mt-5 text-xl font-semibold text-center">You're all set</h2>
         <p className="text-sm text-muted-foreground text-center mt-1">Welcome to MoniPay on Celo</p>
 
-        <ul className="mt-5 space-y-2 text-sm">
+        <ul className="mt-5 space-y-2 text-sm">
+          {['Claimed your MoniTag™', 'Approved MoniBot allowance', 'Linked a social account'].map((s) => (
+            <li key={s} className="flex items-center gap-2.5">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-[11px] flex-shrink-0">✓</span>
+              <span>{s}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-5 rounded-2xl border border-border bg-muted/40 p-4">
+          <p className="text-sm font-semibold">Use MoniBot</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Add the bot to Discord, Telegram, or X</p>
+          <div className="mt-3 grid gap-1.5">
+            <CompoLink href="https://discord.com/oauth2/authorize?client_id=1473815294022520964&permissions=2147483648&scope=bot" label="Add to Discord" sub="Invite the bot to your guild" />
+            <CompoLink href="https://t.me/monipaybot?startgroup=new" label="Add to Telegram" sub="Open in Telegram" />
+            <CompoLink href="https://x.com/intent/tweet?text=%40monibot%20" label="Tweet at MoniBot" sub="Send a public command" />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-5 w-full rounded-full bg-primary text-primary-foreground px-6 py-3 text-sm font-semibold hover:opacity-90 active:translate-y-[1px] transition"
+        >
+          Let's go
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function CompoLink({ href, label, sub }: { href: string; label: string; sub: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2 hover:bg-accent transition"
+    >
+      <div className="min-w-0">
+        <p className="text-sm font-medium leading-tight">{label}</p>
+        <p className="text-xs text-muted-foreground leading-tight truncate mt-0.5">{sub}</p>
+      </div>
+      <span className="text-base text-muted-foreground">→</span>
+    </a>
+  );
+}
