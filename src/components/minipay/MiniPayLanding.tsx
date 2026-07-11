@@ -75,4 +75,82 @@ function MiniPayBackdrop() {
         }}
       />
       {/* faint dot grid */}
-      <div
+      <div
+        className="absolute inset-0 opacity-[0.35] dark:opacity-[0.25]"
+        style={{
+          backgroundImage:
+            'radial-gradient(hsl(var(--mp-ink) / 0.18) 1px, transparent 1px)',
+          backgroundSize: '22px 22px',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, black 0%, black 40%, transparent 90%)',
+          maskImage:
+            'linear-gradient(to bottom, black 0%, black 40%, transparent 90%)',
+        }}
+      />
+    </div>
+  );
+}
+
+/* ── Reveal helper ── */
+function Reveal({ children, className = '', delay = 0, y = 24 }: { children: React.ReactNode; className?: string; delay?: number; y?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y, scale: 0.97, filter: 'blur(8px)' }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' } : {}}
+      transition={{ duration: 0.85, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ── Header ── */
+function MiniPayHeader({ onSignIn }: { onSignIn: () => void }) {
+  const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
+  return (
+    <div className="sticky top-3 z-50 px-3 sm:px-6 pt-3">
+      <div className="mx-auto max-w-5xl">
+        <div
+          className="flex items-center justify-between gap-2 rounded-full pl-2 pr-2 py-2 border border-black dark:border-white"
+          style={{
+            background: '#FCFF52',
+            boxShadow: '0 8px 32px -12px rgba(0,0,0,0.25)',
+          }}
+        >
+          <div className="flex items-center gap-2 pl-1">
+            <MoniPayLogo size={26} color="#000" animationMode="header" entranceOnMount />
+            <span className="font-bold tracking-tight text-[15px] text-black">Monipay</span>
+            <span className="mx-1 text-black/30">|</span>
+            <CeloLogo className="h-5" size={20} />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              aria-label="Toggle theme"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-black hover:bg-black/10 transition-colors"
+            >
+              <Sun className="h-4 w-4 dark:hidden" />
+              <Moon className="h-4 w-4 hidden dark:block" />
+            </button>
+            <button
+              type="button"
+              onClick={onSignIn}
+              className="inline-flex h-9 sm:h-10 items-center gap-1 rounded-full pl-4 pr-3 text-sm font-semibold text-[#FCFF52] bg-black transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {t('minipay_sign_in')}
+              <ArrowUpRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Hero halo ── */
