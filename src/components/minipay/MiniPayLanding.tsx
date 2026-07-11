@@ -153,4 +153,82 @@ function MiniPayHeader({ onSignIn }: { onSignIn: () => void }) {
   );
 }
 
-/* ── Hero halo ── */
+/* ── Hero halo ── */
+const SOCIAL_BUBBLES = [
+  { id: 'x',        Icon: XIcon,       label: 'X',        color: 'hsl(var(--mp-ink))' },
+  { id: 'discord',  Icon: DiscordIcon, label: 'Discord',  color: '#5865F2' },
+  { id: 'telegram', Icon: TelegramIcon,label: 'Telegram', color: '#229ED9' },
+  { id: 'bluesky',  Icon: BlueskyIcon, label: 'Bluesky',  color: '#1185FE' },
+];
+
+function SocialHaloPhone() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(containerRef, { once: true, margin: '-80px' });
+  const phoneX = 300;
+  const phoneTopY = 240;
+  // Geometric arc: 4 points evenly distributed across a 120° arc
+  // centered above the phone notch. Position = polar(center, radius, angle).
+  // Arc center sits BELOW the icons (and just above the phone notch). Lowering
+  // arcCenter.y while keeping radius lifts every icon UP by the same amount,
+  // so they balance precisely on top of the connector tips without breaking
+  // the equal-angular spacing.
+  const arcCenter = { x: 264, y: 200 };
+  const arcRadius = 175;
+  const arcAngles = [-48, -16, 16, 48]; // evenly spaced across a 96° arc
+  const bubblePositions = arcAngles.map((deg) => {
+    const rad = (deg * Math.PI) / 180;
+    return {
+      x: arcCenter.x + arcRadius * Math.sin(rad),
+      y: arcCenter.y - arcRadius * Math.cos(rad),
+    };
+  });
+  // Dotted reference arc — extends ~10° past the outer icons so they sit cleanly on the curve.
+  const arcStart = {
+    x: arcCenter.x + arcRadius * Math.sin((-58 * Math.PI) / 180),
+    y: arcCenter.y - arcRadius * Math.cos((-58 * Math.PI) / 180),
+  };
+  const arcEnd = {
+    x: arcCenter.x + arcRadius * Math.sin((58 * Math.PI) / 180),
+    y: arcCenter.y - arcRadius * Math.cos((58 * Math.PI) / 180),
+  };
+  const arcPath = `M ${arcStart.x},${arcStart.y} A ${arcRadius},${arcRadius} 0 0 1 ${arcEnd.x},${arcEnd.y}`;
+
+  return (
+    <div ref={containerRef} className="relative w-full max-w-[640px] mx-auto select-none pb-[460px] sm:pb-[560px] md:pb-[660px]">
+      {/* Arc layer — sized to the SVG's intrinsic 600:720 ratio so the bubble overlay
+          uses the SAME coordinate space as the SVG (otherwise % top of the outer
+          container — which includes the phone padding — pushes bubbles off the arc). */}
+      <div className="relative w-full" style={{ aspectRatio: '600 / 720' }}>
+      <svg viewBox="0 0 600 720" className="absolute inset-0 w-full h-full" aria-hidden>
+        <path
+          d={arcPath}
+          fill="none"
+          stroke="hsl(var(--mp-border))"
+          strokeWidth="1.2"
+          strokeDasharray="3 6"
+          opacity="0.7"
+        />
+        {bubblePositions.map((p, i) => {
+          // Connector tip starts at the BOTTOM EDGE of the icon bubble (~32px
+          // radius) so the icon visually balances on the tip of the line.
+          const dx = (phoneX - p.x) * 0.45;
+          const d = `M ${p.x} ${p.y + 32} C ${p.x + dx} ${p.y + 120}, ${phoneX - dx * 0.3} ${phoneTopY - 60}, ${phoneX} ${phoneTopY}`;
+          return (
+            <g key={i}>
+              <path
+                d={d}
+                fill="none"
+                stroke="hsl(var(--mp-primary))"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeDasharray="400"
+                strokeDashoffset={inView ? 0 : 400}
+                style={{ transition: `stroke-dashoffset 1.1s cubic-bezier(0.22,1,0.36,1) ${0.2 + i * 0.12}s` }}
+              />
+              <circle
+                r="3.5"
+                fill="hsl(var(--mp-primary))"
+                style={{
+                  offsetPath: `path('${d}')`,
+                  // @ts-ignore vendor
+                  WebkitOffsetPath: `path('${d}')`,
