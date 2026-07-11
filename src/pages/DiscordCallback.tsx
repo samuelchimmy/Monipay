@@ -45,4 +45,20 @@ export default function DiscordCallback() {
           setStatus("error");
           setMessage(data.error);
           return;
-        }
+        }
+
+        setStatus("success");
+        setMessage(`Connected as ${data.discord_username}!`);
+
+        // Notify the opener window and close
+        if (window.opener) {
+          window.opener.postMessage({ type: "discord-oauth-success", ...data }, window.location.origin);
+          setTimeout(() => window.close(), 1500);
+        }
+      } catch (e: any) {
+        setStatus("error");
+        setMessage(e.message || "Failed to link Discord account.");
+      }
+    })();
+  }, [searchParams]);
+
