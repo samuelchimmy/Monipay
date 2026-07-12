@@ -231,4 +231,82 @@ function SocialHaloPhone() {
                 style={{
                   offsetPath: `path('${d}')`,
                   // @ts-ignore vendor
-                  WebkitOffsetPath: `path('${d}')`,
+                  WebkitOffsetPath: `path('${d}')`,
+                  animation: inView ? `mp-pulse-dot 2.4s ${1.4 + i * 0.25}s linear infinite` : undefined,
+                  opacity: 0,
+                }}
+              />
+            </g>
+          );
+        })}
+      </svg>
+      <div className="absolute inset-0 pointer-events-none">
+        {bubblePositions.map((p, i) => {
+          const b = SOCIAL_BUBBLES[i];
+          return (
+            <motion.div
+              key={b.id}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={{
+                type: 'spring',
+                stiffness: 380,
+                damping: 12,
+                mass: 0.7,
+                delay: 0.25 + i * 0.12,
+              }}
+              className="absolute"
+              style={{
+                left: `${(p.x / 600) * 100}%`,
+                top: `${(p.y / 720) * 100}%`,
+                transform: 'translate(-50%, -50%)',
+              }}
+              aria-hidden="true"
+            >
+              <div
+                className="h-12 w-12 sm:h-16 sm:w-16 rounded-full flex items-center justify-center pointer-events-auto bg-white dark:bg-black shadow-[0_0_0_2px_hsl(var(--mp-primary)),0_0_0_3.5px_#fff,0_14px_30px_-10px_hsl(var(--mp-ink)/0.28)] dark:shadow-[0_0_0_2px_hsl(var(--mp-primary)),0_14px_30px_-10px_hsl(var(--mp-ink)/0.6)]"
+              >
+                <span className="text-black dark:text-white">
+                  <b.Icon className="h-5 w-5 sm:h-7 sm:w-7" />
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+      </div>
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-x-0 flex justify-center"
+          style={{ top: 'calc((min(100vw - 32px, 640px) * 0.3667) - 24px)' }}
+        >
+          <div className="relative flex justify-center">
+            <img
+              src={phoneMockupLight}
+              alt="MoniBot social payments shown inside a phone"
+              className="block dark:hidden h-auto max-w-none select-none"
+              style={{ width: 'min(98vw, 620px)' }}
+              width="620"
+              height="1102"
+              fetchPriority="high"
+            />
+            <img
+              src={phoneMockupDark}
+              alt="MoniBot social payments shown inside a phone"
+              className="hidden dark:block h-auto max-w-none select-none"
+              style={{ width: 'min(98vw, 620px)' }}
+              width="620"
+              height="1102"
+              fetchPriority="high"
+            />
+            {/* Cloud fade — soft gradient in the EXACT page bg color so the phone's
+                bottom edge dissolves into the surface. Short height, no blur halo. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[12%]"
+              style={{
+                background:
+                  'linear-gradient(to bottom, hsl(var(--mp-surface) / 0) 0%, hsl(var(--mp-surface) / 0.85) 65%, hsl(var(--mp-surface)) 100%)',
