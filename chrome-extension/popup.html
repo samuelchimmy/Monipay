@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoniPay</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ═══ Welcome Screen ═══ -->
+    <div id="welcome-screen" class="screen hidden">
+      <div class="logo">
+        <div class="logo-icon">M</div>
+        <div class="logo-row">
+          <h1>MoniPay</h1>
+          <span class="beta-pill">Beta</span>
+        </div>
+      </div>
+      <p class="subtitle">Gasless payments on Base, BSC &amp; Tempo. Send, receive, and manage crypto from your browser.</p>
+      <button id="welcome-create-btn" class="btn-primary">Create Account</button>
+      <button id="welcome-import-btn" class="btn-secondary" style="margin-top:10px">Import Existing Wallet</button>
+      <a href="https://monipay.xyz" target="_blank" class="btn-text" style="margin-top:16px">Learn more →</a>
+    </div>
+
+    <!-- ═══ Create: Step 1 — MoniTag ═══ -->
+    <div id="create-tag-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" data-back="welcome-screen">←</button>
+        <span class="step-label">Step 1 of 3</span>
+      </div>
+      <h2>Choose your MoniTag</h2>
+      <p class="subtitle">This is your unique payment identity.</p>
+      <div class="form-group">
+        <label>MoniTag</label>
+        <div class="input-prefix-wrap">
+          <span class="input-prefix">@</span>
+          <input type="text" id="create-paytag" placeholder="e.g. alice" autocomplete="off" />
+        </div>
+        <p id="tag-error" class="field-error hidden"></p>
+      </div>
+      <button id="create-tag-next" class="btn-primary">Continue</button>
+    </div>
+
+    <!-- ═══ Create: Step 2 — PIN ═══ -->
+    <div id="create-pin-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" data-back="create-tag-screen">←</button>
+        <span class="step-label">Step 2 of 3</span>
+      </div>
+      <h2>Set your PIN</h2>
+      <p class="subtitle">4-digit PIN to secure your wallet.</p>
+      <div class="form-group">
+        <label>PIN</label>
+        <input type="password" id="create-pin" maxlength="4" placeholder="••••" class="pin-input" inputmode="numeric" />
+      </div>
+      <div class="form-group">
+        <label>Confirm PIN</label>
+        <input type="password" id="create-pin-confirm" maxlength="4" placeholder="••••" class="pin-input" inputmode="numeric" />
+        <p id="pin-error" class="field-error hidden"></p>
+      </div>
+      <button id="create-pin-next" class="btn-primary">Continue</button>
+    </div>
+
+    <!-- ═══ Create: Step 3 — Mode ═══ -->
+    <div id="create-mode-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" data-back="create-pin-screen">←</button>
+        <span class="step-label">Step 3 of 3</span>
+      </div>
+      <h2>How will you use MoniPay?</h2>
+      <p class="subtitle">You can change this anytime.</p>
+      <div class="mode-cards">
+        <button class="mode-card" data-mode="user">
+          <span class="mode-icon">👤</span>
+          <span class="mode-title">Personal</span>
+          <span class="mode-desc">Send & receive payments</span>
+        </button>
+        <button class="mode-card" data-mode="merchant">
+          <span class="mode-icon">🏪</span>
+          <span class="mode-title">Merchant</span>
+          <span class="mode-desc">Accept payments & invoices</span>
+        </button>
+      </div>
+      <button id="create-finish-btn" class="btn-primary" disabled>Create Account</button>
+      <div id="create-status" class="status hidden"></div>
+    </div>
+
+    <!-- ═══ Backup Screen ═══ -->
+    <div id="backup-screen" class="screen hidden">
+      <div class="screen-header">
+        <span class="step-label">Backup Your Wallet</span>
+      </div>
+      <div class="alert-box alert-warning">
+        <strong>⚠️ Save your private key!</strong><br/>
+        This is the ONLY way to recover your wallet. MoniPay cannot recover it for you.
+      </div>
+      <div class="key-display">
+        <code id="backup-key">Loading...</code>
+        <button id="copy-key-btn" class="copy-btn">📋 Copy</button>
+      </div>
+      <p id="copy-status" class="field-success hidden">✓ Copied to clipboard</p>
+      <button id="backup-done-btn" class="btn-primary" disabled>I've Saved My Key</button>
+      <p class="hint">You can also back up from Settings later.</p>
+    </div>
+
+    <!-- ═══ Import Screen ═══ -->
+    <div id="import-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" data-back="welcome-screen">←</button>
+        <span class="step-label">Import Wallet</span>
+      </div>
+      <h2>Sign In</h2>
+      <p class="subtitle">Enter your MoniTag and PIN to connect your existing wallet.</p>
+      <div class="form-group">
+        <label>MoniTag</label>
+        <div class="input-prefix-wrap">
+          <span class="input-prefix">@</span>
+          <input type="text" id="import-paytag" placeholder="e.g. alice" autocomplete="off" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>PIN</label>
+        <input type="password" id="import-pin" maxlength="4" placeholder="••••" class="pin-input" inputmode="numeric" />
+      </div>
+      <p id="import-error" class="field-error hidden"></p>
+      <button id="import-btn" class="btn-primary">Sign In</button>
+      <div id="import-status" class="status hidden"></div>
+    </div>
+
+    <!-- ═══ Lock Screen ═══ -->
+    <div id="lock-screen" class="screen hidden">
+      <div class="logo">
+        <div class="logo-icon">M</div>
+      </div>
+      <p class="subtitle">Enter your PIN to unlock</p>
+      <div class="form-group">
+        <input type="password" id="lock-pin" maxlength="4" placeholder="••••" class="pin-input" inputmode="numeric" />
+      </div>
+      <button id="unlock-btn" class="btn-primary">Unlock</button>
+    </div>
+
+    <!-- ═══ Dashboard ═══ -->
+    <div id="dashboard-screen" class="screen hidden">
+      <!-- Dashboard Header -->
+      <div class="dash-header">
+        <div class="dash-identity">
+          <div class="logo-icon logo-icon-sm">M</div>
+          <span class="dash-tag" id="dash-tag">@—</span>
+          <span class="beta-pill">Beta</span>
+        </div>
+        <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
+      </div>
+
+      <!-- Network Selector -->
+      <div class="network-bar">
+        <button class="net-btn active" data-net="celo">Celo</button>
+      </div>
+
+      <!-- Balance Card -->
+      <div class="balance-card">
+        <p class="balance-label">Balance</p>
+        <p class="balance-amount" id="dash-balance">$0.00</p>
+        <p class="balance-token" id="dash-token">cUSD on Celo</p>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="action-grid">
+        <button class="action-btn" id="action-send">
+          <span class="action-icon">↗️</span>
+          <span>Send</span>
+        </button>
+        <button class="action-btn" id="action-receive">
+          <span class="action-icon">↙️</span>
+          <span>Receive</span>
+        </button>
+        <button class="action-btn" id="action-monibot">
+          <span class="action-icon">🤖</span>
+          <span>MoniBot</span>
+        </button>
+        <button class="action-btn" id="action-open-app">
+          <span class="action-icon">🌐</span>
+          <span>Open App</span>
+        </button>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="section-header">
+        <span>Recent Activity</span>
+        <button id="refresh-btn" class="icon-btn-sm">🔄</button>
+      </div>
+      <div id="activity-list" class="activity-list">
+        <p class="empty-state">No recent transactions</p>
+      </div>
+    </div>
+
+    <!-- ═══ Send Screen ═══ -->
+    <div id="send-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" data-back="dashboard-screen">←</button>
+        <span class="step-label">Send Payment</span>
+      </div>
+      <div class="form-group">
+        <label>Recipient MoniTag</label>
+        <div class="input-prefix-wrap">
+          <span class="input-prefix">@</span>
+          <input type="text" id="send-recipient" placeholder="recipient" autocomplete="off" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Amount (<span id="send-currency">USDC</span>)</label>
+        <input type="number" id="send-amount" placeholder="0.00" step="0.01" min="0.01" />
+      </div>
+      <div class="form-group">
+        <label>PIN</label>
+        <input type="password" id="send-pin" maxlength="4" placeholder="••••" class="pin-input" inputmode="numeric" />
+      </div>
+      <p id="send-error" class="field-error hidden"></p>
+      <button id="send-confirm-btn" class="btn-primary">Send</button>
+      <div id="send-status" class="status hidden"></div>
+    </div>
+
+    <!-- ═══ Receive Screen ═══ -->
+    <div id="receive-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" data-back="dashboard-screen">←</button>
+        <span class="step-label">Receive</span>
+      </div>
+      <div class="receive-card">
+        <p class="receive-label">Your MoniTag</p>
+        <p class="receive-tag" id="receive-tag">@—</p>
+        <div class="receive-address-wrap">
+          <p class="receive-addr-label">Wallet Address</p>
+          <code class="receive-addr" id="receive-addr">0x...</code>
+          <button id="copy-addr-btn" class="copy-btn">📋 Copy</button>
+        </div>
+        <p id="addr-copy-status" class="field-success hidden">✓ Copied</p>
+      </div>
+      <p class="hint">Share your MoniTag or address to receive payments.</p>
+    </div>
+
+    <!-- ═══ MoniBot Screen ═══ -->
+    <div id="monibot-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" data-back="dashboard-screen">←</button>
+        <span class="step-label">🤖 MoniBot AI</span>
+      </div>
+
+      <div class="monibot-section">
+        <h3>Spending Allowance</h3>
+        <p class="subtitle">Set how much MoniBot can spend on your behalf via social commands.</p>
+
+        <div class="allowance-card" id="allowance-card">
+          <div class="allowance-row">
+            <span class="allowance-label">Current Allowance</span>
+            <span class="allowance-value" id="allowance-value">$0.00</span>
+          </div>
+          <div class="allowance-row">
+            <span class="allowance-label">Network</span>
+            <span class="allowance-value" id="allowance-network">Base</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>New Allowance Amount</label>
+          <input type="number" id="allowance-input" placeholder="e.g. 50" step="1" min="0" />
+        </div>
+        <div class="form-group">
+          <label>PIN to Approve</label>
+          <input type="password" id="allowance-pin" maxlength="4" placeholder="••••" class="pin-input" inputmode="numeric" />
+        </div>
+        <button id="set-allowance-btn" class="btn-primary">Update Allowance</button>
+        <p id="allowance-error" class="field-error hidden"></p>
+        <div id="allowance-status" class="status hidden"></div>
+      </div>
+
+      <div class="monibot-section">
+        <h3>Social Accounts</h3>
+        <p class="subtitle">Link your social accounts to use MoniBot commands on Twitter, Discord, and Telegram.</p>
+        <div class="social-links">
+          <div class="social-row">
+            <span>𝕏 Twitter</span>
+            <span class="social-status" id="social-x">Not linked</span>
+          </div>
+          <div class="social-row">
+            <span>💬 Discord</span>
+            <span class="social-status" id="social-discord">Not linked</span>
+          </div>
+          <div class="social-row">
+            <span>✈️ Telegram</span>
+            <span class="social-status" id="social-telegram">Not linked</span>
+          </div>
+        </div>
+        <button id="link-socials-btn" class="btn-secondary" style="margin-top:12px">Link Accounts on monipay.xyz →</button>
+      </div>
+
+      <div class="monibot-section">
+        <h3>How to Use</h3>
+        <div class="usage-cards">
+          <div class="usage-card">
+            <strong>Twitter/X</strong>
+            <p>Reply to @monibot with your @monitag to receive campaign grants.</p>
+          </div>
+          <div class="usage-card">
+            <strong>Discord</strong>
+            <p>Use <code>!send $5 @alice</code> to send payments in any MoniBot server.</p>
+          </div>
+          <div class="usage-card">
+            <strong>Telegram</strong>
+            <p>Message @MoniBot with <code>/send $5 @alice</code> for instant transfers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Settings Screen ═══ -->
+    <div id="settings-screen" class="screen hidden">
+      <div class="screen-header">
+        <button class="back-btn" data-back="dashboard-screen">←</button>
+        <span class="step-label">Settings</span>
+      </div>
+
+      <div class="settings-section">
+        <h3>Account</h3>
+        <div class="settings-row">
+          <span>MoniTag</span>
+          <span class="settings-value" id="settings-tag">@—</span>
+        </div>
+        <div class="settings-row">
+          <span>Preferred Mode</span>
+          <span class="settings-value" id="settings-mode">—</span>
+        </div>
+        <div class="settings-row">
+          <span>Network</span>
+          <span class="settings-value" id="settings-network">Base</span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Wallet</h3>
+        <div class="settings-row">
+          <span>Address</span>
+          <span class="settings-value settings-addr" id="settings-addr">0x...</span>
+        </div>
+        <button id="export-key-btn" class="btn-secondary">Export Encrypted Key</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Danger Zone</h3>
+        <button id="lock-btn" class="btn-secondary">Lock Wallet</button>
+        <button id="disconnect-btn" class="btn-danger" style="margin-top:10px">Disconnect Wallet</button>
+      </div>
+
+      <p class="hint" style="margin-top:20px">MoniPay Extension v2.0 • <a href="https://monipay.xyz" target="_blank" class="link">monipay.xyz</a></p>
+    </div>
+
+    <!-- ═══ Payment Confirmation (merchant trigger) ═══ -->
+    <div id="payment-screen" class="screen hidden">
+      <div class="logo">
+        <div class="logo-icon">M</div>
+      </div>
+      <div class="payment-card">
+        <p class="payment-label">Payment Request</p>
+        <p class="payment-amount" id="pay-amount">$0.00</p>
+        <p class="payment-merchant" id="pay-merchant">Merchant</p>
+      </div>
+      <div class="form-group">
+        <label>Confirm PIN</label>
+        <input type="password" id="pay-pin" maxlength="4" placeholder="••••" class="pin-input" inputmode="numeric" />
+      </div>
+      <div class="btn-row">
+        <button id="reject-btn" class="btn-secondary">Reject</button>
+        <button id="approve-btn" class="btn-primary">Pay</button>
+      </div>
+      <div id="pay-status" class="status hidden"></div>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
