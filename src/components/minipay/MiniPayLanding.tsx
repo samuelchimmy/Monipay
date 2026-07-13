@@ -309,4 +309,82 @@ function SocialHaloPhone() {
               className="pointer-events-none absolute inset-x-0 bottom-0 h-[12%]"
               style={{
                 background:
-                  'linear-gradient(to bottom, hsl(var(--mp-surface) / 0) 0%, hsl(var(--mp-surface) / 0.85) 65%, hsl(var(--mp-surface)) 100%)',
+                  'linear-gradient(to bottom, hsl(var(--mp-surface) / 0) 0%, hsl(var(--mp-surface) / 0.85) 65%, hsl(var(--mp-surface)) 100%)',
+              }}
+            />
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function MiniPayHero({ onGetStarted }: { onGetStarted: () => void }) {
+  const { t } = useTranslation();
+  const isMiniPayContext = typeof window !== 'undefined' && !!(window as any).ethereum?.isMiniPay;
+
+  const badgeText = isMiniPayContext ? "Transact in Conversations" : t('minipay_hero_badge');
+  const title1 = isMiniPayContext ? "Social Payments" : t('minipay_hero_title_1');
+  const title2 = isMiniPayContext ? "Native to MiniPay." : t('minipay_hero_title_2');
+  const descText = isMiniPayContext
+    ? "Claim your MoniTag and link your social handles. Send and receive money instantly using usernames (@MoniTag) directly in chats on X, Telegram, and Discord. Zero gas fees, fully sponsored."
+    : t('minipay_hero_desc');
+  const ctaText = "Launch Agent";
+
+  return (
+    <section className="relative px-4 sm:px-6 pt-10 sm:pt-16 pb-12">
+      <div className="relative z-10 mx-auto max-w-5xl text-center">
+        <Reveal>
+          <span
+            className="inline-flex items-center gap-2 rounded-full pl-1 pr-4 py-1 text-[12px] font-bold tracking-tight"
+            style={{
+              background: 'hsl(var(--mp-surface))',
+              color: 'hsl(var(--mp-ink))',
+              border: '1px solid hsl(var(--mp-border))',
+              boxShadow: '0 6px 18px -8px hsl(var(--mp-ink) / 0.18)',
+            }}
+          >
+            <img
+              src={AVATAR_MAP['ai-pill']}
+              alt=""
+              className="h-5 w-5 rounded-full object-cover bg-white"
+              style={{ boxShadow: '0 0 0 1.25px #fff, 0 0 0 2.25px hsl(var(--mp-primary))' }}
+            />
+            {badgeText}
+          </span>
+        </Reveal>
+        <Reveal delay={0.05}>
+          <h1
+            className="mt-5 text-[30px] sm:text-[44px] md:text-[54px] leading-[1.04] font-extrabold tracking-tight"
+            style={{ color: 'hsl(var(--mp-ink))' }}
+          >
+            {title1}
+            <br />
+            <span style={{ color: 'hsl(var(--mp-primary))' }}>{title2}</span>
+          </h1>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <p
+            className="mx-auto mt-4 max-w-[600px] text-[15px] sm:text-base"
+            style={{ color: 'hsl(var(--mp-muted))' }}
+          >
+            {descText}
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.15} className="mt-6 flex justify-center">
+          <button
+            onClick={onGetStarted}
+            className="inline-flex items-center gap-2 rounded-full px-7 h-12 text-sm font-bold text-white dark:text-zinc-950 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            style={{
+              background: 'hsl(var(--mp-primary))',
+              boxShadow: '0 14px 32px -10px hsl(var(--mp-primary) / 0.55)',
+            }}
+          >
+            {ctaText}
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </Reveal>
+
+        <Reveal delay={0.2} className="mt-10 sm:mt-14 flex justify-center">
+          <div className="w-full max-w-[640px] mx-auto">
