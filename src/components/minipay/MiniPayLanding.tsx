@@ -387,4 +387,82 @@ function MiniPayHero({ onGetStarted }: { onGetStarted: () => void }) {
         </Reveal>
 
         <Reveal delay={0.2} className="mt-10 sm:mt-14 flex justify-center">
-          <div className="w-full max-w-[640px] mx-auto">
+          <div className="w-full max-w-[640px] mx-auto">
+            <SocialHaloPhone />
+          </div>
+        </Reveal>
+
+        {!isMiniPayContext && (
+          <Reveal delay={0.25} className="mt-12 flex justify-center">
+            <XExhibitBadge variant="card" className="max-w-[640px] w-full" />
+          </Reveal>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ── Avatar helper: real pfp with theme frame ── */
+const AVATAR_MAP: Record<string, string> = {
+  'alex-x': avatar1,
+  'mara-d': avatar2,
+  'nora-t': avatar6,
+  'monibot': avatar4,
+  'ai-pill': avatar3,
+  'extra-1': avatar5,
+};
+
+function Pfp({ seed, size = 28 }: { seed: string; size?: number }) {
+  const url = AVATAR_MAP[seed] ?? avatar5;
+  return (
+    <img
+      src={url}
+      alt={seed}
+      width={size}
+      height={size}
+      className="rounded-full shrink-0 bg-white object-cover"
+      style={{
+        width: size,
+        height: size,
+        boxShadow: '0 0 0 2px #fff, 0 0 0 3.5px hsl(var(--mp-primary))',
+      }}
+    />
+  );
+}
+
+/* ── Phone mockup shell (theme-aware) ── */
+function PhoneMockup({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mx-auto w-full max-w-[380px] sm:max-w-[420px]">
+      <div
+        className="relative rounded-[3rem] p-3 shadow-2xl"
+        style={{
+          background: 'linear-gradient(160deg, #2a2f3a 0%, #14171d 60%, #0a0c10 100%)',
+          boxShadow: '0 40px 80px -30px rgba(0,0,0,0.55), 0 8px 24px -12px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05)',
+        }}
+      >
+        {/* side buttons */}
+        <span aria-hidden className="absolute left-[-2px] top-[110px] h-7 w-[3px] rounded-l bg-zinc-700" />
+        <span aria-hidden className="absolute left-[-2px] top-[160px] h-12 w-[3px] rounded-l bg-zinc-700" />
+        <span aria-hidden className="absolute left-[-2px] top-[220px] h-12 w-[3px] rounded-l bg-zinc-700" />
+        <span aria-hidden className="absolute right-[-2px] top-[180px] h-16 w-[3px] rounded-r bg-zinc-700" />
+
+        <div
+          className="relative rounded-[2.4rem] overflow-hidden"
+          style={{ background: 'hsl(var(--mp-surface))' }}
+        >
+          {/* dynamic island */}
+          <div className="absolute left-1/2 top-2 -translate-x-1/2 z-10 h-[26px] w-[110px] rounded-full bg-black flex items-center justify-end pr-2.5">
+            <span className="h-2 w-2 rounded-full bg-zinc-700" />
+          </div>
+          <div className="px-4 pt-12 pb-6">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Chat demos ── */
+const CHAT_DEMOS = [
