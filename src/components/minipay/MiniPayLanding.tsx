@@ -465,4 +465,82 @@ function PhoneMockup({ children }: { children: React.ReactNode }) {
 }
 
 /* ── Chat demos ── */
-const CHAT_DEMOS = [
+const CHAT_DEMOS = [
+  {
+    network: 'X',
+    Icon: XIcon,
+    handle: '@alex',
+    userKey: 'minipay_chat_x_user',
+    botKey: 'minipay_chat_x_bot',
+    seed: 'alex-x',
+  },
+  {
+    network: 'Discord',
+    img: discordSvg,
+    handle: '#design-team',
+    userKey: 'minipay_chat_discord_user',
+    botKey: 'minipay_chat_discord_bot',
+    seed: 'mara-d',
+  },
+  {
+    network: 'Telegram',
+    img: telegramSvg,
+    handle: '@nora',
+    userKey: 'minipay_chat_telegram_user',
+    botKey: 'minipay_chat_telegram_bot',
+    seed: 'nora-t',
+  },
+];
+
+function ChatDemos() {
+  const { t } = useTranslation();
+  return (
+    <section className="relative px-4 sm:px-6 py-16 sm:py-24" style={{ background: 'hsl(var(--mp-surface))' }}>
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="text-center mb-6 sm:mb-8">
+          <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: 'hsl(var(--mp-primary-strong))' }}>
+            {t('minipay_chat_eyebrow')}
+          </span>
+          <h2 className="mt-2 text-[22px] sm:text-[34px] font-extrabold tracking-tight" style={{ color: 'hsl(var(--mp-ink))' }}>
+            {t('minipay_chat_title')}
+          </h2>
+          <p className="mt-2 max-w-xl mx-auto text-sm" style={{ color: 'hsl(var(--mp-muted))' }}>
+            {t('minipay_chat_subtitle')}
+          </p>
+        </Reveal>
+
+        <Reveal>
+          <PhoneMockup>
+            <div className="space-y-5">
+              {CHAT_DEMOS.map((c) => (
+                <div
+                  key={c.network}
+                  className="rounded-2xl overflow-hidden"
+                  style={{
+                    background: 'hsl(var(--mp-surface-elev))',
+                    border: '1px solid hsl(var(--mp-border))',
+                  }}
+                >
+                  <div
+                    className="flex items-center gap-2 px-3 py-2 border-b"
+                    style={{ borderColor: 'hsl(var(--mp-border))' }}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-red-400" />
+                    <span className="h-2 w-2 rounded-full bg-amber-400" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <div className="ml-1.5 flex items-center gap-1.5 text-[10px] font-semibold" style={{ color: 'hsl(var(--mp-muted))' }}>
+                      {c.img ? (
+                        <img src={c.img} alt={c.network} className={`h-3 w-3 ${c.network === 'Discord' ? 'dark:[filter:invert(1)_brightness(2)]' : ''}`} />
+                      ) : (
+                        c.Icon && <c.Icon className="h-3 w-3" />
+                      )}
+                      {c.network} · {c.handle}
+                    </div>
+                  </div>
+                  <div className="p-3 space-y-2.5">
+                    <div className="flex items-end gap-2">
+                      <Pfp seed={c.seed} size={26} />
+                      <div
+                        className="rounded-2xl rounded-bl-sm px-3 py-2 text-[12px] leading-snug max-w-[82%]"
+                        style={{ background: 'hsl(var(--mp-faint))', color: 'hsl(var(--mp-ink))' }}
+                      >
