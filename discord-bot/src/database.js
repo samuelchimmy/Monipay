@@ -1,0 +1,30 @@
+/**
+ * Re-export database.js from root for src/ module imports.
+ */
+export {
+  initSupabase,
+  getSupabase,
+  getProfileByDiscordId,
+  getProfileByMonitag,
+  isCommandProcessed,
+  logCommand,
+  updateCommandStatus,
+  logMonibotTransaction,
+  upsertDiscordServer,
+  markServerInactive,
+  createScheduledJob,
+  getCompletedScheduledJobs,
+  getPendingScheduledJobs,
+  getServerConfig,
+  updateServerChain,
+  markCommandReplied,
+  updateUserPreferredNetwork,
+  getTransactionHistory,
+  getClaimableIOUs,
+  getGuildLeaderboard,
+  checkFeedbackEligibility,
+  logFeedbackPrompt,
+  getActiveCampaigns,
+  getPendingScheduledJobsForUser,
+  cancelScheduledJobs,
+} from '../database.js';
