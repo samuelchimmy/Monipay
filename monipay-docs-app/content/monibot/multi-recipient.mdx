@@ -1,0 +1,19 @@
+---
+title: "MoniBot Multi-Recipient Payments"
+description: "MoniBot parses comma-separated and 'and'-separated recipient lists for atomic batch payments across chains."
+canonical: "https://docs.monipay.xyz/docs/monibot/multi-recipient"
+ogImage: "/og/monibot.png"
+updated: "2026-06-19"
+section: "MoniBot"
+tags: ["monibot", "batch", "payments"]
+---
+
+# Multi-recipient MoniBot payments
+
+MoniBot supports two separator styles for batch P2P:
+
+- Commas: `send $1 to @alice, @bob, @charlie`
+- "and": `send $1 to @alice and @bob`
+- Mixed: `send $1 to @alice, @bob and @charlie`
+
+On EVM, the batch is executed via sequential transactions from the executor wallet. On **Tempo**, MoniBot uses a single **batch-call** atomic transaction (one signature, all-or-nothing).
