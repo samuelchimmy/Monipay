@@ -1,0 +1,30 @@
+---
+title: "Monipay on BSC | Gasless USDT Payments"
+description: "Send USDT (BEP-20) on BNB Smart Chain with zero gas. EIP-712 relayer, 1% fee, 18 decimals."
+canonical: "https://docs.monipay.xyz/docs/chains/bsc"
+ogImage: "/og/bsc.png"
+updated: "2026-06-19"
+section: "Chains"
+tags: ["bsc", "usdt", "gasless"]
+---
+
+# Monipay on BSC
+
+Send USDT (BEP-20) on BNB Smart Chain with zero gas using Monipay.
+
+## Network Details
+
+- **Chain ID:** `56`
+- **Token:** USDT
+- **Decimals:** 18
+- **Relayer Model:** EIP-712 Meta-Transactions
+- **Explorer:** [BscScan](https://bscscan.com)
+
+## Implementation Notes
+
+Monipay on BSC uses a recompiled version of the `MonipayRouter` to handle the 18-decimal nature of BEP-20 USDT. The architecture mirrors the Base implementation, providing a consistent experience across EVM networks.
+
+## Read next
+
+- [BSC Contracts](/contracts/bsc)
+- [How Gasless Payments Work](/concepts/gasless-payments)
