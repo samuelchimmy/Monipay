@@ -1,0 +1,34 @@
+---
+title: "Monipay on Solana | Gasless USDC SPL Payments"
+description: "Send USDC SPL on Solana with zero gas. Twin-Key Ed25519, feePayer relay, 1% fee split."
+canonical: "https://docs.monipay.xyz/docs/chains/solana"
+ogImage: "/og/solana.png"
+updated: "2026-06-19"
+section: "Chains"
+tags: ["solana", "usdc", "gasless"]
+---
+
+# Monipay on Solana
+
+Monipay brings gasless USDC SPL payments to the Solana ecosystem.
+
+## Network Details
+
+- **Chain:** Solana Mainnet-Beta
+- **Token:** USDC (SPL)
+- **Decimals:** 6
+- **Relayer Model:** feePayer Relay
+- **Address Format:** Base58
+
+## Twin-Key Model
+
+Solana uses an Ed25519 keypair. For security, the private key is stored in `localStorage` only and is never written to the database. Import validation ensures the decrypted public key matches the database-bound address.
+
+## Gas Sponsorship
+
+Monipay acts as the `feePayer` for Solana transactions. The app constructs the transaction, the user signs the instruction, and the Monipay relayer adds the fee payer signature before broadcasting to the cluster.
+
+## Read next
+
+- [Solana Key Storage Model](/security/solana-key-storage)
+- [How Gasless Payments Work](/concepts/gasless-payments)
