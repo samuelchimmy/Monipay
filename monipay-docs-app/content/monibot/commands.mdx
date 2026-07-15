@@ -1,0 +1,95 @@
+---
+title: "MoniBot Commands Reference"
+description: "MoniBot command syntax, multi-recipient parsing, and Tempo keywords."
+canonical: "https://docs.monipay.xyz/docs/monibot/commands"
+ogImage: "/og/monibot.png"
+updated: "2026-06-19"
+section: "MoniBot"
+tags: ["monibot", "commands", "syntax"]
+---
+
+# MoniBot commands reference
+
+MoniBot supports a wide range of natural language commands for sending payments, checking balances, and managing social links.
+
+## Sending Payments
+
+- `send $10 to @alice`
+- `tip @bob $1`
+- `pay @charlie $5 on base`
+
+## Multi-Recipient Parsing
+
+MoniBot supports commas and "and" for batch sends:
+- `send $1 to @alice, @bob, @charlie`
+- `send $1 to @alice and @bob`
+
+## Tempo Keywords
+
+To force routing to the Tempo network, use:
+- `on tempo`
+- `alphausd`
+- `ausd`
+
+## Read next
+
+- [MoniBot Overview](/monibot)
+- [MoniBot Multi-Recipient](/monibot/multi-recipient)
+
+## Balance and account commands
+
+| Command | Description |
+|---------|-------------|
+| `balance` | Show your current wallet balance across chains |
+| `my tag` | Display your MoniTag |
+| `link @twitter` | Link your Twitter/X account to your MoniTag |
+| `unlink @twitter` | Remove the Twitter/X link |
+| `chains` | List supported chains and your address on each |
+
+## Giveaway and airdrop commands
+
+MoniBot supports token giveaways in server channels:
+
+```
+!monibot bless @username with $5
+!monibot airdrop $1 to @alice @bob @charlie
+!monibot raffle $50 among 10 winners in #channel
+```
+
+## Chain-specific routing
+
+Append `on <chain>` to any send command to force a specific network:
+
+```
+send $10 to @alice on celo
+pay @bob $5 on base
+tip @charlie $2 on solana
+```
+
+## Claim commands
+
+If you've received an IOU, use:
+
+```
+claim
+claim my funds
+```
+
+MoniBot will walk you through connecting your wallet and releasing the escrowed payment.
+
+## Error codes
+
+| Code | Meaning |
+|------|---------|
+| `ERR_INSUFFICIENT_BALANCE` | Your wallet balance is too low |
+| `ERR_UNKNOWN_TAG` | The `@tag` hasn't registered a MoniTag |
+| `ERR_CHAIN_UNSUPPORTED` | Requested chain not yet supported |
+| `ERR_IOU_EXPIRED` | The IOU window has closed; contact sender |
+
+## Platform differences
+
+Commands work identically on Discord, Telegram, and Twitter/X. The only difference is the invocation prefix:
+
+- **Discord:** `!monibot <command>`
+- **Telegram:** `/monibot <command>` or direct message the bot
+- **Twitter/X:** `@Monipay <command>` as a public reply or DM
