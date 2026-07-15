@@ -1,0 +1,202 @@
+---
+title: "Monipay FAQ | Frequently Asked Questions"
+description: "Everything about Monipay: gasless payments, MoniTag™, MoniBot, supported chains, security, fees, merchant tools, and developer API."
+canonical: "https://docs.monipay.xyz/docs/faq"
+ogImage: "/og/faq.png"
+updated: "2026-06-19"
+section: "Resources"
+tags: ["faq", "help", "support"]
+---
+
+# Frequently asked questions
+
+## Section A | General
+
+### 1. What is Monipay?
+A non-custodial, gasless stablecoin payment network spanning Base, BSC, Solana, Tempo, Ink and Celo. Send by MoniTag™ | a human-readable username.
+
+### 2. Who built Monipay?
+Monipay is built and operated by the Monipay team. See the [About page](https://monipay.xyz/about).
+
+### 3. Is Monipay open source?
+Smart contracts are verified on each chain's explorer. Core app source is closed.
+
+### 4. What chains does Monipay support today?
+Base (USDC), Solana (USDC SPL), BSC (USDT), Celo (USDT via MiniPay), Ink (USDT0), and Tempo (αUSD - testnet-only).
+
+### 5. Is Monipay free to use?
+Personal sends are free of gas; merchants pay 1% per transaction. Storefront Pro is $29/month.
+
+## Section B | MoniTag™
+
+### 6. What is a MoniTag™?
+A unique username that maps to your wallet address on every supported chain.
+
+### 7. Are MoniTags case-sensitive?
+Stored lowercase. UI may display as you typed.
+
+### 8. Can I change my MoniTag™?
+No. Pick carefully.
+
+### 9. What characters are allowed?
+Lowercase letters, digits, underscore. Length 3–20.
+
+### 10. What if my MoniTag™ is reserved?
+A 150+ word blocklist prevents impersonation (admin, support, monipay, etc.). Try a variation.
+
+### 11. Can I have multiple MoniTags™?
+One per account. Use store sub-paths for brand variants.
+
+## Section C | Wallets & Security
+
+### 12. Is Monipay custodial?
+No. Keys are generated locally and encrypted with your PIN (AES-256-GCM).
+
+### 13. Where is my private key stored?
+localStorage on web (encrypted), Secure Enclave/KeyStore on native, never on Monipay servers. Solana key is **localStorage-only**.
+
+### 14. Can Monipay access my funds?
+No. We have no copy of your private key.
+
+### 15. What happens if I forget my PIN?
+Restore from your encrypted backup file or Google Drive backup. Without either, funds are unrecoverable. PIN-only.
+
+### 16. Does Monipay use seed phrases?
+No. We use PIN-encrypted local keys. Seed-phrase compatibility is not exposed by default.
+
+### 17. What is the Walkaway Test?
+If Monipay shuts down, your encrypted key still works with any Ethereum/Solana tooling. You own your funds.
+
+### 18. What encryption is used?
+AES-256-GCM for the key, Argon2id for the PIN hash.
+
+### 19. What about lockout?
+5 failed PIN attempts triggers a temporary lockout.
+
+### 20. Is biometric unlock supported?
+Yes on native (FaceID/TouchID/fingerprint).
+
+## Section D | Payments
+
+### 21. How do I send a payment?
+Enter `@MoniTag` → amount → confirm with PIN. Settled on-chain in seconds.
+
+### 22. Why are payments gasless?
+Monipay sponsors gas via ERC-2771 (Base/BSC), native `feePayer` (Tempo), and feePayer relay (Solana).
+
+### 23. What is the platform fee?
+1% per transaction for direct app transfers, and 2% for multilevel financial intent execution via MagicPay, split atomically by the router contract.
+
+### 24. Are there minimums or maximums?
+No hard minimum; rate limits apply (5/wallet/min, 10/IP/min on relay).
+
+### 25. Do payments settle on-chain?
+Yes, every payment is a real on-chain transfer with an explorer link.
+
+### 26. Can I pay someone on a different chain?
+Cross-chain auto-routing picks the chain where you have balance and the recipient is supported.
+
+### 27. Can I send to a non-Monipay user?
+Use an IOU at `/claim`; recipient claims later by creating a MoniTag.
+
+### 28. Can I cancel a payment?
+Once signed and broadcast, no. On-chain is final.
+
+## Section E | Merchants
+
+### 29. How do I become a merchant?
+Sign up, create a MoniTag™, enable merchant mode in settings.
+
+### 30. What is Storefront Pro?
+$29/month subscription unlocking `/store/@yourtag` storefront customization.
+
+### 31. How does the payment gateway work?
+Redirect customers to `monipay.xyz/pay?orderId=…` or `/pay/pl_[code]`. Webhook fires on completion.
+
+### 32. How are webhooks secured?
+HMAC-SHA256 signature in the `X-Monipay-Signature` header.
+
+### 33. What is a payment link?
+A `pl_[code]` URL for a fixed or open-amount payment, single or multi-use.
+
+### 34. Can I issue invoices?
+Yes, with itemized line items, due dates, and one-click pay.
+
+### 35. Is there a refund flow?
+Initiate refunds manually from the order page; on-chain reverse transfer.
+
+## Section F | MoniBot
+
+### 36. What is MoniBot?
+An autonomous AI agent that processes crypto payments and campaigns on Discord, Telegram and X.
+
+### 37. Which platform is the reference implementation?
+Discord. Telegram and X mirror its behavior with platform-specific adaptations.
+
+### 38. How do I link my MoniTag™ to Discord/Telegram?
+Use `/link @yourtag` and complete the handshake.
+
+### 39. Can MoniBot run giveaways?
+Yes. First-come-first-served grants until campaign budget is exhausted.
+
+### 40. Does MoniBot support multi-recipient sends?
+Yes. Use commas or "and" in the command.
+
+### 41. How does MoniBot pay gas?
+An executor wallet sponsors gas; on Tempo, allowance approvals are bypassed.
+
+## Section G | Chains
+
+### 42. Which chain should I use?
+Base for USDC, Solana for USDC SPL, BSC for USDT, Celo for USDT via MiniPay, Ink for USDT0, and Tempo for αUSD (testnet-only).
+
+### 43. What is AlphaUSD?
+A TIP-20 stablecoin on Tempo Moderato Testnet (chain ID 42431, 18 decimals).
+
+### 44. Is Tempo on mainnet?
+Tempo support is currently testnet-only behind the `VITE_ENABLE_TEMPO` flag; the public `/tempo` route bypasses the flag.
+
+### 45. Why does Solana use a Twin-Key model?
+Ed25519 + relay feePayer enables gasless SPL transfers without key custody.
+
+### 46. What is the ERC-8021 builder code?
+`bc_qt9yxo1d` is appended to Base transactions for builder attribution.
+
+## Section H | Developers
+
+### 47. Does Monipay have an SDK?
+REST API + Chrome extension `window.monipay.requestPayment()` today; SDK roadmap published in [Changelog](/docs/changelog).
+
+### 48. How do I generate API keys?
+Merchant settings → API Keys → Generate. Public + secret pair.
+
+### 49. What rate limits apply?
+5 requests/wallet/min and 10/IP/min on `relay-payment`.
+
+### 50. Where are smart contracts verified?
+Basescan, BscScan, contracts.tempo.xyz, Solscan/Solana program registry.
+
+## Section I | Mobile
+
+### 51. Is there a mobile app?
+Native Flutter app (SDK 3.27+, Dart 3.6+) with strict parity to web. PWA also supported.
+
+### 52. Does the PWA work offline?
+Network-first service worker cache; deep links via `monipay://pay?to=…`.
+
+### 53. Are push notifications supported?
+Yes, with deep-link routing to the relevant transaction.
+
+## Section J | Privacy & Legal
+
+### 54. What data does Monipay collect?
+Account email, MoniTag™, transaction metadata. No private keys, no PIN.
+
+### 55. How do I delete my account?
+Soft delete via Settings → Delete Account. `profiles.status='deactivated'`. Data retained for compliance; account blocked from re-import.
+
+### 56. Where can I read the privacy policy?
+[monipay.xyz/privacy](https://monipay.xyz/privacy).
+
+### 57. Where are the Terms of Service?
+[monipay.xyz/terms](https://monipay.xyz/terms).
