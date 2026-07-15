@@ -1,0 +1,28 @@
+---
+title: "MoniBot for Telegram"
+description: "Send payments via MoniBot in Telegram. Bot commands, linking, and platform-specific adaptations."
+canonical: "https://docs.monipay.xyz/docs/monibot/telegram"
+ogImage: "/og/monibot-telegram.png"
+updated: "2026-06-19"
+section: "MoniBot"
+tags: ["telegram", "monibot", "tutorial"]
+---
+
+# MoniBot for Telegram
+
+MoniBot on Telegram mirrors the Discord implementation with platform-specific adaptations for the Telegram Bot API.
+
+## Commands
+
+- `!send @username $5` , Send stablecoins to another Telegram user.
+- `/link @monitag` , Link your Telegram handle to your MoniTag.
+- `/balance` , Check your Monipay balances.
+
+## Linking Social Identity
+
+MoniBot uses `return_to` callbacks to securely link your Telegram account to your Monipay identity. Once linked, you can receive payments sent to your Telegram handle directly into your Monipay wallet.
+
+## Read next
+
+- [MoniBot Commands Reference](/monibot/commands)
+- [MoniBot for Discord](/monibot/discord)
