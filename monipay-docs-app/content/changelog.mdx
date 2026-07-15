@@ -1,0 +1,73 @@
+---
+title: "Monipay Changelog"
+description: "Release notes for the Monipay app, smart contracts, MoniBot and SDK."
+canonical: "https://docs.monipay.xyz/docs/changelog"
+ogImage: "/og/changelog.png"
+updated: "2026-06-19"
+section: "Resources"
+tags: ["changelog", "updates", "releases"]
+---
+
+# Changelog
+
+## 2026-06-22
+
+### Content Accuracy
+- Removed Bluesky from MoniBot glossary entry (MoniBot only supports X, Discord and Telegram).
+- Updated MoniTag concept page chain list to include Celo and Ink (previously only listed Base, BSC, Solana and Tempo).
+- Removed stale "Lovable Cloud" label from Supabase reference in How It Works page.
+- Corrected Storefront Pro price inconsistency in FAQ (Q30 now consistently shows $29/month).
+- Aligned `updated` dates on Celo chain page and Sports Oracle page to match the rest of the docs.
+
+### Layout and Mobile
+- Fixed homepage horizontal overflow on mobile caused by TopNav min-width and footer layout.
+- Footer columns now sit on a single row on all breakpoints using compact font sizing.
+- Applied `overflow-x: hidden` to the HTML root and key layout containers to prevent viewport bleed.
+- Added sitemap and robots.txt for search engine indexing.
+
+---
+
+## 2026-06-19
+
+
+### Docs & SEO
+- Fixed SEO titles: replaced comma separators with pipe separators.
+- Resolved stale updated dates across all documentation pages.
+- Corrected Twitter handles from `@monaborng` / `@maborng` to the official `@monipay_xyz` account.
+- Fixed broken internal relative links pointing to docs subpages.
+- Updated chain lists to include Celo and Ink.
+- Added MagicPay fee structure (2% fee model) and MiniPay deep link details.
+- Standardized terminology references from aUSD to αUSD / AlphaUSD.
+- Fixed TopNav layout shifts on first render and added missing social links to Footer.
+
+## 2026-05-20
+
+### Docs
+- Restructured sidebar: new dedicated Payments, Merchant, and Mobile & PWA sections.
+- Removed broken nav links (monibot/fees, developers/api-reference, chrome-extension, roadmap, brand).
+- Added orphaned pages to nav: changelog, monibot/commands, merchant/payment-gateway.
+- Rewrote `llms.txt` — all AI crawler URLs now resolve correctly.
+- Added Arc chain stub for parity with the live landing page.
+- Expanded Celo page with MiniPay setup guide and local on-ramp information.
+- Documented vault architecture, edge function JWT requirements, and on-chain identity hashing in Security.
+- Added full MoniBot commands reference: balance, giveaway, chain routing, claim flow, error codes.
+- Expanded IOU Registry page with claim flow diagram and expiry/reclaim mechanics.
+
+## 2026-05-12
+
+### Monipay Web
+- Added support for Solana twin-key import validation.
+- Improved deposit detection speed for Base and BSC.
+- New "Fund" modal with per-chain QR codes.
+
+### MoniBot
+- Gemini 2.0-flash integration for multi-recipient parsing.
+- Support for "and" separator in commands.
+
+### Smart Contracts
+- `IOURegistry.sol` deployed on Base and BSC.
+- Verified `MonipayRouterCelo` for MiniPay integration.
+
+---
+
+View previous releases on [GitHub](https://github.com/monipay).

@@ -1,0 +1,32 @@
+---
+title: "Monipay on Ink | Gasless Stablecoin Payments"
+description: "Send stablecoins on Ink Layer 2 with zero gas via Monipay."
+canonical: "https://docs.monipay.xyz/docs/chains/ink"
+ogImage: "/og/ink.png"
+updated: "2026-06-19"
+section: "Chains"
+tags: ["ink", "kraken", "gasless"]
+---
+
+# Monipay on Ink (Coming Soon)
+
+Ink is Kraken's Layer 2, built on the OP Stack. Monipay's Ink integration brings gasless, username-addressed stablecoin payments to that distribution surface.
+
+## Network Details
+
+- **Chain ID:** `57073`
+- **Token:** USDT0 (native on Ink)
+- **Decimals:** 6
+- **Status:** In development
+
+## Architecture
+
+Ink reuses Monipay's Base architecture:
+- **MonipayRouter (Ink):** Atomic 1% split on USDT0 transfers.
+- **MoniBotRouter (Ink):** Sponsored social payments.
+- **IOURegistry (Ink):** Claim registry for unaddressed recipients.
+
+## Read next
+
+- [Monipay on Base](/chains/base)
+- [Supported Chains](/chains)

@@ -1,0 +1,71 @@
+---
+title: "Monipay x MiniPay on Celo - Gasless USDm & USDT"
+description: "Use Monipay inside the Opera MiniPay browser on Celo. Send USDm or USDT by MoniTag with zero gas - optimized for emerging markets."
+canonical: "https://docs.monipay.xyz/docs/chains/celo"
+ogImage: "/og/celo.png"
+updated: "2026-06-19"
+section: "Supported Chains"
+tags: ["celo", "minipay", "usdm", "usdt", "gasless", "emerging-markets"]
+---
+
+# Monipay on Celo (MiniPay)
+
+Monipay runs as a mini-app inside Opera's MiniPay wallet on Android, bringing gasless MoniTag payments to Celo's USDm and USDT user base. Celo is Monipay's primary emerging-markets chain - optimized for low-data environments and real-world payment use cases.
+
+## Network details
+
+| Property | Value |
+|----------|-------|
+| Network  | Celo Mainnet |
+| Chain ID | 42220 |
+| Supported tokens | USDm, USDT |
+| Gas model | Sponsored (users pay zero gas) |
+| MiniPay optimized | ✅ Yes |
+
+## Why Celo
+
+Celo is designed for mobile-first, emerging-market payments. Its fee abstraction layer lets Monipay sponsor gas in USDm, meaning recipients and senders never need to hold CELO to transact. This makes Monipay on Celo the closest experience to a traditional payment app while remaining fully non-custodial.
+
+## MiniPay integration
+
+Monipay is available inside the **Opera MiniPay** browser on Android. To access it:
+
+1. Open MiniPay on your Android device.
+2. Navigate to the mini-apps section and search for **Monipay**.
+3. Create or link your MoniTag.
+4. Send USDm or USDT to any `@monitag` instantly.
+
+No seed phrase required for initial use. The [Invisible Wallet](/docs/concepts/invisible-wallet) handles key management transparently.
+
+## MoniBot on Celo
+
+MoniBot commands work on Celo the same as any other chain. Funds are routed to the Celo network when the recipient's linked wallet is on Celo mainnet.
+
+```
+!monibot pay @username $5 USDm
+```
+
+For Discord giveaways with USDm:
+
+```
+!monibot bless @username with $5
+```
+
+## Smart contracts
+
+See [Celo Contracts](/docs/contracts/celo) for verified `IOURegistry` and `MonipayRouterCelo` addresses.
+
+## On-ramps
+
+Celo has strong local on-ramp support in sub-Saharan Africa and Latin America. Supported on-ramps for loading USDm:
+
+- **Kotani Pay** - M-Pesa, MTN Mobile Money (East Africa)
+- **Valora** - In-app on-ramp via Transak
+- **MoonPay** - Global card on-ramp to USDm
+
+## Read next
+
+- [Celo Contracts](/docs/contracts/celo)
+- [Gasless Payments](/docs/concepts/gasless-payments)
+- [IOU Registry](/docs/payments/iou)
+- [MiniPay Developer Docs](https://docs.minipay.opera.com)
