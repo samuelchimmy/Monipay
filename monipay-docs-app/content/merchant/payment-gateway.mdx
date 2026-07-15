@@ -1,0 +1,33 @@
+---
+title: "Monipay Payment Gateway API"
+description: "Hosted checkout at monipay.xyz/pay?orderId=… HMAC-SHA256 signed webhooks. Public/secret key auth."
+canonical: "https://docs.monipay.xyz/docs/merchant/payment-gateway"
+ogImage: "/og/payment-gateway.png"
+updated: "2026-06-19"
+section: "Merchant"
+tags: ["api", "gateway", "developer"]
+---
+
+# Payment gateway API
+
+Integrate Monipay's gasless payment rail into your application.
+
+## Hosted Checkout
+
+Redirect users to:
+`https://monipay.xyz/pay?orderId={your_order_id}`
+
+The gateway handles wallet connection, chain selection, and transaction signing, then redirects the user back to your site.
+
+## Authentication
+
+Use your **Public Key** for client-side requests and your **Secret Key** for server-side API calls.
+
+## Webhooks
+
+Monipay fires a POST request to your configured webhook URL upon payment completion. Every request is signed with HMAC-SHA256 for security.
+
+## Read next
+
+- [API Keys](/merchant/api-keys)
+- [Webhooks Reference](/merchant/webhooks)
