@@ -104,39 +104,4 @@ export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChan
 
   const handleUnlinkX = async () => {
     setIsUnlinkingX(true);
-    try {
-      const response = await supabase.functions.invoke("social-identity", {
-        body: { action: "unlink-x", profileId, walletAddress },
-      });
-      if (response.error) throw response.error;
-      toast.success("X account unlinked");
-      fetchIdentity();
-    } catch (err: any) {
-      toast.error(err?.message ?? "Failed to unlink X");
-    } finally {
-      setIsUnlinkingX(false);
-    }
-  };
-
-  const shared = {
-    identity,
-    validProfileId: profileId,
-    walletAddress,
-    fetchIdentity,
-    setIdentity: handleIdentityChange,
-    writeCachedIdentity,
-    themeClasses,
-  } as const;
-
-  return (
-    <div className="space-y-2.5">
-      <XLinkCard
-        {...shared}
-        isUnlinkingX={isUnlinkingX}
-        handleUnlinkX={handleUnlinkX}
-      />
-      <DiscordLinkCard {...shared} />
-      <TelegramLinkCard {...shared} />
-    </div>
-  );
-}
+    try {
