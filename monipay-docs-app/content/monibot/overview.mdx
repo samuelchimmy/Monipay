@@ -1,0 +1,33 @@
+---
+title: "MoniBot | AI Payment Agent"
+description: "Autonomous AI agent that processes crypto payments and giveaways on Discord, Telegram and X."
+canonical: "https://docs.monipay.xyz/docs/monibot"
+ogImage: "/og/monibot.png"
+updated: "2026-06-19"
+section: "MoniBot"
+tags: ["monibot", "ai", "social-payments"]
+---
+
+# MoniBot: The AI payment agent
+
+MoniBot is an autonomous AI agent that interprets natural language commands to process crypto payments and giveaways directly within social platforms.
+
+## Core Capabilities
+
+- **Natural Language Parsing:** MoniBot uses Gemini 2.0-flash to understand intents like *"send $5 to @alice"*.
+- **Multi-Platform:** Works across Discord, Telegram, and Twitter/X.
+- **Gasless Grants:** Sponsors gas for social distributions.
+- **Multi-Recipient:** Handles complex batch sends with commas or "and".
+
+## How it works
+
+1. User issues a command (e.g., `!monibot send $10 to @bob`).
+2. MoniBot resolves `@bob` to a MoniTag and its corresponding address.
+3. MoniBot validates the sender's pre-linked social account and signature balance allowance.
+4. MoniBot submits the transaction to the relayer to execute the transfer on-chain.
+
+## Read next
+
+- [MoniBot for Discord](/docs/monibot/discord)
+- [MoniBot for Telegram](/docs/monibot/telegram)
+- [MoniBot for Twitter](/docs/monibot/twitter)
