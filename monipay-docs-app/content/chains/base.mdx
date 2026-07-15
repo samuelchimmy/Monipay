@@ -1,0 +1,35 @@
+---
+title: "Monipay on Base | Gasless USDC Payments"
+description: "Send USDC on Base with zero gas. ERC-2771 meta-transactions, ERC-8021 builder code attribution, 1% platform fee."
+canonical: "https://docs.monipay.xyz/docs/chains/base"
+ogImage: "/og/base.png"
+updated: "2026-06-19"
+section: "Chains"
+tags: ["base", "usdc", "gasless"]
+---
+
+# Monipay on Base
+
+Base is Monipay's primary home for gasless USDC payments.
+
+## Network Details
+
+- **Chain ID:** `8453`
+- **Token:** USDC
+- **Decimals:** 6
+- **Relayer Model:** ERC-2771 Meta-Transactions
+- **Builder Code:** `bc_qt9yxo1d` (ERC-8021)
+- **Explorer:** [Basescan](https://basescan.org)
+
+## Gas Sponsorship
+
+Monipay sponsors 100% of the gas fees for P2P payments on Base. New accounts receive a small gas grant (0.000002 ETH) on signup to initialize the account if necessary, though the relayer handles the vast majority of user interactions.
+
+## Platform Fee
+
+A 1% platform fee is collected on every transaction, split atomically by the router contract.
+
+## Read next
+
+- [How Gasless Payments Work](/concepts/gasless-payments)
+- [Monipay Smart Contracts](/contracts)
