@@ -1,0 +1,32 @@
+---
+title: "Monipay Deep Link Specification | monipay:// URL Scheme for One-Tap Payments"
+description: "The monipay:// URL scheme opens the installed Monipay app pre-filled for one-tap payments. Full spec: parameters, fallback to universal link, per-chain handling, memo behavior on TIP-20."
+canonical: "https://docs.monipay.xyz/docs/mobile/deep-links"
+ogImage: "/og/default.png"
+updated: "2026-06-19"
+section: "Mobile"
+tags: ["deeplinks", "mobile", "technical"]
+---
+
+# Deep links
+
+Monipay registers the `monipay://` URL scheme on iOS and Android. Triggering a `monipay://` URL on a device with Monipay installed opens the app pre-filled and ready to confirm.
+
+## URL format
+
+```
+monipay://pay?to=@alice&amount=5&chain=base&memo=Coffee
+```
+
+## Parameters
+
+- `to` , Recipient's MoniTag.
+- `amount` , Decimal amount.
+- `chain` , `base` | `bsc` | `solana` | `tempo` | `celo` | `ink`.
+- `memo` , Optional memo.
+- `ref` , Optional short reference code.
+
+## Read next
+
+- [PWA Install](/mobile/pwa)
+- [Payment Links](/payments/payment-links)

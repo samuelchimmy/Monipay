@@ -1,0 +1,41 @@
+---
+title: "Webhooks Reference"
+description: "HMAC-SHA256 signed POST to your callback URL on payment completion. Retry policy and signature verification examples."
+canonical: "https://docs.monipay.xyz/docs/merchant/webhooks"
+ogImage: "/og/webhooks.png"
+updated: "2026-06-19"
+section: "Merchant"
+tags: ["webhooks", "api", "developer"]
+---
+
+# Webhooks
+
+Receive real-time notifications about payment events.
+
+## Signature Verification
+
+Monipay signs every webhook payload using HMAC-SHA256. The signature is sent in the `X-Monipay-Signature` header. You should verify this signature using your Secret Key to ensure the request is authentic.
+
+## Retry Policy
+
+If your server returns a non-200 response, Monipay will retry the delivery with exponential backoff for up to 24 hours.
+
+## Example Payload
+
+```json
+{
+  "event": "payment.succeeded",
+  "data": {
+    "orderId": "ord_123",
+    "amount": "10.00",
+    "currency": "USDC",
+    "txHash": "0x...",
+    "moniTag": "@customer"
+  }
+}
+```
+
+## Read next
+
+- [Payment Gateway API](/merchant/payment-gateway)
+- [API Keys](/merchant/api-keys)
