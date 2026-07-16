@@ -1,0 +1,83 @@
+---
+title: "Monipay Glossary | Terminology for Users, Merchants and Developers"
+description: "Definitions for every Monipay-specific term | MoniTag™, MoniBot, MagicPay, AlphaUSD, paymaster, TIP-20, EIP-2718 type 0x76, Walkaway Test, feePayer, Ed25519, secp256k1, 2D nonces and more."
+canonical: "https://docs.monipay.xyz/docs/glossary"
+ogImage: "/og/glossary.png"
+updated: "2026-06-19"
+section: "Resources"
+tags: ["glossary", "definitions", "terminology"]
+---
+
+# Glossary
+
+**AES-256-GCM** | Authenticated symmetric encryption with a 256-bit key. Monipay encrypts every user's private key with AES-256-GCM, keyed by a PBKDF2 derivation of the user's PIN.
+
+**AlphaUSD (αUSD)** | Tempo's primary stablecoin. 18 decimals. TIP-20 standard. Contract `0x20c0000000000000000000000000000000000001`.
+
+**Atomic split** | The single-transaction transfer pattern Monipay's router contracts use to send 99% of a payment to the recipient and 1% to the platform treasury without any intermediate state.
+
+**Base** | Coinbase's Ethereum L2. Monipay's home chain. Token: native USDC, 6 decimals.
+
+**Base58** | Solana's canonical address encoding. Case-sensitive, no normalization.
+
+**BEP-20** | BSC's token standard, broadly ERC-20-compatible. BSC USDT is BEP-20 with **18** decimals.
+
+**Builder code (ERC-8021)** | On-chain attribution suffix that lets a builder count originated transactions. Monipay's Base builder code is `bc_qt9yxo1d`.
+
+**Celo** | Opera's target network, running Celo mainnet. Support for USDT via MiniPay deep links.
+
+**Ed25519** | Solana's signing curve. Used for Solana keypairs.
+
+**EIP-712** | Ethereum's typed structured-data signing standard. Monipay's EVM routers verify EIP-712 signatures to authorise meta-transactions.
+
+**EIP-2718 type 0x76** | Tempo's native transaction envelope type. Supports `feePayer` sponsorship, 2D nonces, and atomic batch calls as first-class fields.
+
+**executor wallet** | MoniBot's hot wallet that submits social-payment transactions and pays gas. Per-chain, monitored, refilled on low-balance alerts.
+
+**fee-on-top** | MoniBot's social-payment fee model. Sender pays `amount + 2%` (for MagicPay), recipient receives the full amount. Contrast with the in-app **fee-split** model.
+
+**`feePayer`** | A Solana and Tempo transaction field naming a non-sender account that pays the fee. The foundation of Monipay's gasless UX on those chains.
+
+**Hammer** | Monipay's product philosophy. A tool you own and walk away with, not a service you depend on. See the [Walkaway Test](/docs/concepts/walkaway-test).
+
+**Ink** | Kraken's Ethereum L2 network. Supported token is USDT0, an omnichain USDT variant.
+
+**IOURegistry** | On-chain registry that backs MagicPay claims. Holds escrowed funds for unaddressed recipients until they prove control of the linked social handle.
+
+**MagicPay** | A claim link issued when a MoniBot recipient has no linked MoniTag. Backed by the on-chain `IOURegistry`. Recipient redeems by signing up and proving handle ownership.
+
+**MagicPay fee** | The platform fee of **2%** charged for multilevel financial intent execution via MoniBot/MagicPay.
+
+**MiniPay** | Opera's mobile wallet on Celo. Monipay runs as a mini-app inside MiniPay.
+
+**MiniPay deep link** | URI scheme `monipay://` for launching payments inside Opera MiniPay browser.
+
+**MoniBot** | Monipay's autonomous AI agent for multilevel financial intent execution on Twitter/X, Discord, and Telegram.
+
+**Monipay** | The product. A gasless, non-custodial, multi-chain stablecoin wallet and payment platform.
+
+**MoniTag™** | Your permanent username on Monipay. Lowercase `m`, uppercase `T`, ™ on first use.
+
+**paymaster** | A relayer that pays gas on a user's behalf in exchange for the user's signature on an off-chain typed-data message.
+
+**PBKDF2** | Password-Based Key Derivation Function. Monipay uses PBKDF2 with a high iteration count to derive an AES key from the user's PIN.
+
+**RLS** | Row Level Security. Supabase's database access control. Monipay's tables are deny-all by default with explicit policies per access path.
+
+**secp256k1** | Ethereum's signing curve. Used for EVM keypairs (Base, BSC, Celo, Ink).
+
+**Smart Feedback** | MoniBot's optional AI-evaluated reply quality gate for airdrop and grant campaigns. Powered by Gemini 2.0-flash.
+
+**Soft delete** | Monipay account deletion sets `profiles.status = 'deactivated'` rather than dropping rows. Data is retained for legal compliance. Re-import is blocked.
+
+**TIP-20** | Tempo's stablecoin standard. ERC-20-like, with on-chain transfer memos and delegated-transfer semantics for sponsorship.
+
+**Two-dimensional (2D) nonce** | Tempo's `(nonceKey, nonce)` pair that allows parallel-safe concurrent transactions without single-account nonce contention.
+
+**USDC** | Circle's regulated US-dollar stablecoin. Native on Base (6 dec) and available as SPL on Solana (6 dec).
+
+**USDT** | Tether's US-dollar stablecoin. Native on BSC as BEP-20 (18 decimals) and Celo (6 decimals), and as USDT0 omnichain variant on Ink.
+
+**Walkaway Test** | Monipay's resilience principle: if Monipay disappeared tomorrow, you could still spend the funds in your wallet from any compatible wallet. Non-negotiable.
+
+**worker bot** | Per-platform MoniBot service that polls the social platform, parses commands, and submits on-chain transactions via the chain-specific `MoniBotRouter`.

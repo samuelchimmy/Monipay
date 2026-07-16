@@ -1,0 +1,62 @@
+---
+title: "How Monipay Works | Wallet, Gasless Relayer, Fee Model"
+description: "Monipay is a non-custodial wallet with gasless sponsorship. Private keys are encrypted locally with AES-256-GCM. Payments use ERC-2771 meta-transactions, feePayer relay on Solana, and native sponsorship on Tempo."
+canonical: "https://docs.monipay.xyz/docs/how-it-works"
+ogImage: "/og/default.png"
+updated: "2026-06-19"
+section: "Introduction"
+tags: ["technical", "architecture", "gasless"]
+---
+
+# How it works
+
+Monipay is a non-custodial wallet with a convenience layer for gasless payments and username resolution.
+
+## The Invisible Wallet
+
+When you sign up, Monipay generates a standard private key locally on your device (browser `localStorage` or mobile Secure Enclave).
+
+- **Encryption:** Your key is encrypted with **AES-256-GCM** using a key derived from your 6-digit PIN.
+- **Custody:** Monipay **never** sees your private key or your PIN. The encrypted blob is backed up to your Google Drive (optional) so you can recover it on other devices.
+- **Standard Curve:** We use `secp256k1` for EVM chains (Base, BSC, Tempo, Ink, Celo) and `Ed25519` for Solana. You can export your key at any time and use it in MetaMask, Rabby, Phantom or any compatible wallet.
+
+## Gasless sponsorship
+
+You do not need ETH, BNB, or SOL to pay for gas. Monipay uses three distinct sponsorship models:
+
+- **Base, BSC, Celo, Ink:** We use **ERC-2771 meta-transactions**. You sign a message (EIP-712), and our relayer pays the gas to execute it on-chain.
+- **Solana:** We use a **feePayer relay**. You sign the transaction, and our relayer adds a second signature as the fee payer before broadcasting.
+- **Tempo:** We use **native fee sponsorship** (EIP-2718 type 0x76 on testnet, mainnet details pending). The transaction includes a `feePayer` field, and the sponsor's signature is included in the payload.
+
+## Cross-chain routing
+
+Your MoniTag is your identity across all chains. When you send a payment:
+
+1. Monipay checks if the recipient is on the same chain → direct send.
+2. If not → automatic cross-chain routing (currently same-chain only; cross-chain bridge planned).
+3. If the sender's preferred chain has zero balance → app suggests funding or switching.
+
+## Fee model
+
+- **User fee:** **0** , gas is fully sponsored.
+- **Platform fee:** **1%** of every regular payment, deducted atomically by the smart contract. Multilevel financial intent execution via **MagicPay** charges a **2%** platform fee.
+  - For social payments (MoniBot), the fee is **on top** of the user-typed amount. The recipient gets the full amount; the sender pays amount + 2%.
+  - For direct app payments, recipient gets full amount; platform fee comes from the same transfer via the contract split.
+- **MoniBot fees** also apply when a sponsored account uses gas grants.
+
+## Database & state
+
+Monipay uses **Supabase** for:
+
+- Profiles, MoniTag registry, social identity links
+- Transaction history (receipts) , on-chain hash is canonical
+- Merchant orders, products, customers
+- Edge functions for the relayer, MoniBot worker, webhook signing
+
+The blockchain remains the source of truth for **funds**. The database is for **UX** (history, names, receipts).
+
+## Read next
+
+- [Smart contracts & ABIs](/docs/contracts)
+- [Security model](/docs/security)
+- [Supported chains](/docs/chains/base)
