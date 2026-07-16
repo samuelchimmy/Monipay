@@ -1,0 +1,35 @@
+---
+title: MoniPay Mobile — iOS, Android & PWA
+description: MoniPay runs as a native Flutter app on iOS and Android, plus an installable PWA. Full feature parity with the web app.
+keywords: monipay app, monipay ios, monipay android, monipay flutter app, monipay pwa, install monipay
+canonical: https://docs.monipay.xyz/mobile/
+---
+
+# MoniPay mobile
+
+MoniPay ships in three forms:
+
+- **Native iOS / Android** — built in Flutter (SDK 3.27+, Dart 3.6+)
+- **Progressive Web App** — install from any browser with a single tap
+- **Web** — the full app at [monipay.xyz](https://monipay.xyz)
+
+The Flutter app maintains **strict visual and functional parity** with the web app. Same MoniTag, same wallet, same backups.
+
+## Features
+
+- Biometric unlock (Face ID, Touch ID, Android biometrics)
+- Secure enclave key storage
+- Push notifications for received payments
+- Deep linking via `monipay://pay?to=@you&amount=5&chain=base`
+- Offline-tolerant via service-worker network-first cache (PWA)
+
+## Install
+
+- **iOS:** [App Store](https://monipay.xyz/install)
+- **Android:** [Play Store](https://monipay.xyz/install)
+- **PWA:** [/install](https://monipay.xyz/install) — Add to Home Screen
+
+## Read next
+
+- [Deep link specification](/mobile/deep-links)
+- [PWA install prompt](/mobile/pwa)
