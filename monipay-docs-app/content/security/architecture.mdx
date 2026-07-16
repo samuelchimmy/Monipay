@@ -1,0 +1,72 @@
+---
+title: "Monipay Security Architecture"
+description: "Client-side AES-256-GCM key encryption, Argon2id PIN hashing, RLS on all DB tables, HMAC-SHA256 signed APIs, rate limiting."
+canonical: "https://docs.monipay.xyz/docs/security/architecture"
+ogImage: "/og/security.png"
+updated: "2026-06-19"
+section: "Security"
+tags: ["security", "architecture", "technical"]
+---
+
+# Security architecture
+
+Monipay's security is built on a multi-layered approach that prioritizes user self-custody and data integrity.
+
+## Core Pillars
+
+- **Non-Custodial Keys:** Private keys are generated and encrypted locally (AES-256-GCM). Monipay never sees them.
+- **PIN Hashing:** We use Argon2id to ensure PINs are resistant to brute-force attacks.
+- **On-Chain Truth:** The blockchain is the final source of truth for all balances and transactions.
+- **API Security:** All merchant APIs are signed with HMAC-SHA256.
+
+## Database Security
+
+Monipay uses Supabase with Row Level Security (RLS) enabled on all tables. This ensures that users can only access their own data.
+
+## Rate Limiting
+
+We enforce strict rate limits on the `relay-payment` endpoint (5 requests per wallet/min and 10 per IP/min) to prevent abuse of our gas sponsorship infrastructure.
+
+## Read next
+
+- [Walkaway Test](/concepts/walkaway-test)
+- [Solana Key Storage](/security/solana-key-storage)
+
+## Vault architecture
+
+Monipay's backend uses a **hot wallet vault** model for the IOU claim flow:
+
+- A dedicated hot wallet holds the `IOU_VAULT_PRIVATE_KEY`.
+- This address is the **only** address authorized to call `batchClaim` on `IOURegistry.sol`.
+- The vault private key is stored in a secrets manager (never in application code or environment files committed to version control).
+
+## Edge function security
+
+Two Supabase Edge Functions handle the claim flow:
+
+| Function | Role |
+|----------|------|
+| `claim-iou` | Verifies caller identity before submitting an IOU claim on-chain |
+| `claim-social-funds` | Handles OAuth identity verification before releasing escrowed funds |
+
+Both functions require **JWT authentication** - unauthenticated requests are rejected at the gateway level.
+
+## Identity hashing
+
+Recipient identities are stored on-chain as:
+
+```
+keccak256(abi.encodePacked("platform:userId"))
+```
+
+No usernames, emails, or social handles appear on-chain. The `recipientId` is a deterministic hash - only a user who can prove control of the underlying social account can claim.
+
+## Responsible disclosure
+
+Found a vulnerability? Email **security@monipay.xyz** with a description, reproduction steps, and impact assessment. We aim to respond within 48 hours and will credit researchers in our changelog.
+
+## Read next
+
+- [Solana Key Storage](/docs/security/solana-key-storage)
+- [Reserved Usernames](/docs/concepts/reserved-usernames)
+- [IOU Registry](/docs/payments/iou)

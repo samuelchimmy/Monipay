@@ -1,0 +1,115 @@
+---
+title: "What is Monipay? | Gasless Stablecoin Payments by Username"
+description: "Monipay is an AI-powered social payments layer for stablecoins. Learn about our 3 modes of entry and agent capabilities."
+canonical: "https://docs.monipay.xyz/docs/what-is-monipay"
+ogImage: "/og/default.png"
+updated: "2026-06-19"
+section: "Introduction"
+tags: ["overview", "monitag", "gasless", "agent"]
+---
+
+# What is Monipay?
+
+**Monipay** is an AI-powered social payments layer that enables financial intents to be executed directly inside social conversations on X, Telegram, and Discord. By bridging social identities and onchain actions, Monipay enables users and autonomous agents to process stablecoin transfers using rails they are already familiar with | such as usernames, social timelines, and natural language commands.
+
+It replaces long blockchain addresses with **MoniTag™ usernames** (e.g. `@samuel`), removes gas fees from the user experience entirely, and stays **non-custodial** | your keys never leave your device.
+
+> **Tagline:** The social payments layer for stablecoins, powered by autonomous AI agents.
+
+---
+
+## Three Modes of Entry
+
+Monipay is designed to be accessible regardless of your Web3 experience. You can enter and use the ecosystem in three distinct ways:
+
+### 1. Create a Monipay Wallet
+The fastest, most seamless onboarding experience. Monipay generates a standard private key locally on your device (browser `localStorage` or mobile Secure Enclave). 
+- **No seed phrases:** Your private key is encrypted client-side using **AES-256-GCM** derived from a 6-digit PIN. 
+- **Gasless by default:** All transactions are sponsored via our relayer infrastructure, meaning you only hold stablecoins.
+
+### 2. WalletConnect
+If you already have a preferred Web3 wallet (such as MetaMask, Rabby, Phantom, or Coinbase Wallet), you can link it to Monipay using WalletConnect. This allows you to bind your existing address to a universal **MoniTag™** and utilize Monipay's gasless relayers and social features without generating a new key.
+
+### 3. MiniPay Miniapp
+Monipay is integrated directly as a miniapp inside Opera's **MiniPay** browser on Celo for Android. Specifically optimized for low-data environments and mobile-first audiences, this mode allows millions of users to send stablecoins inside chat interfaces natively and access Celo's mobile-focused on-ramps.
+
+---
+
+## Key Features
+
+Monipay collapses Web3 onboarding friction and provides powerful features for both users and AI agents:
+
+### 👤 MoniTag™ Identity & Onboarding
+Replaces 42-character hex addresses with a clean `3-20` character username (e.g., `@alice`). Your MoniTag™ is universal across all supported networks and maps directly to your linked social accounts (X, Discord, Telegram).
+
+### 💸 CasualPay (P2P Payments)
+Peer-to-peer stablecoin transfers between Monipay users on the same or different platforms. Just two taps to send funds with zero gas fees.
+
+### 🪄 MagicPay (Walletless Social Payments)
+Send stablecoins directly to any social username (e.g. a Twitter handle or Discord ID), **even if the recipient does not have a wallet or a Monipay account yet**. Funds are held securely on-chain in the MagicPay IOU Registry. The recipient receives a social notification and can claim their funds at any time.
+
+### 🤖 MoniBot Agent & Natural Language Commands
+An autonomous AI bot that runs on X/Twitter, Telegram, and Discord. Senders can trigger payments simply by typing natural language commands in conversation, such as:
+- `send $10 to @alice`
+- `tip @bob $1 on base`
+- `!monibot bless @username with $5` (Discord)
+
+### ⚽ Conditional Sports P2P (New)
+Designed for the World Cup 2026, this feature allows users to reward their community/followers for correct match outcomes automatically based on conditions, without locking up funds in escrow or managing spreadsheets.
+- **Zero Escrow:** Funds remain in the sender's wallet. The payment executes only if the condition is met.
+- **3-Source Consensus Sports Oracle:** Settle payments securely. Monipay queries three independent data layers: `football-data.org` (primary), `API-Football` (fallback), and the `openfootball` repository (sanity check). Settle only when $\ge 2$ agree. If there is a dispute, a **Dispute Safety Lock** halts execution for manual review.
+- **Supported Conditions:** Match outcomes like win/loss (`if Germany wins Curacao`) and draw (`if they tie`).
+
+### ⚙️ Relayer & Sponsorship
+Utilizes ERC-2771 meta-transactions on EVM networks (Base, BSC, Celo, Ink), a feePayer relay on Solana, and native fee sponsorship on Tempo, ensuring users never have to hold native gas tokens (like ETH, BNB, SOL, or CELO).
+
+### 🔌 Developer & Agent APIs (ERC-8004)
+- **ERC-8004 Agent Registry:** Fully compliant endpoints exposing agent capabilities and reputation metrics.
+- **Model Context Protocol (MCP) & Agent Cards:** Allows seamless machine-to-machine integrations so other AI agents can programmatically request payments.
+
+---
+
+## The Monipay Thesis
+
+Crypto payments have failed consumers for a decade because the UX is hostile: 42-character addresses, native gas tokens, signing prompts written in hex, lost-key panic. **Monipay collapses all of that into a username and a PIN.**
+
+- **Username, not address:** `@samuel` resolves to a wallet on every supported chain.
+- **PIN, not seed phrase:** Your private key is encrypted locally. No 12-word ceremony to lose.
+- **Zero gas:** A paymaster sponsors fees on Base, BSC, Solana, Tempo, Ink and Celo. Users hold only stablecoins.
+- **One account, every chain:** USDC on Base, USDC SPL on Solana, USDT on BSC, USDT on Celo, USDT0 on Ink, AlphaUSD on Tempo | same MoniTag, same login.
+
+---
+
+## A Hammer, not a service
+
+Monipay is built like a **tool**, not a managed service. We call this the **Walkaway Test**:
+
+> If Monipay's company, servers and team disappeared tomorrow, could you still spend the funds in your wallet?
+
+The answer is **yes**. Your encrypted private key sits in `localStorage` (or your phone's secure enclave) and can be exported, decrypted with your PIN, and imported into MetaMask, Rabby, Phantom or any compatible wallet. Monipay is the convenience layer; the wallet is yours.
+
+---
+
+## What Monipay is not
+
+- **Not a custodial exchange:** We never hold your funds.
+- **Not a stablecoin issuer:** We move USDC, USDT, AlphaUSD and other regulated stablecoins.
+- **Not a chain:** Monipay is an application layer that runs on Base, BSC, Solana, Tempo, Ink and Celo.
+- **Not a Web3 social app:** MoniBot adds social distribution, but the core product is a payment rail.
+
+---
+
+## Who is Monipay for?
+
+- **Consumers** who want Venmo-simple crypto payments without gas anxiety.
+- **Merchants** who want to accept stablecoins online or in-person without POS hardware.
+- **Creators** who want to receive tips and run airdrops via Twitter, Discord and Telegram.
+- **Developers** who want to embed gasless stablecoin payments into their app or website.
+
+---
+
+## Read next
+
+- [Getting started](/docs/getting-started)
+- [How Monipay works](/docs/how-it-works)
+- [Why MoniTag matters](/docs/concepts/monitag)

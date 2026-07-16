@@ -1,0 +1,30 @@
+---
+title: "Monipay Solana Key Storage Model | localStorage-Only, DB-Validated Import"
+description: "Monipay's Solana Ed25519 private key is generated client-side, AES-256-GCM encrypted with the user's PIN, and stored in localStorage only , never written to the database. Import validates the decrypted public key against the database-bound address; mismatches reject. Regeneration carries a two-step warning."
+canonical: "https://docs.monipay.xyz/docs/security/solana-key-storage"
+ogImage: "/og/solana.png"
+updated: "2026-06-19"
+section: "Security"
+tags: ["solana", "security", "technical"]
+---
+
+# Solana key storage model
+
+Monipay's Solana key handling is **stricter** than its EVM key handling, because Solana's threat surface is different and the consequences of a compromised key are immediate.
+
+## The model
+
+- **Generation.** An Ed25519 keypair is generated client-side at signup or when the user enables Solana on an existing account. No keys ever leave the device.
+- **Encryption.** The private key is encrypted with **AES-256-GCM** using a key derived from the user's PIN via PBKDF2 with a high iteration count and a per-user salt.
+- **Storage.** The encrypted blob is stored in `localStorage` **only**. It is never written to the Supabase database, never sent to any Monipay edge function, never logged.
+- **Validation on import.** When a user re-imports their wallet, the decrypted public key derived from the imported keypair **must match** the address bound to their MoniTag in the database. Mismatches reject the import.
+- **Two-step regenerate warning.** If a user opts to regenerate their Solana key (a destructive operation), Monipay shows a two-step confirmation.
+
+## Why localStorage-only
+
+The Solana key is the most sensitive credential Monipay handles. Storing nothing on the server means that even a total server compromise cannot leak user Solana keys.
+
+## Read next
+
+- [The Walkaway Test](/concepts/walkaway-test)
+- [Monipay on Solana](/chains/solana)
