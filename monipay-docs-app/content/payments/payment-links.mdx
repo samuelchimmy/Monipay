@@ -1,0 +1,37 @@
+---
+title: "Payment Links (pl_ codes)"
+description: "monipay.xyz/pay/pl_[code] format, single or multi-use, expiry, amount lock."
+canonical: "https://docs.monipay.xyz/docs/payments/payment-links"
+ogImage: "/og/payments-links.png"
+updated: "2026-06-19"
+section: "Payments"
+tags: ["links", "payments", "merchant"]
+---
+
+# Payment links
+
+Generate a one-shot or reusable payment URL. Anyone with the link can pay you.
+
+```
+https://monipay.xyz/pay?to=@you&amount=10&chain=base&memo=Order%20123&callback=https://yoursite.com/thanks
+```
+
+## Parameters
+
+- `to` , MoniTag of the recipient.
+- `amount` , Decimal amount.
+- `chain` , `base` | `bsc` | `solana` | `tempo` | `celo` | `ink`.
+- `memo` , Optional reference.
+- `callback` , URL to redirect after success.
+- `pl_[code]` , Preset payment link code.
+
+## Behavior
+
+- **Mobile:** Opens the installed Monipay app via deep link.
+- **Web:** Renders a hosted checkout modal.
+- **Success:** Redirects to `callback` and triggers a webhook.
+
+## Read next
+
+- [Webhooks Reference](/merchant/webhooks)
+- [Deep Links Specification](/mobile/deep-links)

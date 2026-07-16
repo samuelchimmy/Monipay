@@ -1,0 +1,71 @@
+---
+title: "IOUs and Claims"
+description: "On-chain IOU registry, claim flow for unaddressed recipients."
+canonical: "https://docs.monipay.xyz/docs/payments/iou"
+ogImage: "/og/payments-iou.png"
+updated: "2026-06-19"
+section: "Payments"
+tags: ["iou", "claims", "smart-contracts"]
+---
+
+# IOUs and claims
+
+Send payments to people who don't have a Monipay account yet using the on-chain IOU registry.
+
+## How it works
+
+1. Sender issues a payment to an email or social handle.
+2. The funds are held in the `IOURegistry` smart contract.
+3. The recipient receives a notification with a claim link.
+4. Recipient creates a MoniTag and claims the funds.
+5. Funds are released from the escrow contract to the recipient's new wallet.
+
+## Walkaway Test for IOUs
+
+If an IOU remains unclaimed after a certain period, the sender can reclaim the funds. This ensures that capital is never permanently trapped in the registry.
+
+## Read next
+
+- [IOU Registry Contract](/contracts/iou-registry)
+- [How to Claim](/getting-started)
+
+## Claim flow in detail
+
+The IOU system uses a `bytes32 recipientId` derived from `keccak256("platform:userId")` - no PII stored on-chain. Here's the full lifecycle:
+
+```
+Sender pays @username (Twitter / Discord / Telegram)
+       ↓
+IOURegistry.sol escrows funds on-chain
+       ↓
+Recipient receives notification (email / DM)
+       ↓
+Recipient visits monipay.xyz → connects wallet
+       ↓
+claim-social-funds edge function verifies OAuth identity
+       ↓
+batchClaim called from vault → funds released to wallet
+```
+
+## Expiry and reclaim
+
+IOUs have a configurable expiry window. If a recipient does not claim within the window:
+
+- The sender can call `reclaim()` on the `IOURegistry` to recover funds.
+- Unclaimed IOUs are **never lost** - only the sender can reclaim after expiry.
+
+## Supported chains
+
+The IOU Registry is deployed on: **Base**, **BSC**, **Celo**, and **Tempo**. Solana uses a parallel escrow model adapted for the Solana account model.
+
+## Security notes
+
+- Recipient identity is stored as a hash - no username or email appears on-chain.
+- Only the authorized vault hot wallet can call `batchClaim`.
+- See [Security Architecture](/docs/security/architecture) for the full threat model.
+
+## Read next
+
+- [Contracts Overview](/docs/contracts/overview)
+- [Security Architecture](/docs/security/architecture)
+- [MoniBot Commands](/docs/monibot/commands)
