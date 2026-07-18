@@ -95,11 +95,9 @@ const moniBotRouterAbi = [
   { name: 'executeP2P',    type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'from', type: 'address' }, { name: 'to', type: 'address' }, { name: 'amount', type: 'uint256' }, { name: 'nonce', type: 'uint256' }, { name: 'tweetId', type: 'string' }], outputs: [{ name: 'success', type: 'bool' }] },
   { name: 'executeGrant',  type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'to', type: 'address' }, { name: 'amount', type: 'uint256' }, { name: 'campaignId', type: 'string' }], outputs: [{ name: 'success', type: 'bool' }] },
   { name: 'getNonce',      type: 'function', stateMutability: 'view',       inputs: [{ name: 'user', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
-  { name: 'nonces',        type: 'function', stateMutability: 'view',       inputs: [{ name: '', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
   { name: 'isTweetUsed',   type: 'function', stateMutability: 'view',       inputs: [{ name: 'tweetId', type: 'string' }], outputs: [{ name: '', type: 'bool' }] },
   { name: 'isGrantIssued', type: 'function', stateMutability: 'view',       inputs: [{ name: 'campaignId', type: 'string' }, { name: 'recipient', type: 'address' }], outputs: [{ name: '', type: 'bool' }] },
   { name: 'calculateFee',  type: 'function', stateMutability: 'view',       inputs: [{ name: 'amount', type: 'uint256' }], outputs: [{ name: 'fee', type: 'uint256' }, { name: 'netAmount', type: 'uint256' }] },
-  { name: 'calculateFee',  type: 'function', stateMutability: 'view',       inputs: [{ name: 'user', type: 'address' }, { name: 'token', type: 'address' }, { name: 'amount', type: 'uint256' }], outputs: [{ name: '', type: 'uint256' }] },
 ];
 
 const magicPayAbi = [
@@ -395,10 +393,8 @@ export async function executeP2PViaRouter(fromAddress, toAddress, amount, tweetI
     try {
       const { publicClient, walletClient } = getClients(chain);
 
-      const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
-
       const [nonce, balance, allowance, isTweetUsed] = await Promise.all([
-        publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: isV2 ? 'nonces' : 'getNonce', args: [fromAddress] }),
+        publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'getNonce',     args: [fromAddress] }),
         publicClient.readContract({ address: config.tokenAddress,  abi: erc20Abi,         functionName: 'balanceOf',   args: [fromAddress] }),
         publicClient.readContract({ address: config.tokenAddress,  abi: erc20Abi,         functionName: 'allowance',   args: [fromAddress, config.routerAddress] }),
         publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'isTweetUsed', args: [tweetId] }),
@@ -415,17 +411,9 @@ export async function executeP2PViaRouter(fromAddress, toAddress, amount, tweetI
         throw new Error(`ERROR_ALLOWANCE:MoniBot is only approved to move $${approved} ${config.symbol} on ${chain.toUpperCase()} but you need $${amount}. Go to MoniPay Settings > MoniBot > Set Allowance.`);
       }
 
-      let feeValue;
-      if (isV2) {
-        feeValue = await publicClient.readContract({
-          address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [fromAddress, config.tokenAddress, amountInUnits],
-        });
-      } else {
-        const [f] = await publicClient.readContract({
-          address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [amountInUnits],
-        });
-        feeValue = f;
-      }
+      const [fee] = await publicClient.readContract({
+        address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [amountInUnits],
+      });
 
       let calldata = encodeFunctionData({
         abi: moniBotRouterAbi,
@@ -450,7 +438,7 @@ export async function executeP2PViaRouter(fromAddress, toAddress, amount, tweetI
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       if (receipt.status === 'reverted') throw new Error(`ERROR_REVERTED:P2P transaction reverted on ${chain.toUpperCase()} (${hash})`);
 
-      return { hash, fee: parseFloat(formatUnits(feeValue, config.decimals)) };
+      return { hash, fee: parseFloat(formatUnits(fee, config.decimals)) };
 
     } catch (err) {
       if (isRpcFailure(err) && attempt < totalRpcs - 1) {
@@ -469,9 +457,6 @@ export async function executeP2PViaRouter(fromAddress, toAddress, amount, tweetI
 
 export async function executeGrantViaRouter(toAddress, amount, campaignId, chainName = 'base') {
   const chain = normalizeChain(chainName);
-  const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
-  if (isV2) throw new Error('ERROR_V2_OMITTED:executeGrant is disabled in V2. Use off-chain grant processing.');
-
   const config = getChainConfig(chain);
   const amountInUnits = parseUnits(amount.toFixed(config.decimals), config.decimals);
   const totalRpcs = config.rpcs.length;
@@ -543,8 +528,7 @@ export const getUserNonce = async (user, chainName = 'base') => {
   for (let attempt = 0; attempt < totalRpcs; attempt++) {
     try {
       const { publicClient } = getClients(chain);
-      const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
-      return await publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: isV2 ? 'nonces' : 'getNonce', args: [user] });
+      return await publicClient.readContract({ address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'getNonce', args: [user] });
     } catch (e) {
       if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
       throw e;
@@ -590,18 +574,10 @@ export const calculateFee = async (amount, chainName = 'base') => {
   for (let attempt = 0; attempt < totalRpcs; attempt++) {
     try {
       const { publicClient } = getClients(chain);
-      const isV2 = process.env.USE_V2_CONTRACTS === 'true' && chain === 'celo';
-      if (isV2) {
-        const fee = await publicClient.readContract({
-          address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: ['0x0000000000000000000000000000000000000000', config.tokenAddress, amountUnits],
-        });
-        return { fee: parseFloat(formatUnits(fee, config.decimals)), netAmount: parseFloat(formatUnits(amountUnits - fee, config.decimals)) };
-      } else {
-        const [fee, net] = await publicClient.readContract({
-          address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [amountUnits],
-        });
-        return { fee: parseFloat(formatUnits(fee, config.decimals)), netAmount: parseFloat(formatUnits(net, config.decimals)) };
-      }
+      const [fee, net] = await publicClient.readContract({
+        address: config.routerAddress, abi: moniBotRouterAbi, functionName: 'calculateFee', args: [amountUnits],
+      });
+      return { fee: parseFloat(formatUnits(fee, config.decimals)), netAmount: parseFloat(formatUnits(net, config.decimals)) };
     } catch (e) {
       if (isRpcFailure(e) && attempt < totalRpcs - 1) { rotateRpc(chain); continue; }
       throw e;
