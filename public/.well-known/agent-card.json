@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "0.3.0",
+  "name": "MoniBot",
+  "description": "Social-native stablecoin payments agent. Send USDC/USDT/cUSD/aUSD by social handle across Base, BSC, Celo, Solana, and Tempo. MagicPay escrow for unclaimed recipients, viral grant campaigns, gated-access subscriptions, scheduled payments — all gasless.",
+  "url": "https://monipay.xyz/monibot",
+  "documentationUrl": "https://docs.monipay.xyz/monibot",
+  "version": "1.2.0",
+  "provider": { "organization": "MoniPay Labs", "url": "https://monipay.xyz" },
+  "interfaces": [
+    { "transport": "https", "url": "https://vdaeojxonqmzejwiioaq.supabase.co/functions/v1/monibot-a2a" },
+    { "transport": "x", "url": "https://x.com/monibot" },
+    { "transport": "discord", "url": "https://discord.com/oauth2/authorize?client_id=monibot" },
+    { "transport": "telegram", "url": "https://t.me/monipaybot" }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": true,
+    "stateTransitionHistory": true
+  },
+  "skills": [
+    { "id": "p2p_payment", "name": "P2P Payment", "description": "Send stablecoin to any social handle, gasless." },
+    { "id": "magicpay_escrow", "name": "MagicPay Escrow", "description": "Tip anyone with no wallet; they claim later." },
+    { "id": "campaign_grant", "name": "Campaign Grant", "description": "Run viral grant campaigns with on-chain settlement." },
+    { "id": "gated_access", "name": "Gated Access Manager", "description": "Recurring subscriptions for Telegram/Discord communities." },
+    { "id": "scheduled_payment", "name": "Scheduled Payment", "description": "One-time or recurring scheduled transfers." },
+    { "id": "reputation_query", "name": "Reputation Query", "description": "Read MoniBot ERC-8004 reputation signals." }
+  ],
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "securitySchemes": {
+    "x402": { "type": "http", "scheme": "x402", "description": "Pay-per-call via x402.org facilitator." }
+  },
+  "registrations": [
+    { "agentId": 51818, "registry": "eip155:8453:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" },
+    { "agentId": 96451, "registry": "eip155:56:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" },
+    { "agentId": 9103, "registry": "eip155:42220:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" }
+  ]
+}

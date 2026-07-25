@@ -1,0 +1,35 @@
+# MoniPay robots.txt
+# Indexable by default. AI bots explicitly allowed (see /llm.txt).
+
+User-agent: *
+Allow: /
+Disallow: /m0n1b0t-cmd
+Disallow: /discord-callback
+Disallow: /telegram-callback
+Disallow: /x-callback
+Disallow: /pay$
+Disallow: /pay/
+
+# Explicit AI-bot allow list (mirrors llm.txt policy)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+Sitemap: https://monipay.xyz/sitemap.xml
