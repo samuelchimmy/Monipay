@@ -1,0 +1,19 @@
+{
+  "name": "monipay-blog",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
+    "@fontsource/fira-code": "^5.2.7",
+    "@fontsource/plus-jakarta-sans": "^5.2.8",
+    "@supabase/supabase-js": "^2.49.1",
+    "astro": "^5.8.0"
+  }
+}

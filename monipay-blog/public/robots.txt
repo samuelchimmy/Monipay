@@ -1,0 +1,69 @@
+# Monipay Blog — robots.txt
+# Production crawl directives
+
+# Allow all search engines
+User-agent: *
+Allow: /
+Disallow: /private/
+
+# Google
+User-agent: Googlebot
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+
+# Brave Search
+User-agent: BraveSearch
+Allow: /
+
+# OpenAI crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Google AI / Gemini
+User-agent: Google-Extended
+Allow: /
+
+# Anthropic / Claude
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+
+# Apple / Siri
+User-agent: Applebot
+Allow: /
+
+# Common AI crawlers
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+# Sitemaps
+Sitemap: https://blog.monipay.xyz/sitemap-index.xml
+
+# RSS Feed
+# Available at: https://blog.monipay.xyz/rss.xml
+
+# LLM context
+# Available at: https://blog.monipay.xyz/llm.txt
