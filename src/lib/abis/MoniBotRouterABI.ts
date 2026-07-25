@@ -1,0 +1,98 @@
+export const MoniBotRouterABI = [
+  // Admin
+  {
+    name: 'addExecutor',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'executor', type: 'address' }],
+    outputs: [],
+  },
+  {
+    name: 'removeExecutor',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'executor', type: 'address' }],
+    outputs: [],
+  },
+  {
+    name: 'setPlatformFee',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'newFeeBps', type: 'uint256' }],
+    outputs: [],
+  },
+  {
+    name: 'setPlatformTreasury',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'newTreasury', type: 'address' }],
+    outputs: [],
+  },
+  {
+    name: 'withdrawCampaignFunds',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'amount', type: 'uint256' }],
+    outputs: [],
+  },
+  {
+    name: 'emergencyWithdraw',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'token', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    outputs: [],
+  },
+  // Read
+  {
+    name: 'platformTreasury',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'address' }],
+  },
+  {
+    name: 'platformFeeBps',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'getGrantBalance',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'isExecutor',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ name: '', type: 'bool' }],
+  },
+  {
+    name: 'getNonce',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: 'user', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'owner',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'address' }],
+  },
+  {
+    name: 'MAX_FEE_BPS',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+] as const;
