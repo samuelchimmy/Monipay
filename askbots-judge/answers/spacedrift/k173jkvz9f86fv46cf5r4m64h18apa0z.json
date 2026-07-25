@@ -1,0 +1,80 @@
+{
+  "projectId": "k173jkvz9f86fv46cf5r4m64h18apa0z",
+  "name": "Chesscito — Hackathon Review",
+  "propertyUrl": "chesscito.com",
+  "answers": [
+    {
+      "questionId": "would_ship",
+      "_text": "Would you ship or use this in a real app?",
+      "_type": "multiple_choice",
+      "_choices": ["Yes", "Not yet", "No"],
+      "answer": "Yes"
+    },
+    {
+      "questionId": "ux_rating",
+      "_text": "Rate the overall UX (1–10).",
+      "_type": "rating",
+      "answer": "9"
+    },
+    {
+      "questionId": "ux_issue",
+      "_text": "What is the single biggest UX problem?",
+      "_type": "freeform",
+      "answer": "Genuinely the best-designed MiniPay game I've reviewed — the custom art, the wizard-wolf mascot, the storybook framing, the mobile fit are all top-tier and clearly bespoke, not templated. The single biggest UX problem is that there's no sound at all. For a game this polished visually, silence is a jarring gap — a title-screen sting, a move click, and a win chime would lift the whole feel and cost little. Second, a smaller thing I hit: tapping Start changes the domain to learn.chesscito.com. Inside the MiniPay in-app browser that cross-subdomain hop is worth double-checking against MiniPay's origin/manifest expectations — an app that navigates off its declared origin can trip the webview's rules; keep the whole flow on one origin to be safe."
+    },
+    {
+      "questionId": "tech_rating",
+      "_text": "Rate the technical implementation quality (1–10).",
+      "_type": "rating",
+      "answer": "9"
+    },
+    {
+      "questionId": "tech_issue",
+      "_text": "What is the top technical issue or risk you would fix first?",
+      "_type": "freeform",
+      "answer": "Technically this is a standout — PageInsight 98 performance / 94 accessibility / 100 best-practices / 100 SEO with FCP 0.8s, LCP 2.4s, TBT 0ms, CLS 0 on throttled mobile, which is exceptional for a game. The repo shows why: a clean pnpm monorepo (apps/landing, apps/web, apps/admin, apps/contracts) that splits the light onboarding surface from the heavy game, Next.js 14 with per-route code-split, and 300+ avif/webp/png image variants via sharp. That architecture is the lesson other MiniPay builders should copy. The top thing I'd firm up isn't a bug but a boundary: on-chain money paths. You have ChesscitoTreasury, ShopUpgradeable, ScoreboardUpgradeable, VictoryNFT contracts — for the paid 21-day challenge and shop, make sure score/progress attestation is signed server-side and verified on-chain (so a client can't forge a 'completed day' to claim rewards), and that the treasury has a refund/timeout path. Upgradeable contracts also mean the proxy admin key is now the highest-value target — document who holds it and consider a timelock. For a paid habit product, the integrity of 'did the user really complete the day' is the thing to lock down first."
+    },
+    {
+      "questionId": "gtm_freeform",
+      "_text": "What is the biggest go-to-market risk, and one thing to try?",
+      "_type": "freeform",
+      "answer": "Biggest GTM risk: the $0.99 price on the 21-Day Mind Challenge. That reads as app-store / dollar-store pricing, not game pricing — in a MiniPay stablecoin context, a flat $0.99 'buy-in' feels like a paywall in front of a game you haven't fallen in love with yet, and it's the kind of number that quietly caps conversion. One thing to try: let users start the challenge free (or for a sub-$0.50 impulse commitment) and make the payment a 'stake on yourself' mechanic — you put down a small amount, finish the 21 days, get it back (or get it back plus a bonus). That reframes the payment from 'price of entry' to 'commitment device,' which is exactly the habit-formation thesis the product is built on, and it's far more MiniPay-native than a fixed sticker price."
+    },
+    {
+      "questionId": "celo_rating",
+      "_text": "How well does this fit the Celo/MiniPay ecosystem? (1–10)",
+      "_type": "rating",
+      "answer": "8"
+    },
+    {
+      "questionId": "celo_missing",
+      "_text": "What Celo-native feature or integration is missing?",
+      "_type": "freeform",
+      "answer": "Gas fee abstraction is the piece to confirm — a MiniPay user holds stablecoins, not CELO, so any on-chain action (joining the paid challenge, a shop purchase, minting a Victory NFT) must let gas be paid in the stablecoin via Celo's fee-currency support, or it silently fails for exactly the users MiniPay brings. Beyond that, the challenge is a natural fit for a Celo-native 'commitment stake' (see GTM answer) and for verified-humanity gating (Self.xyz / GoodDollar) if you ever add leaderboards or shared prize pools, so one person can't farm rewards across many wallets. Also: the domain moves to learn.chesscito.com after Start — make sure the MiniPay manifest / declared origin covers wherever the paid actions actually execute, or the wallet handshake can break mid-flow."
+    },
+    {
+      "questionId": "custom_ask_1",
+      "_text": "Does the experience communicate it's more than a chess game (focus/habit/decision-making), or does it feel like a regular chess app with payments on top?",
+      "_type": "freeform",
+      "answer": "It communicates it partially — the scaffolding of the 'more than chess' vision is visible, but the framing is doing the work more than the experience yet. The strong signals: the 'Focus Passport,' the '21-Day Mind Challenge,' 'Start Focus' as the primary CTA, and the Training-Path progression (Rook->Bishop->Queen->...) all clearly signal habit and mastery over raw chess. That's more intentional than a plain chess app. But it still reads as 'chess + a habit wrapper' rather than 'a focus tool that happens to use chess,' because the moment-to-moment loop a first-timer sees is still: here is a board, play chess. To make the vision felt rather than labeled, the daily loop itself needs to embody focus — e.g. a single deliberate daily puzzle/decision with a short reflection ('why was that the better move'), a visible streak/'mind' meter that grows, and a moment of understanding-a-mistake, rather than just 'play a match.' Right now the vision lives in the copy and the passport UI; push it into the 60 seconds of actual daily play and it becomes undeniable."
+    },
+    {
+      "questionId": "custom_ask_2",
+      "_text": "Is the 21-day challenge a strong enough entry point for commitment/retention, or should the app simplify around one clearer promise before Play/PRO/rewards/payments?",
+      "_type": "freeform",
+      "answer": "The 21-day challenge is the right core bet — a bounded, habit-shaped commitment with a streak and a payment-as-commitment is a genuinely strong retention primitive, and far better than an open-ended 'play chess' loop. But the first-time journey is carrying too much at once: on the hub a newcomer simultaneously sees Training vs Play, the 21-Day Challenge with a $0.99 tag and Join Challenge, a big Start Focus button, a Connect wallet prompt, a trophy/level strip, a gift, and the Training Path — that's a lot of competing calls before they've made one move. I'd simplify hard around ONE promise for the first session: get them into a single, delightful focus rep (one puzzle/one short game) with zero wallet and zero payment, let them feel the streak begin, and only THEN surface the 21-day challenge, PRO, and payment as the natural next commitment. Lead with the transformation ('21 days to a sharper mind'), deliver one rep of it immediately, and defer every monetization/wallet decision to after the first win. The challenge should be the thing they opt INTO once hooked, not one of eight things on the first screen."
+    },
+    {
+      "questionId": "custom_ask_3",
+      "_text": "What would make it feel genuinely native/valuable to Celo/MiniPay without forcing Web3 complexity (payments, on-chain progression, social, rewards, scores, identity, referrals, events)?",
+      "_type": "freeform",
+      "answer": "Rank them by value-per-unit-of-added-complexity. HIGHEST value, lowest complexity: (1) Commitment staking — stake a small stablecoin on the 21-day challenge, finish and reclaim it (optionally +bonus). This is the single most Celo-native mechanic because it turns MiniPay's frictionless stablecoin payments into the habit device itself, not a paywall. (2) On-chain progression as proof, not chore — mint the completed Focus Passport / streak as a soulbound-style record the user owns; it's a keepsake and a status signal, and it composes with the ERC-8004/8004scan world without the user thinking about chains. MEDIUM: (3) Referrals ('bring a friend, both get a free challenge') — social, viral, MiniPay-distribution-friendly. (4) Weekly focus events with a shared pot (opt-in). LOWEST priority / most complexity-risk: heavy public leaderboards and identity systems — only add once there's density, and gate them behind verified-humanity so they can't be farmed. The guiding rule: use MiniPay payments and on-chain ownership where they reinforce the habit (staking, keepsake progression, referrals); avoid on-chain-everything that adds taps without adding meaning. Keep gas abstracted so none of it requires the user to hold CELO."
+    },
+    {
+      "questionId": "focus_note",
+      "_text": "Focus: product positioning, first-time journey, habit loop, Celo/MiniPay fit — is this worth doubling down on, or reposition/simplify first?",
+      "_type": "freeform",
+      "answer": "Double down — but simplify the front door first. As a founder-led experiment, Chesscito is one of the most promising MiniPay/Celo product directions I've seen this batch: the craft is exceptional (best-designed MiniPay game I've reviewed, PageInsight 98/94/100/100, custom art, clean Next.js monorepo splitting a light landing from the heavy game — genuinely something other builders should study), and the thesis (chess as a focus/habit interface, payment as a commitment device) is differentiated and real. The gap is not the vision or the execution quality — it's that the first-time journey front-loads too many decisions (Training/Play + $0.99 challenge + Start Focus + Connect + rewards + training path, all at once) so the 'focus tool, not chess app' promise is stated more than felt. Concrete priorities: (1) First session = one delightful focus rep, no wallet, no payment; let the streak start, then reveal the challenge. (2) Reframe the $0.99 as a reclaimable commitment stake, not a sticker price — it's more MiniPay-native and matches the habit thesis. (3) Push the 'focus/decision-making' vision into the actual 60-second daily loop (a deliberate move + a one-line reflection), not just the passport UI. (4) Add sound. (5) Confirm gas abstraction and that the MiniPay origin/manifest covers the learn.chesscito.com hop. Do those and this is a clear double-down, not a reposition."
+    }
+  ]
+}
