@@ -1,0 +1,11 @@
+# MoniPay
+
+MoniPay is the social payments layer for stablecoins, powered by autonomous AI agents. 
+
+## Useful Links
+- [Main App](https://monipay.xyz)
+- [MiniPay Experience](https://monipay.xyz/minipay)
+- [Blog](https://blog.monipay.xyz)
+- [Documentation](https://docs.monipay.xyz)
+- [Terms of Service](https://monipay.xyz/terms)
+- [Privacy Policy](https://monipay.xyz/privacy)

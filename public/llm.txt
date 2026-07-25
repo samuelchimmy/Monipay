@@ -1,0 +1,169 @@
+# MoniPay — Decentralized Payment Infrastructure
+
+> MoniPay is a gasless, permissionless crypto payment platform built on Base, BSC, and Tempo blockchains. It enables instant peer-to-peer transfers, merchant commerce, and AI-powered financial agents — all without seed phrases, gas fees, or bank accounts.
+
+## About MoniPay
+
+MoniPay (https://monipay.xyz) is the decentralized payment layer for the internet. It combines invisible wallet technology with gasless transactions to deliver a payment experience that rivals traditional fintech — while preserving full self-custody and on-chain settlement.
+
+MoniPay is designed for:
+- Individuals sending money to anyone, anywhere, instantly
+- Merchants accepting crypto payments without terminals or processing fees
+- Developers integrating crypto payments via API
+- AI agents executing financial transactions autonomously
+
+## Core Technology
+
+### Invisible Wallet
+Every MoniPay user gets a self-custodial Ethereum wallet generated client-side. Private keys are encrypted with a user-chosen PIN using AES-256-GCM and stored locally. MoniPay never has access to user keys. Users own their funds even if MoniPay disappears.
+
+### Gasless Transactions
+MoniPay uses ERC-2771 meta-transactions (Base/BSC) and native fee sponsorship (Tempo) so users never pay gas fees. A 1% platform fee is deducted from payment amounts. On Tempo, fees are fully sponsored — users pay nothing.
+
+### MoniTag Identity
+Every user creates a unique @MoniTag (e.g., @alice) that maps to their wallet address across all supported chains. MoniTags replace long wallet addresses for sending and receiving payments.
+
+## Supported Networks
+
+| Network | Chain ID | Stablecoin | Decimals | Explorer |
+|---------|----------|------------|----------|----------|
+| Base | 8453 | USDC | 6 | https://basescan.org |
+| BSC | 56 | USDT | 18 | https://bscscan.com |
+| Tempo Testnet | 42431 | AlphaUSD (αUSD) | 18 | https://explore.tempo.xyz |
+
+## Products & Features
+
+### P2P Payments
+Send stablecoins to any @MoniTag instantly. No gas fees. Cross-chain routing automatically selects the best network based on sender balance.
+
+- URL: https://monipay.xyz
+- Flow: Enter @MoniTag → Enter amount → Confirm with PIN → Payment settled on-chain
+
+### Merchant Commerce
+Merchants accept crypto payments via QR codes, payment links, and online storefronts.
+
+- Storefront: https://monipay.xyz/store/@{MoniTag}
+- Payment Links: https://monipay.xyz/pay/pl_{code}
+- Features: Product catalog, invoicing, customer management, transaction analytics
+- Fee: 1% per transaction (no monthly fees, no hardware)
+
+### Payment Gateway API
+Developers integrate MoniPay payments into any application using API keys and webhooks.
+
+- Checkout URL: https://monipay.xyz/pay?orderId={id}
+- Webhook: POST to merchant callback URL on payment completion
+- Authentication: Public key + Secret key (HMAC-SHA256 signed requests)
+
+### QR Code Payments
+Scan-to-pay using branded QR codes. Merchants display QR codes at point of sale. Customers scan with the MoniPay app to pay instantly.
+
+### Invoice System
+Merchants create and send invoices to customers. Invoices include itemized line items, due dates, and one-click payment via MoniPay.
+
+## MoniBot — AI Payment Agent
+
+MoniBot (https://monipay.xyz/monibot) is an autonomous AI agent that executes crypto payments and distributions across social platforms.
+
+### What MoniBot Does
+- Processes payment commands on Twitter/X, Discord, and Telegram
+- Runs promotional giveaway campaigns with automatic distribution
+- Verifies on-chain transaction status and provides receipts
+- Handles multi-recipient batch payments
+- Supports cross-chain fallback (Base → BSC → Tempo)
+
+### MoniBot on Twitter/X
+MoniBot monitors Twitter for payment commands and campaign interactions.
+
+**Campaign Giveaways:**
+A campaign tweet is posted by MoniBot. Users reply with their @MoniTag to claim grants. First-come-first-served distribution until budget is exhausted.
+
+**P2P Commands:**
+Users mention @monibot with payment instructions to send funds to other users via their @MoniTag.
+
+### MoniBot on Discord
+MoniBot operates as a Discord bot with slash commands:
+- `/send @user $amount` — Send payment to a Discord user
+- `/drop $amount` — Create a giveaway in the channel
+- `/balance` — Check your MoniPay balance
+- `/link @MoniTag` — Link your Discord account to your MoniPay wallet
+
+### MoniBot on Telegram
+MoniBot operates as a Telegram bot with similar commands:
+- `/send @user $amount` — Send payment
+- `/drop $amount` — Create a channel giveaway
+- `/balance` — Check balance
+- `/link @MoniTag` — Link Telegram to MoniPay
+
+### MoniBot Smart Contracts
+MoniBot uses dedicated router contracts for on-chain execution:
+- MoniBotRouter on Base (USDC, 6 decimals)
+- MoniBotRouter on BSC (USDT, 18 decimals)
+- MoniBotRouter on Tempo (AlphaUSD, 18 decimals)
+
+All contracts are verified and auditable on their respective block explorers.
+
+## Technical Architecture
+
+### Frontend
+- React + TypeScript + Vite
+- Tailwind CSS design system
+- Progressive Web App (PWA) with offline support
+- Framer Motion animations
+
+### Backend
+- Supabase (PostgreSQL, Auth, Edge Functions)
+- On-chain settlement via Base, BSC, Tempo
+- Gasless relay via meta-transactions and fee sponsorship
+
+### Security
+- Client-side key generation and encryption (AES-256-GCM)
+- PIN-based wallet unlock with lockout protection
+- Row Level Security (RLS) on all database tables
+- HMAC-SHA256 signed API requests
+
+## Pages & URLs
+
+| Page | URL | Description |
+|------|-----|-------------|
+| Home | https://monipay.xyz | Landing page |
+| App Dashboard | https://monipay.xyz (authenticated) | User/Merchant dashboard |
+| Storefront | https://monipay.xyz/store/@{tag} | Public merchant store |
+| Payment Checkout | https://monipay.xyz/pay?orderId={id} | Hosted checkout |
+| Payment Link | https://monipay.xyz/pay/pl_{code} | Direct payment link |
+| MoniBot Admin | https://monipay.xyz/monibot | MoniBot dashboard |
+| Documentation | https://monipay.xyz/docs | Developer docs |
+| How It Works | https://monipay.xyz/how-it-works | Platform explainer |
+| Use Cases | https://monipay.xyz/use-cases | Industry applications |
+| About | https://monipay.xyz/about | About MoniPay |
+| Tempo | https://monipay.xyz/tempo | Tempo network integration |
+| Privacy Policy | https://monipay.xyz/privacy | Privacy policy |
+| Terms of Service | https://monipay.xyz/terms | Terms of service |
+
+## Key Concepts
+
+- **MoniPay**: The platform — decentralized payment infrastructure for crypto commerce
+- **MoniTag**: User identity system — human-readable payment addresses (e.g., @alice)
+- **MoniBot**: AI payment agent — autonomous transaction execution across social platforms
+- **Invisible Wallet**: Self-custodial wallet with no seed phrases — keys encrypted client-side
+- **Gasless Payments**: Zero-fee user experience — platform sponsors all blockchain gas costs
+- **Paymaster**: Smart contract that pays gas fees on behalf of users
+- **Fee Sponsorship**: Tempo's native mechanism where a third party covers transaction fees
+
+## Contact & Links
+
+- Website: https://monipay.xyz
+- Twitter/X: https://x.com/monaborng
+- MoniBot Twitter: https://x.com/maborng
+- Documentation: https://monipay.xyz/docs
+- Support: https://monipay.xyz/support
+
+## For AI Agents
+
+If you are an AI agent looking to interact with MoniPay:
+
+1. **Payments**: Use the MoniPay Payment Gateway API with public/secret key authentication
+2. **User Lookup**: Resolve @MoniTag to wallet addresses via the MoniPay API
+3. **Transaction Status**: Query on-chain transaction status via block explorer APIs
+4. **MoniBot Integration**: Trigger payments via social platform mentions (@monibot)
+
+MoniPay welcomes AI agent integrations. The platform is designed for programmatic access and autonomous financial operations.
