@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "2025-06-18",
+  "name": "MoniBot MCP",
+  "description": "MoniBot exposes social-payment, MagicPay escrow, campaign grants, gated-access subscriptions, and reputation tools over MCP.",
+  "vendor": "MoniPay Labs",
+  "homepage": "https://monipay.xyz/monibot",
+  "transport": { "type": "http", "url": "https://vdaeojxonqmzejwiioaq.supabase.co/functions/v1/monibot-mcp" },
+  "auth": { "type": "x402", "facilitator": "https://x402.org/facilitator" },
+  "tools": [
+    { "name": "send_payment", "description": "Send stablecoin via MoniTag or social handle across Base, BSC, Celo, Solana, Tempo." },
+    { "name": "create_magicpay", "description": "Escrow a tip for any social handle; recipient claims later." },
+    { "name": "create_campaign", "description": "Launch a viral grant campaign on Twitter/Discord/Telegram." },
+    { "name": "gated_access_subscribe", "description": "Subscribe to a Telegram/Discord community via recurring stablecoin payment." },
+    { "name": "get_reputation", "description": "Fetch MoniBot's on-chain reputation signals (ERC-8004)." },
+    { "name": "resolve_monitag", "description": "Resolve @monitag to wallet addresses across all supported chains." }
+  ]
+}
