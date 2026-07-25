@@ -1,0 +1,80 @@
+{
+  "projectId": "k17cfvvex0gg8yhetc8xzx5vg58aqbfw",
+  "name": "Zombie Plague — Hackathon Review",
+  "propertyUrl": "https://zplague.xyz",
+  "answers": [
+    {
+      "questionId": "would_ship",
+      "_text": "Would you ship or use this in a real app?",
+      "_type": "multiple_choice",
+      "_choices": ["Yes", "Not yet", "No"],
+      "answer": "Not yet"
+    },
+    {
+      "questionId": "ux_rating",
+      "_text": "Rate the overall UX (1–10).",
+      "_type": "rating",
+      "answer": "7"
+    },
+    {
+      "questionId": "ux_issue",
+      "_text": "What is the single biggest UX problem?",
+      "_type": "freeform",
+      "answer": "The empty-state is the biggest UX problem, and it's the same as your cold-start problem: the landing page shows placeholder dashes for 'Matches Played' and 'Zombies Caught', which for a real-money social game reads as 'nobody is here / this might not pay out.' Trust is the entire product in a staking game. The free no-wallet demo is the right instinct, but it should be the hero action, not a secondary path — let a first-timer play a full round against bots in under 10 seconds with zero friction, then surface staked play once they've felt the loop. Also, a per-move '<5s confirm' claim sets an expectation that any RPC hiccup will visibly break; show optimistic UI with a clear pending state so a slow block doesn't feel like the game froze."
+    },
+    {
+      "questionId": "tech_rating",
+      "_text": "Rate the technical implementation quality (1–10).",
+      "_type": "rating",
+      "answer": "8"
+    },
+    {
+      "questionId": "tech_issue",
+      "_text": "What is the top technical issue or risk you would fix first?",
+      "_type": "freeform",
+      "answer": "The top risk is the trust boundary of server-side Noir proving (see the dedicated answer). After that: the payout path. In a staked multiplayer game the contract that holds the pot and splits it is the highest-value attack surface — I'd fix/verify griefing and liveness first: what happens to the pot if a player disconnects mid-round, if the timer expires with no vote, or if the server (which generates proofs) goes down mid-match? Make sure funds can always be resolved or refunded without the server being live — a stake that can be soft-locked because the proving service is offline is worse than a UX bug. Get that path audited and add a timeout-based refund escape hatch."
+    },
+    {
+      "questionId": "gtm_freeform",
+      "_text": "What is the biggest go-to-market risk, and one thing to try?",
+      "_type": "freeform",
+      "answer": "Biggest risk: liquidity of players. A 4+ player real-money social-deduction game is dead without a critical mass online at the same time — asynchronous doesn't work for a live argue-and-vote loop. One thing to try: scheduled 'match times' instead of always-on lobbies. Concentrate demand into daily prime-time rounds (announced in the Telegram/Discord, MiniPay-native timezones) so 20 people show up in one 15-minute window rather than 2 people trickling in all day. Pair it with a small guaranteed prize pool you seed for the first N rounds so early players are paid to create the liquidity flywheel. Bots fill the gaps, but humans-at-a-known-time is what breaks cold-start."
+    },
+    {
+      "questionId": "celo_rating",
+      "_text": "How well does this fit the Celo/MiniPay ecosystem? (1–10)",
+      "_type": "rating",
+      "answer": "7"
+    },
+    {
+      "questionId": "celo_missing",
+      "_text": "What Celo-native feature or integration is missing?",
+      "_type": "freeform",
+      "answer": "Two things. (1) Gas fee abstraction — players staking USDm should never need a separate CELO balance to make a move; use Celo's fee-currency support so every action is paid in the stablecoin they already hold. For a per-move on-chain game this is essential, otherwise a player runs out of gas mid-match and rage-quits. (2) Sybil resistance for the pot: a real-money game where one human can enter a lobby as multiple wallets is exploitable. Celo has first-party proof-of-personhood (Self.xyz) and GoodDollar identity — gating staked matches behind verified-human checks would protect the prize pool and is a strong, Celo-native trust story. MiniPay is the obvious distribution channel but I don't see it explicitly wired for the staked flow."
+    },
+    {
+      "questionId": "custom_ask_1",
+      "_text": "Cold-start: beyond AI bot-fill, most effective GTM play for a real-money multiplayer game on Celo with empty lobbies?",
+      "_type": "freeform",
+      "answer": "Bot-fill keeps a lobby technically playable but it doesn't fix the reason people leave — they can tell it's empty and there's no social tension against bots. The most effective play is time-boxed liquidity, not more bots: run scheduled daily tournament rounds at fixed times announced to a community, with a seeded guaranteed pot for the first weeks so showing up is +EV. Concentrating 20 real humans into one window beats 200 spread thin. Layer on referral stakes (invite a friend, both get a free entry) because social-deduction is inherently viral — it's more fun with people you know. Use MiniPay's distribution and Celo community channels to fill those scheduled windows. Treat bots as garnish for off-peak solo play, not the growth engine."
+    },
+    {
+      "questionId": "custom_ask_2",
+      "_text": "Is server-side Noir proving (role commitment + innocence/infection proofs via bb CLI, verified on-chain) a sound trade-off, or does it undercut trust-minimization vs client-side proving?",
+      "_type": "freeform",
+      "answer": "It's a reasonable pragmatic trade-off for a hackathon and for UX (mobile clients can't feasibly run bb proving in-browser at acceptable latency), but be honest that it does move the trust model: if the server generates the proofs, the server knows every player's secret role. That means your ZK gives you public verifiability and tamper-evidence, but NOT privacy from the operator — a server that knows all roles could, in principle, leak or act on them. That's fine IF you frame it correctly and constrain it: (1) commit roles on-chain so the server can't change them after the fact, (2) make the reveal verifiable by anyone so cheating is detectable post-hoc, and (3) state plainly in the rules that the operator is trusted for role privacy until client-side proving lands. The roadmap should be: server-proving now → client-side/local proving later for true trust-minimization. Don't claim 'not even us can see' while the proving is server-side — that specific claim is contradicted by the architecture and a technical judge will catch it."
+    },
+    {
+      "questionId": "custom_ask_3",
+      "_text": "Autonomous ERC-8004 agents self-play, stake, and can lose real USDm to humans. Is the economic model sustainable and how to fund/limit the bots as real players grow?",
+      "_type": "freeform",
+      "answer": "As-is it's a subsidy, not a sustainable model: every USDm a bot loses to a human is money leaving your treasury, and if bots are naive they become a farmable faucet — humans will find the strategy that reliably beats them and drain the bankroll. Sustainable framing: treat bot stakes as a capped, budgeted user-acquisition cost (CAC), not a game mechanic that must break even. Concretely: (1) Fund bots from a dedicated, hard-capped liquidity pool with a daily loss limit; when it's exhausted, bots play free/demo mode only, never staked. (2) Cap bots to a minority of any staked lobby (e.g. never more than 1-2 seats) so humans can't farm an all-bot table. (3) As real player density rises, ramp bot participation DOWN automatically — they exist to solve cold-start, so their share should decay as liquidity grows. (4) Skill-tune bots to roughly break-even EV, not to lose, so variance (not systematic bleed) is what funds player winnings. Measure USDm-out-to-bots per acquired retained human; if that number is below your other CAC, it's working."
+    },
+    {
+      "questionId": "focus_note",
+      "_text": "Focus: (1) GTM/cold-start for a real-money multiplayer game, (2) whether ZK + autonomous-agent architecture is technically sound and fits Celo. UI/UX welcome.",
+      "_type": "freeform",
+      "answer": "Cold-start (your #1): the fix is time-boxed liquidity + seeded pots + referral stakes, not more bot-fill — concentrate humans into scheduled windows; bots should decay as density grows (detail in custom_ask_1 and _3). ZK soundness (your #2): the design is legitimately impressive for a hackathon — on-chain role commitment + verifiable reveal via Noir is the right shape — but server-side proving means the operator can see roles, so tighten the marketing claim and put client-side proving on the roadmap (detail in custom_ask_2). Celo fit: strong bones, but wire fee abstraction (stake and move in USDm without a CELO balance) and Sybil/proof-of-personhood gating (Self.xyz/GoodDollar) to protect the pot — a real-money game without Sybil resistance is exploitable. UX: kill the empty-state dashes and make the free demo the hero so a newcomer feels the loop before being asked to stake. Net: technically one of the more serious builds in this batch; the gap is liquidity and one honest correction to the privacy claim, not the engineering."
+    }
+  ]
+}

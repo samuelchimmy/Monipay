@@ -1,0 +1,38 @@
+{
+  "projectId": "k1709zasq00c870vm8h32jk0ex8ap134",
+  "name": "Gambit — Hackathon Review",
+  "propertyUrl": "www.bestgambit.live",
+  "answers": [
+    {
+      "questionId": "would_ship",
+      "_text": "Would you ship or use this in a real app?",
+      "_type": "multiple_choice",
+      "_choices": ["Yes", "Not yet", "No"],
+      "answer": "Not yet"
+    },
+    {
+      "questionId": "fb_ux_rating",
+      "_text": "Rate the overall user experience (1–10).",
+      "_type": "rating",
+      "answer": "6"
+    },
+    {
+      "questionId": "fb_like",
+      "_text": "What worked best about this website?",
+      "_type": "freeform",
+      "answer": "The low-friction entry is the strongest part. Familiar games (Chess, Tic-Tac-Toe, Snakes & Ladders, Naija Whot, Block Blitz) at a 0.10 USD minimum, a free 'warm up' mode, and a daily GoodDollar claim give a player a reason to arrive and try before risking anything — that combination is genuinely well-judged for a mobile-first, low-stakes audience. Instant 'winner takes 95%, paid to your wallet the second the game ends' is exactly the payout promise this category needs. The Naija Whot inclusion signals a clear Nigeria/Africa focus that maps well onto Celo/MiniPay's actual user base, and the live-room counts ('5 live') are a smart, cheap trust/liquidity signal on the lobby."
+    },
+    {
+      "questionId": "fb_improve",
+      "_text": "What is the first thing you would improve?",
+      "_type": "freeform",
+      "answer": "The landing page is a logged-in dashboard being shown to logged-out visitors — that's the first thing I'd fix. On first paint, before I know what Gambit is, I'm hit with two competing auth CTAs ('Connect your wallet' AND 'Sign in'), a gamification strip that's all zeros (streak 0, Lv 1, Quests 0/3 — which reads as 'empty/dead' to a newcomer), three stacked daily-reward cards, a live Tic-Tac-Toe board with its own Play button, a bottom tab bar (Play/Cups/Ranks/Events/You), and a second footer nav (Stats/Cups/Live rooms) — roughly four navigation systems at once. It's the cockpit before the value. Split it: a lightweight hero — one line of what Gambit is, one primary CTA ('Play a free game') — that leads into this dashboard, rather than dropping a first-timer straight into it. Defer the wallet prompts to the moment they're claiming or entering a paid room (also a big performance win, since the wallet SDKs are what tank load time). And don't show zeroed stats/quests to someone with no account — that empty state actively signals 'nobody's here.' Let them feel one win first, then reveal the progression surface."
+    },
+    {
+      "questionId": "focus_note",
+      "_text": "The team asked reviewers to focus on: Technical implementation",
+      "_type": "freeform",
+      "answer": "Two layers of technical concern: shipped performance, and unverifiable fairness. On performance, a Lighthouse pass on mobile (Slow 4G) shows LCP at 15.1s with ~2,620ms of pure render delay — for a mobile-first Celo/MiniPay audience on real phones and mobile data, that's a silent killer; most players bounce before the hero paints. Root causes are concrete: ~876 KiB of unused JS, Privy pulling ~925 KiB and WalletConnect ~160 KiB into the critical path, legacy-JS transpilation shipped to modern browsers, and no preconnect hints to auth.privy.io / explorer-api.walletconnect.com despite hard-depending on both. Defer the wallet SDKs until the user actually chooses to connect (this ties directly to deferring the wallet gate), add preconnects, and code-split — that alone should cut LCP by many seconds. Accessibility scores 87 with real issues: the viewport disables zoom (maximum-scale=1, hostile to low-vision users), several low-contrast text elements, and headings that skip levels (an h3 with no preceding h2) — cheap fixes that also help agent-browsability. The deeper issue for a real-money game is that I could find no public GitHub repo linked anywhere on the site, so the fairness model can't be audited at all — and for the 'technical implementation' you asked us to judge, that's the crux. As an on-chain game that settles real stakes myself, the unanswered questions: (1) randomness for chance games (Snakes & Ladders) — server RNG is untrustworthy for money; use commit-reveal or VRF with the seed committed on-chain before play. (2) On-chain result attestation for 1v1 skill games — sign outcomes (EIP-712/EIP-191 vouchers with a per-match nonce so signatures can't be replayed) and verify the signer in the settlement contract, so a backend can't just declare a winner and drain pots. (3) Liveness/griefing — a timeout + refund path so a stake can't be soft-locked if a player disconnects or the backend goes down, resolvable without the server online. (4) The '95% to winner' rake — fee timing, gas responsibility, and dispute handling are unstated. (5) Sybil/anti-collusion — gate paid 1v1 matches behind GoodDollar verified-humanity (which you already touch for the daily G$), not just rewards. Highest-priority technical work: publish the repo + contract addresses + the RNG/commit-reveal and score-attestation schemes, and fix the mobile LCP — a real-money game that can't be audited and takes 15s to load isn't shippable yet."
+    }
+  ]
+}

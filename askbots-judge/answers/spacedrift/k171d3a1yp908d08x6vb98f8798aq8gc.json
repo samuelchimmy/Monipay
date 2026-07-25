@@ -1,0 +1,80 @@
+{
+  "projectId": "k171d3a1yp908d08x6vb98f8798aq8gc",
+  "name": "Tycoon — Hackathon Review",
+  "propertyUrl": "https://www.tycoonworld.xyz/",
+  "answers": [
+    {
+      "questionId": "would_ship",
+      "_text": "Would you ship or use this in a real app?",
+      "_type": "multiple_choice",
+      "_choices": ["Yes", "Not yet", "No"],
+      "answer": "Yes"
+    },
+    {
+      "questionId": "ux_rating",
+      "_text": "Rate the overall UX (1–10).",
+      "_type": "rating",
+      "answer": "7"
+    },
+    {
+      "questionId": "ux_issue",
+      "_text": "What is the single biggest UX problem?",
+      "_type": "freeform",
+      "answer": "The web landing puts a wallet gate at Level 1 ('Connect & Play') before the player has felt a single dice roll. For a Monopoly-style game the fun is legible in 5 seconds — so let them roll first and connect at the moment progress needs saving. On the web surface specifically, the landing is all vibe and no gameplay screenshot; a first-timer can't tell what a turn looks like. Show a 3-second gameplay loop (or an instant guest board) above the connect button. The wallet is your D1 cliff; every step you can defer past the player's first 'I get it' moment is retention saved."
+    },
+    {
+      "questionId": "tech_rating",
+      "_text": "Rate the technical implementation quality (1–10).",
+      "_type": "rating",
+      "answer": "7"
+    },
+    {
+      "questionId": "tech_issue",
+      "_text": "What is the top technical issue or risk you would fix first?",
+      "_type": "freeform",
+      "answer": "Two surfaces (tycoonworld.xyz web + playtycoon.xyz MiniPay) sharing one backend/contracts means your onboarding, analytics, and session logic fork by environment — that's where retention bugs hide. Fix the environment-detection path first: detect the MiniPay/Opera injected provider and auto-connect silently there (no wallet-picker), while the web build falls back to a normal connect. If that branch is even slightly wrong, MiniPay users hit a WalletConnect modal that shouldn't exist and bounce — which is consistent with a 15% D1. Also unify your event instrumentation across both surfaces so 'where do we lose them' is answerable with one funnel, not two. The branding/link inconsistencies on the page (GitHub 'Tyoon', mixed social handles) suggest the web surface is under-maintained relative to the MiniPay one — tighten that, it reads as abandoned to a new user."
+    },
+    {
+      "questionId": "gtm_freeform",
+      "_text": "What is the biggest go-to-market risk, and one thing to try?",
+      "_type": "freeform",
+      "answer": "Biggest risk: you already proved acquisition works (~3,100 week-1 users) but not retention (~15% D1, DAU 600→200), so more marketing just pours water into a leaky bucket — every cedi of CAC evaporates by day 2. Don't buy more users until the second-session rate moves. One thing to try: a scheduled re-engagement hook that MiniPay makes cheap — a daily 'your properties earned rent, come collect' or a fixed daily tournament window that gives a concrete reason to open the app tomorrow. You have outlier players with 29+ games, so the loop CAN hook; the job is manufacturing a day-2 reason to return for the median player, not acquiring more day-1 players."
+    },
+    {
+      "questionId": "celo_rating",
+      "_text": "How well does this fit the Celo/MiniPay ecosystem? (1–10)",
+      "_type": "rating",
+      "answer": "8"
+    },
+    {
+      "questionId": "celo_missing",
+      "_text": "What Celo-native feature or integration is missing?",
+      "_type": "freeform",
+      "answer": "Gas fee abstraction is the missing piece. A MiniPay user holds stablecoins, not CELO — if any on-chain action (buying a perk, claiming a reward) requires a CELO gas balance, it silently fails for exactly the users MiniPay brought you, and they never understand why. Use Celo's fee-currency support so gas is paid in the same stablecoin as the purchase. Second: auto-detect and pre-select the stablecoin the user actually holds the most of (USDm/USDC/USDT) instead of asking them to pick a token — one fewer decision in the buy flow, measurably higher conversion. Both are small integrations that directly attack your $0.01 ARPU problem by removing the reasons a purchase silently dies."
+    },
+    {
+      "questionId": "custom_ask_1",
+      "_text": "How to onboard users without MiniPay — strengthen web wallet flow, keep MiniPay-first, or unify onboarding?",
+      "_type": "freeform",
+      "answer": "MiniPay-first is correct — it's where your growth came from and it's your gasless, zero-friction path — but 'MiniPay-first' should mean 'MiniPay is the golden path, web is the graceful fallback,' not two separate products. Concretely: (1) In MiniPay, auto-connect via the injected provider and never show a wallet picker. (2) On web, don't try to replicate MiniPay's magic with WalletConnect for a Web2 user — instead let them play a guest game with zero wallet, and only prompt to connect when they want to save progress or enter a paid mode, with a one-tap 'open in MiniPay' deep link as the upgrade. (3) Unify the account model so a guest→wallet upgrade doesn't wipe progress. Don't invest in making the web WalletConnect flow great; invest in a walletless trial on web that funnels to MiniPay. Trying to make both surfaces equally first-class is how you got two half-maintained onboardings."
+    },
+    {
+      "questionId": "custom_ask_2",
+      "_text": "Where in the MiniPay flow are we losing players (before game 1 or after victory), and 2-3 UI changes to drive a second game?",
+      "_type": "freeform",
+      "answer": "With ~90% game completion but ~15% D1, you are NOT losing them during a game — you're losing them at two seams: (a) before game 1, in the connect/setup step, and (b) at the victory screen, which is a dead end. The completion rate proves the core loop holds attention; the retention rate proves nothing pulls them back. Three UI changes, highest leverage first: (1) Make the victory/defeat screen a launchpad, not a terminus — a single dominant 'Play again' / 'Rematch' button that requeues in one tap with no return to menu; most players never take a second action if it costs more than one tap. (2) Add a visible streak/daily goal that starts on game 1 ('play 1 more today → reward') so a second game has an immediate payoff, seeded at the victory screen. (3) Instrument and cut the pre-game-1 setup to the absolute minimum (auto-connect, auto-token, skip any tutorial gate) — every step there is a player lost before they ever felt the fun. Measure second-game rate as your north star, not DAU."
+    },
+    {
+      "questionId": "custom_ask_3",
+      "_text": "Perk shop: is the bottleneck price, discovery, choice overload, or retention? One change to test first to scale revenue with games played?",
+      "_type": "freeform",
+      "answer": "It's discovery + missing purchase moment, not price ($0.05–$1.00 is already impulse-tier for a stablecoin game). 15+ items in a nav menu is a catalog nobody visits mid-game, and a buried shop can't convert players who are in flow. The one change I'd test first: surface exactly ONE contextual, in-run purchase at the moment of need — the equivalent of an 'extra life' offered on the failure/near-loss screen, or a single power-up offered when a player is about to lose a property. That's where a game-native purchase moment lives: at a real decision point, one item, one tap, priced for impulse. This is exactly how a fast arcade game monetizes — you don't sell from a menu, you sell a rescue at the moment the player wants it. Move from 'shop as destination' to 'one offer at the point of pain,' measure attach-rate per game, then expand. Choice overload (15 items) is a second-order fix; the first-order fix is putting a single relevant offer in the flow."
+    },
+    {
+      "questionId": "focus_note",
+      "_text": "Focus: MiniPay build at playtycoon.xyz (same backend + contracts, in-wallet UX).",
+      "_type": "freeform",
+      "answer": "Reviewed with the MiniPay surface as the primary product (the web landing is clearly the weaker, less-maintained twin). Net read: acquisition is solved, retention and monetization are not, and both are fixable with in-flow changes rather than new features. Priority order I'd ship: (1) auto-connect + auto-token-select in MiniPay to remove the pre-game-1 drop; (2) turn the victory screen into a one-tap rematch + daily-streak launchpad to manufacture the second session; (3) replace the 15-item shop-as-menu with a single contextual in-run offer to lift the $0.01 ARPU; (4) wire fee abstraction so stablecoin-only users' purchases don't silently fail. The 29+ game outliers are your proof the loop is good — everything above is about getting the median player to the second game and the first purchase. Genuinely strong MiniPay fit; the gap is flow polish, not concept."
+    }
+  ]
+}

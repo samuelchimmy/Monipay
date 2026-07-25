@@ -1,0 +1,80 @@
+{
+  "projectId": "k17deezqcn5j1cptdn4a8ckqt98ap6nq",
+  "name": "Md Raju Ahmed — Hackathon Review",
+  "propertyUrl": "https://payforapi.online",
+  "answers": [
+    {
+      "questionId": "would_ship",
+      "_text": "Would you ship or use this in a real app?",
+      "_type": "multiple_choice",
+      "_choices": ["Yes", "Not yet", "No"],
+      "answer": "Not yet"
+    },
+    {
+      "questionId": "ux_rating",
+      "_text": "Rate the overall UX (1–10).",
+      "_type": "rating",
+      "answer": "7"
+    },
+    {
+      "questionId": "ux_issue",
+      "_text": "What is the single biggest UX problem?",
+      "_type": "freeform",
+      "answer": "The landing page sells a 'subscriptionless Web3 API gateway' but never shows the one thing a buyer needs before connecting a wallet: price. There is no visible per-call cost, no payment token (cUSD? USDT? CELO?), and no example of the pay-per-request flow on the marketing page. A developer evaluating an API gateway decides in the first 15 seconds whether the economics work; forcing a wallet connect before revealing pricing inverts that. Surface a concrete price tag ('$0.001 / call in cUSD') and a 3-line curl example above the fold, before the Connect Wallet gate."
+    },
+    {
+      "questionId": "tech_rating",
+      "_text": "Rate the technical implementation quality (1–10).",
+      "_type": "rating",
+      "answer": "6"
+    },
+    {
+      "questionId": "tech_issue",
+      "_text": "What is the top technical issue or risk you would fix first?",
+      "_type": "freeform",
+      "answer": "The payment-enforcement boundary is the thing to harden first. For a metered gateway the highest-risk bug is a paid endpoint that still returns 200 with a full body when payment is missing or unverified — a common failure I see in x402-style flows where the server decodes the payment header but never confirms settlement on-chain before serving. Make the gateway fail closed: return HTTP 402 with a machine-readable challenge (asset, amount, payTo, network, scheme) until settlement is verified against the facilitator, and only then release the response. Add an idempotency key per paid request so a retry after a dropped connection doesn't double-charge or double-serve."
+    },
+    {
+      "questionId": "gtm_freeform",
+      "_text": "What is the biggest go-to-market risk, and one thing to try?",
+      "_type": "freeform",
+      "answer": "Biggest risk: a two-sided marketplace with neither side seeded. API creators won't list without buyers, buyers won't come without APIs, and 'subscriptionless' alone isn't a wedge. One thing to try: stop being a marketplace on day one and be a single killer proxy instead — wrap 3-5 APIs developers already want (an LLM endpoint, a price feed, an image gen) behind your x402 paywall, publish copy-paste snippets, and let people pay-per-call with zero signup. Prove the meter works and settles on Celo with real volume, then open it up to third-party creators once there's demand to sell into."
+    },
+    {
+      "questionId": "celo_rating",
+      "_text": "How well does this fit the Celo/MiniPay ecosystem? (1–10)",
+      "_type": "rating",
+      "answer": "6"
+    },
+    {
+      "questionId": "celo_missing",
+      "_text": "What Celo-native feature or integration is missing?",
+      "_type": "freeform",
+      "answer": "Two Celo-native pieces are missing. First, fee abstraction: Celo lets users pay gas in the stablecoin itself (fee currency / gas in cUSD/USDT), so an API buyer holding only stablecoins never needs a separate CELO balance — for a metered gateway this removes the single biggest onboarding blocker. Second, the Celo x402 facilitator (api.x402.celo.org) already does exactly what this product needs: gasless EIP-3009 stablecoin settlement per HTTP request, non-custodial, no contracts to deploy. Routing paid calls through it would give you real, countable on-chain settlements instead of a bespoke payment path, and it's the standard the ecosystem is converging on this cycle."
+    },
+    {
+      "questionId": "custom_ask_1",
+      "_text": "How resilient is the Next.js architecture and smart contract integration for high-frequency micro-transactions, and optimizations to improve scalability?",
+      "_type": "freeform",
+      "answer": "Next.js serverless is fine for the control plane (catalog, dashboard) but a poor fit for the hot path of high-frequency paid calls if each request does synchronous on-chain reads/writes — you'll hit cold starts and RPC latency per call, and pay it on every request. Optimizations: (1) Do NOT settle synchronously inside the request. Verify a payment authorization (signed EIP-3009 / x402 payload) in-memory, serve immediately, and batch the actual on-chain settlement asynchronously — this is what a facilitator does and it's why gasless x402 scales. (2) Put a persistent RPC provider with connection pooling behind the functions; don't instantiate a fresh viem/ethers client per invocation. (3) Add a Redis-style nonce/idempotency store so concurrent calls from the same payer can't race. (4) Cache the paid response briefly where semantics allow so a burst of identical calls doesn't fan out to the upstream API on every hit. Measure p99 under a concurrency load test before claiming 'high-frequency'."
+    },
+    {
+      "questionId": "custom_ask_2",
+      "_text": "Post WCAG refactor: additional UX improvements to reduce friction during Web3 wallet connection and onboarding for Web2 developers?",
+      "_type": "freeform",
+      "answer": "For a Web2 developer the wallet connect is the cliff. Concrete reductions: (1) Let them read everything — browse the marketplace, see pricing, read docs, even get a test API key — WITHOUT connecting a wallet. Gate the wallet only at the moment of first paid call. (2) On Celo, lean on MiniPay's in-app browser: if you detect it, auto-connect via the injected provider and skip the wallet-picker modal entirely. (3) Replace 'Connect Wallet' with an outcome-labeled button ('Get your first 100 calls') so the action maps to value, not plumbing. (4) Offer a free trial quota tied to a session before any signature, so the first successful API call happens with zero web3 steps and the wallet becomes a top-up action, not a gate. (5) Show supported wallets/chains explicitly — a Web2 dev doesn't know if their setup will work and an ambiguous modal makes them bounce."
+    },
+    {
+      "questionId": "custom_ask_3",
+      "_text": "How to better align the payment model with Celo tools (native stablecoins, MiniPay) to strengthen GTM and adoption?",
+      "_type": "freeform",
+      "answer": "Align on three concrete things. (1) Price and settle in Celo-native stablecoins (cUSD/USDT) with fee abstraction so buyers pay gas in the same token — one asset, one balance, no CELO side-quest. (2) Adopt the x402 standard on the Celo facilitator as your payment rail; it makes every API call a countable, gasless on-chain settlement and plugs you directly into the agent-payments narrative Celo is pushing this quarter (agents that pay per request are the exact buyer persona for a metered gateway). (3) Use MiniPay as the distribution channel: 16M+ users with stablecoins already in-wallet. A 'top up your API credits from MiniPay' flow turns their existing balance into your funnel. GTM story becomes: 'the pay-per-call layer for agents and apps on Celo, funded straight from MiniPay' — that's sharper than 'subscriptionless gateway.'"
+    },
+    {
+      "questionId": "focus_note",
+      "_text": "Focus: technical robustness of API payment flow + centralized error handling, dashboard intuitiveness for API creators, Celo positioning for growth.",
+      "_type": "freeform",
+      "answer": "Payment flow robustness: the make-or-break is fail-closed metering with on-chain-verified settlement and idempotent retries (details in the tech-issue and scalability answers) — right now the marketing surface doesn't let me confirm the meter actually enforces, and that's the first thing a judge or integrator will probe. Centralized error handling: expose a documented, machine-readable error contract — every failure should return a typed JSON body with a stable code (402 payment_required with the challenge object, 429 rate_limited with retry_after, 403, etc.) so an autonomous client can react without scraping prose. Creator dashboard: I couldn't reach it without connecting, which is itself the finding — let creators preview the listing/analytics experience unauthenticated. Celo positioning: strong thesis, under-built — pick x402 + fee abstraction + MiniPay top-up as the three concrete integrations and the 'future growth' story writes itself. Overall: genuinely useful direction, but ship a live, enforced, documented pay-per-call demo before calling the payment flow robust."
+    }
+  ]
+}
