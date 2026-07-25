@@ -12,7 +12,7 @@
  * which was the blocker the MiniPay refactor surfaced.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -26,7 +26,6 @@ import {
 interface Props {
   profileId: string;
   walletAddress: `0x${string}`;
-  onIdentityChange?: (identity: SocialIdentity | null) => void;
 }
 
 // Light-on-yellow palette so the cards sit cleanly inside the MoniBot AI
@@ -40,14 +39,9 @@ const themeClasses = {
   isLightTheme: true,
 };
 
-export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChange }: Props) {
+export function WalletMoniBotSettings({ profileId, walletAddress }: Props) {
   const [identity, setIdentity] = useState<SocialIdentity | null>(null);
   const [isUnlinkingX, setIsUnlinkingX] = useState(false);
-
-  // Use a ref to ensure onIdentityChange can be called inside stable callbacks
-  // without triggering infinite loops or re-evaluating useCallback dependencies.
-  const onIdentityChangeRef = useRef(onIdentityChange);
-  onIdentityChangeRef.current = onIdentityChange;
 
   const writeCachedIdentity = useCallback(
     (next: SocialIdentity | null) => {
@@ -73,35 +67,56 @@ export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChan
       const next = response.data as SocialIdentity;
       setIdentity(next);
       writeCachedIdentity(next);
-      onIdentityChangeRef.current?.(next);
     } catch (err) {
       console.error("WalletMoniBotSettings: fetch identity failed", err);
     }
   }, [profileId, writeCachedIdentity]);
-
-  const handleIdentityChange = useCallback(
-    (next: SocialIdentity | null) => {
-      setIdentity(next);
-      writeCachedIdentity(next);
-      onIdentityChangeRef.current?.(next);
-    },
-    [writeCachedIdentity],
-  );
 
   // Hydrate from cache immediately, then refresh in background — no blocking
   // spinner, the panel opens instantly.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(socialIdentityCacheKey(profileId));
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        setIdentity(parsed);
-        onIdentityChangeRef.current?.(parsed);
-      }
+      if (raw) setIdentity(JSON.parse(raw));
     } catch { /* ignore */ }
     fetchIdentity();
   }, [profileId, fetchIdentity]);
 
   const handleUnlinkX = async () => {
     setIsUnlinkingX(true);
-    try {
+    try {
+      const response = await supabase.functions.invoke("social-identity", {
+        body: { action: "unlink-x", profileId, walletAddress },
+      });
+      if (response.error) throw response.error;
+      toast.success("X account unlinked");
+      fetchIdentity();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed to unlink X");
+    } finally {
+      setIsUnlinkingX(false);
+    }
+  };
+
+  const shared = {
+    identity,
+    validProfileId: profileId,
+    walletAddress,
+    fetchIdentity,
+    setIdentity,
+    writeCachedIdentity,
+    themeClasses,
+  } as const;
+
+  return (
+    <div className="space-y-2.5">
+      <XLinkCard
+        {...shared}
+        isUnlinkingX={isUnlinkingX}
+        handleUnlinkX={handleUnlinkX}
+      />
+      <DiscordLinkCard {...shared} />
+      <TelegramLinkCard {...shared} />
+    </div>
+  );
+}
