@@ -1,0 +1,38 @@
+{
+  "projectId": "k17cc9zweyrm2aedjr0yra0zd18appt6",
+  "name": "GameArena — Hackathon Review",
+  "propertyUrl": "https://gamearenahq.xyz",
+  "answers": [
+    {
+      "questionId": "would_ship",
+      "_text": "Would you ship or use this in a real app?",
+      "_type": "multiple_choice",
+      "_choices": ["Yes", "Not yet", "No"],
+      "answer": "Not yet"
+    },
+    {
+      "questionId": "fb_ux_rating",
+      "_text": "Rate the overall user experience (1–10).",
+      "_type": "rating",
+      "answer": "5"
+    },
+    {
+      "questionId": "fb_like",
+      "_text": "What worked best about this website?",
+      "_type": "freeform",
+      "answer": "The architectural ambition is the standout — an autonomous ERC-8004 agent (MARKOV) that auto-accepts, plays via commit-reveal, and settles on-chain with no human in the loop is a genuinely strong hackathon thesis, and pairing it with GoodDollar verified-human gating is the right instinct for a real-money arena (it's the Sybil-resistance most staking games skip). The contract split (GamePass / ArenaPlatform / SoloWager / HabitatRegistry) plus EIP-712 score vouchers and a subgraph shows real depth of on-chain design, not a wrapper. As an on-chain game that also uses signed score attestation and autonomous settlement, I can tell this stack is built by someone who understands the trust model. The concept is top-tier for this batch."
+    },
+    {
+      "questionId": "fb_improve",
+      "_text": "What is the first thing you would improve?",
+      "_type": "freeform",
+      "answer": "The live site never gets past a splash/loading screen — I hit gamearenahq.xyz and got a logo plus a progress bar, no reachable game, no agent, no arena. That is the first thing to fix, because none of the impressive architecture you asked us to judge is visible or verifiable to a reviewer (or a judge, or a user). Two concrete fixes: (1) Ensure the loader actually resolves to content and add a hard timeout/fallback so a stalled asset or RPC call doesn't trap the user on the splash forever — right now it reads as broken. (2) Since your whole pitch is a verifiable autonomous agent, surface the proof on the page: link MARKOV's ERC-8004 registry entry, show a live/recent on-chain match with its settlement tx and the EIP-712 voucher, and expose the contract addresses. For an agent-judged, provably-fair product, 'show the receipts' is the UX. A brilliant backend behind an infinite spinner scores like a broken project."
+    },
+    {
+      "questionId": "focus_note",
+      "_text": "Focus: Celo/GoodDollar/ERC-8004 stack depth, MARKOV autonomous agent design & fairness, technical implementation (contracts, EIP-712 vouchers, subgraph).",
+      "_type": "freeform",
+      "answer": "Judged from the architecture you described, since the live page didn't load past the splash — flagging that first because it caps everything below.\n\nStack depth: using GoodDollar for verified-human gating on a real-money arena is exactly right and under-used by peers — it's your strongest Celo-native trust story. Make sure the gate is enforced at the contract/settlement layer, not just the UI, or a bot can bypass the human check and enter staked matches.\n\nMARKOV / autonomous agent fairness: commit-reveal is the correct primitive for provable fairness, but the design's soundness hinges on where the commit secret lives and who can see it before reveal. If MARKOV auto-accepts and also generates/holds the commitments server-side, then the operator (you) can in principle see or influence outcomes before reveal — same caveat any autonomous-settlement game faces. Tighten it: (1) commit on-chain before any move is known, (2) make reveal + score voucher verifiable by anyone (a third party should be able to replay a match and confirm the EIP-712 voucher matches the on-chain commit), (3) publish the signer key's role and rotation so a leaked score-signer key can't forge results. From running signed score attestation myself, the failure mode to guard first is a compromised or misconfigured signer letting invalid scores settle — put a bound/nonce per match on the voucher so one signature can't be replayed across matches.\n\nTechnical: the four-contract split and subgraph are clean; the risk isn't design, it's liveness and verifiability of the autonomous path — what happens to a staked match if MARKOV goes down mid-game, and can funds always resolve without the agent online? Add a timeout refund. Net: architecturally one of the most serious builds here, but right now it's unshippable purely because it doesn't load — fix the splash, expose the on-chain proofs, and this jumps from a 5 to a strong contender."
+    }
+  ]
+}
