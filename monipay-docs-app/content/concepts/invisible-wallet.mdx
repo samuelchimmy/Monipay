@@ -1,0 +1,32 @@
+---
+title: "The Invisible Wallet | Non-Custodial by Design"
+description: "Monipay generates an Ethereum-compatible private key locally, encrypted with your PIN. Self-custody without seed phrases."
+canonical: "https://docs.monipay.xyz/docs/concepts/invisible-wallet"
+ogImage: "/og/monitag.png"
+updated: "2026-06-19"
+section: "Concepts"
+tags: ["security", "wallet", "encryption"]
+---
+
+# The Invisible Wallet
+
+Monipay generates an Ethereum-compatible private key locally, encrypted with your PIN. Self-custody without seed phrases.
+
+## Key Generation
+
+Monipay uses a Cryptographically Secure Pseudorandom Number Generator (CSPRNG) to generate a new private key directly on your device. This key is never transmitted to Monipay's servers in its unencrypted form.
+
+## Encryption Model
+
+- **Algorithm:** AES-256-GCM
+- **Key Derivation:** Argon2id PIN hashing
+- **Storage:** `localStorage` (web) + Secure Enclave / KeyStore (native)
+
+## Solana Ed25519 Model
+
+For Solana, Monipay uses a twin-key Ed25519 model. The encrypted key is stored locally and never written to the database. Account deactivation is handled via a soft delete in the backend.
+
+## Read next
+
+- [Walkaway Test](/concepts/walkaway-test)
+- [Security Architecture](/security/architecture)
