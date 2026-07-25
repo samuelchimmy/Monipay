@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN visible_on_storefront boolean NOT NULL DEFAULT true;
