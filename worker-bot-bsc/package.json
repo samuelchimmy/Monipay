@@ -1,0 +1,33 @@
+{
+  "name": "monibot-worker-bsc",
+  "version": "1.0.0",
+  "description": "MoniBot Silent Worker for BSC - Autonomous USDT transaction layer for MoniPay",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "chrono-node": "^2.7.0",
+    "dotenv": "^16.4.5",
+    "twitter-api-v2": "^1.18.2",
+    "viem": "^2.21.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "monibot",
+    "monipay",
+    "twitter-bot",
+    "usdt",
+    "bsc",
+    "bnb-chain",
+    "blockchain"
+  ],
+  "author": "MoniPay",
+  "license": "MIT"
+}
