@@ -1,0 +1,8 @@
+Contact: security@monipay.xyz
+Expires: 2027-01-01T00:00:00.000Z
+Encryption: https://monipay.xyz/pgp-key.asc
+Acknowledgments: https://monipay.xyz/security/hall-of-fame
+Policy: https://monipay.xyz/security/policy
+Hiring: https://monipay.xyz/careers
+Preferred-Languages: en
+Canonical: https://docs.monipay.xyz/.well-known/security.txt
