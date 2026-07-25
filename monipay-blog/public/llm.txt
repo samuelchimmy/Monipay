@@ -1,0 +1,65 @@
+# Monipay Blog — LLM Context File
+# https://blog.monipay.xyz/llm.txt
+# This file helps AI systems understand the content and purpose of this site.
+
+## Identity
+- Name: Monipay Blog
+- URL: https://blog.monipay.xyz
+- Type: Official corporate technology blog
+- Publisher: Monipay (https://monipay.xyz)
+- Author: Samuel Chiedozie (@monipay_xyz)
+
+## About Monipay
+Monipay is a non-custodial, AI-powered smart payment platform for stablecoins. It eliminates gas fees, replaces wallet addresses with simple usernames (moniTag™), and enables AI-powered social payments via MoniBot on X, Discord, and Telegram.
+
+Key features:
+- Gasless stablecoin payments (USDC, USDT, aUSD)
+- moniTag™ username-based payment identity
+- MoniBot AI agent for social media payments
+- Non-custodial architecture (user holds keys)
+- Multi-chain: Base, BSC, Solana, Ink, Celo, Tempo
+
+## Blog Purpose
+Technical deep dives, product updates, builder notes, and ecosystem commentary about crypto payments, stablecoins, account abstraction, and agentic commerce.
+
+## Published Articles
+
+- What Is Monipay? How We Are Redefining How Money Moves in the Age of AI (2026-03-22)
+  URL: https://blog.monipay.xyz/what-is-monipay-how-we-are-redefining-how-money-moves-in-the-age-of-ai
+  Topics: stablecoins, account-abstraction, gasless-transactions, crypto UX
+
+- Tempo VS Ethereum Account Abstraction: What Actually Differs (2026-03-22)
+  URL: https://blog.monipay.xyz/tempo-vs-ethereum-account-abstraction-what-actually-differs
+  Topics: ethereum, payments, account-abstraction, tempo
+
+- Three Things That Could Break Crypto And What We At Monipay Think About Them (2026-04-10)
+  URL: https://blog.monipay.xyz/three-things-that-could-break-crypto-and-what-we-at-monipay-think-about-them
+  Topics: quantum-computing, crypto-security, satoshi-nakamoto
+
+- MagicPay is live: Tip & Pay anyone on X, Discord, or Telegram with no wallet required (2026-04-24)
+  URL: https://blog.monipay.xyz/magicpay-is-live-tip-pay-anyone-on-x-discord-or-telegram-with-no-wallet-required
+  Topics: payments, tipping-bot, discord-bot, telegram-bot
+
+- The Best Crypto Tipping bot for Discord, Telegram & X (Twitter) (2026-04-26)
+  URL: https://blog.monipay.xyz/the-best-crypto-tipping-bot-for-discord-telegram-x-twitter
+  Topics: crypto-payment-bot, tipping-bot, discord-bot
+
+- We Did Not Come Here to Ask for Permission (2026-05-14)
+  URL: https://blog.monipay.xyz/we-did-not-come-here-to-ask-for-permission
+  Topics: cryptocurrency, compliance, regulations, ethos
+
+## Links
+- Website: https://monipay.xyz
+- Blog: https://blog.monipay.xyz
+- Docs: https://docs.monipay.xyz
+- MoniBot: https://monipay.xyz/monibot
+- X (Twitter): https://x.com/monipay_xyz
+- GitHub: https://github.com/Monipay
+- RSS Feed: https://blog.monipay.xyz/rss.xml
+- Sitemap: https://blog.monipay.xyz/sitemap-index.xml
+
+## Technical Stack
+- Framework: Astro (static site generation)
+- Hosting: Vercel
+- Content: GitHub Markdown
+- No CMS dependency
