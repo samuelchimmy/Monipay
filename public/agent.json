@@ -1,0 +1,130 @@
+{
+  "$schema": "https://eips.ethereum.org/EIPS/eip-8004",
+  "name": "MoniBot",
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "version": "1.2.0",
+  "image": "https://monipay.xyz/og/monibot.png",
+  "description": "MoniBot is MoniPay's social payments agent enabling non-custodial stablecoin transfers directly from Discord, Telegram, and X (Twitter) to anyone using only a username in natural language commands. No wallet required on the recipient's side. Powered by the MagicPay & CasualPay protocols, MoniBot escrows funds on-chain and lets recipients claim them later via social identity verification. Supports USDC, USDT, USDm, and aUSD across Base, BSC, Celo, Solana, and Tempo. Commands include P2P sends, multi-recipient drops, community giveaways, scheduled recurring payments, and gated-access subscription management.",
+  "external_url": "https://monipay.xyz/monibot",
+  "documentation_url": "https://docs.monipay.xyz/monibot",
+  "active": true,
+  "x402Support": true,
+  "x402": {
+    "version": 1,
+    "facilitator": "https://x402.org/facilitator",
+    "endpoints": [
+      {
+        "path": "https://vdaeojxonqmzejwiioaq.supabase.co/functions/v1/monibot-x402/reputation-premium",
+        "description": "Premium reputation feed with per-user trust history",
+        "price": "0.001",
+        "asset": "USDC",
+        "network": "base",
+        "payTo": "0xdfa50FEa1A07c45b18a44b1f50CC15Ce5dC58ED3"
+      }
+    ]
+  },
+  "ai": {
+    "engine": "Gemini 2.0 Flash",
+    "provider": "Google",
+    "architecture": "Silent Worker + Social Reply Agent",
+    "fallback": "Regex command parser"
+  },
+  "capabilities": [
+    "natural_language_payments",
+    "social_escrow",
+    "multi_recipient_batching",
+    "campaign_grants",
+    "gated_access_subscriptions",
+    "cross_chain_routing",
+    "scheduled_payments",
+    "gasless_transactions"
+  ],
+  "supportedChains": [
+    { "name": "Base", "chainId": 8453, "tokens": ["USDC"], "router": "0x..." },
+    { "name": "BSC", "chainId": 56, "tokens": ["USDT"], "router": "0x..." },
+    { "name": "Celo", "chainId": 42220, "tokens": ["USDm"], "router": "0x..." },
+    { "name": "Solana", "chainId": "mainnet-beta", "tokens": ["USDC"], "model": "feePayer-relay" },
+    { "name": "Tempo", "chainId": 42431, "tokens": ["aUSD"], "model": "TIP-20 sponsored" }
+  ],
+  "socialPlatforms": ["discord", "telegram", "twitter"],
+  "services": [
+    {
+      "type": "MCP",
+      "version": "2025-06-18",
+      "url": "https://monipay.xyz/.well-known/mcp.json"
+    },
+    {
+      "type": "A2A",
+      "version": "0.3.0",
+      "url": "https://monipay.xyz/.well-known/agent-card.json"
+    },
+
+    {
+      "type": "Web",
+      "name": "Website",
+      "url": "https://monipay.xyz"
+    },
+    { "type": "Web", "name": "docs", "url": "https://docs.monipay.xyz" },
+    { "type": "Web", "name": "reputation", "url": "https://vdaeojxonqmzejwiioaq.supabase.co/functions/v1/monibot-reputation" },
+    { "type": "Web", "name": "x402-premium", "url": "https://vdaeojxonqmzejwiioaq.supabase.co/functions/v1/monibot-x402" },
+    { "type": "Web", "name": "magicpay-claim", "url": "https://monipay.xyz/claim" },
+    { "type": "Web", "name": "pay", "url": "https://monipay.xyz/pay" },
+    { "type": "Web", "name": "store", "url": "https://monipay.xyz/store" },
+    { "type": "Web", "name": "discord", "url": "https://discord.com/oauth2/authorize?client_id=monibot" },
+    { "type": "Web", "name": "telegram", "url": "https://t.me/monipaybot" },
+    { "type": "Web", "name": "twitter", "url": "https://x.com/monibot" }
+  ],
+  "peerFeedback": {
+    "enabled": true,
+    "description": "MoniBot returns ERC-8004 identity headers (X-ERC8004-Agent-Id, X-ERC8004-Registry, X-ERC8004-Feedback-Hint) on every successful API response. Peer agents and high-volume users are prompted to call giveFeedback() on the Reputation Registry.",
+    "headers": ["X-ERC8004-Agent-Id", "X-ERC8004-Registry", "X-ERC8004-Feedback-Hint"],
+    "registries": [
+      { "chain": "base", "registry": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432", "agentId": 51818 },
+      { "chain": "bsc", "registry": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432", "agentId": 96451 },
+      { "chain": "celo", "registry": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432", "agentId": 9103 }
+    ]
+  },
+  "reputation": {
+    "endpoint": "https://vdaeojxonqmzejwiioaq.supabase.co/functions/v1/monibot-reputation",
+    "format": "json",
+    "cacheSeconds": 300,
+    "signals": [
+      "trust_score",
+      "total_transactions",
+      "completed_transactions",
+      "failed_transactions",
+      "total_volume_usd",
+      "total_fees_usd",
+      "total_users",
+      "unique_transacting_users",
+      "dau",
+      "active_campaigns",
+      "magicpay_claim_rate",
+      "network_performance",
+      "platform_distribution",
+      "gas_spend"
+    ]
+  },
+  "registrations": [
+    { "agentId": 9103, "agentRegistry": "eip155:42220:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" },
+    { "agentId": 51818, "agentRegistry": "eip155:8453:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" },
+    { "agentId": 96451, "agentRegistry": "eip155:56:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" }
+  ],
+  "supportedTrust": [
+    { "type": "reputation", "endpoint": "https://vdaeojxonqmzejwiioaq.supabase.co/functions/v1/monibot-reputation" },
+    { "type": "web_domain", "value": "monipay.xyz" },
+    { "type": "onchain_history", "chains": ["base", "bsc", "celo"] }
+  ],
+  "socials": {
+    "twitter": "https://x.com/monibot",
+    "discord": "monibot#4480",
+    "telegram": "https://t.me/monipaybot",
+    "github": "https://github.com/monipay"
+  },
+  "developer": {
+    "name": "MoniPay Labs",
+    "website": "https://monipay.xyz",
+    "email": "team@monipay.xyz",
+    "attestation": "verified_web_domain:monipay.xyz"
+  }
+}
