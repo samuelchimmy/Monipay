@@ -1,0 +1,80 @@
+# Monipay Documentation
+
+> Monipay is a stablecoin payment platform that lets anyone send USDC or USDT to any social media username — no wallet, no gas, no friction. These docs cover MagicPay, MoniBot, smart contracts, supported chains, and security architecture.
+
+Monipay is a gasless, non-custodial payment network built on top of multiple blockchains. It allows users to send and receive stablecoins using human-readable usernames called MoniTags, instead of complex wallet addresses. The platform sponsors gas fees for all users, making it as easy to use as traditional payment apps like Venmo or Cash App.
+
+MagicPay is the underlying technology that enables social media payments. By linking social accounts like Twitter, Discord, or Telegram to a MoniTag, users can receive payments directly on those platforms. If a recipient doesn't have a Monipay account yet, the funds are held securely in an on-chain escrow contract (IOU Registry) until they claim them.
+
+MoniBot is an autonomous AI agent that interprets natural language commands on social media platforms. Users can simply tweet or message @Monipay to send funds, run giveaways, or check their balance. Monipay currently supports Base, BSC, Solana, Tempo, Ink, and Celo, providing a unified payment experience across the entire multi-chain ecosystem.
+
+## Introduction
+- [What is Monipay](https://docs.monipay.xyz/docs/what-is-monipay): Overview of the platform and its core value proposition
+- [How It Works](https://docs.monipay.xyz/docs/how-it-works): Step-by-step explanation of the payment flow
+
+## Core Concepts
+- [The Invisible Wallet](https://docs.monipay.xyz/docs/concepts/invisible-wallet): How Monipay creates wallets without user friction
+- [MoniTag Identity](https://docs.monipay.xyz/docs/concepts/monitag): Your universal payment identity across chains
+- [Username Resolution](https://docs.monipay.xyz/docs/concepts/resolution): How social usernames map to wallet addresses
+- [Gasless Payments](https://docs.monipay.xyz/docs/concepts/gasless-payments): How gas sponsorship works
+- [Multi-Chain Routing](https://docs.monipay.xyz/docs/concepts/multi-chain-routing): Cross-chain payment routing logic
+- [Walkaway Test](https://docs.monipay.xyz/docs/concepts/walkaway-test): How Monipay handles abandoned IOUs
+- [Glossary](https://docs.monipay.xyz/docs/glossary): Definitions of all key terms
+
+## Getting Started
+- [Quick Start](https://docs.monipay.xyz/docs/getting-started): Send your first payment in under 2 minutes
+- [Create your MoniTag](https://docs.monipay.xyz/docs/getting-started/create-monitag): Register your universal payment handle
+- [Fund your Wallet](https://docs.monipay.xyz/docs/getting-started/fund-wallet): Add stablecoins to your Monipay wallet
+- [Send your First Payment](https://docs.monipay.xyz/docs/getting-started/send-payment): Pay anyone by @monitag with zero gas
+
+## Payments
+- [P2P Payments](https://docs.monipay.xyz/docs/payments/p2p): Direct peer-to-peer stablecoin transfers
+- [Payment Links](https://docs.monipay.xyz/docs/payments/payment-links): Generate shareable payment request links
+- [QR Codes](https://docs.monipay.xyz/docs/payments/qr-codes): Scan-to-pay QR code generation
+- [IOU Registry](https://docs.monipay.xyz/docs/payments/iou): The on-chain escrow system for unclaimed payments
+
+## Merchant
+- [Merchant Overview](https://docs.monipay.xyz/docs/merchant/overview): Accept stablecoin payments in your business
+- [Storefront](https://docs.monipay.xyz/docs/merchant/storefront): Hosted storefront payment page
+- [Payment Gateway](https://docs.monipay.xyz/docs/merchant/payment-gateway): Integrate Monipay into your checkout
+- [Webhooks](https://docs.monipay.xyz/docs/merchant/webhooks): Real-time payment event callbacks
+
+## Mobile & PWA
+- [Mobile Overview](https://docs.monipay.xyz/docs/mobile/overview): Monipay on mobile devices
+- [Deep Links](https://docs.monipay.xyz/docs/mobile/deep-links): URL scheme for deep-linking into payment flows
+
+## MoniBot Agent
+- [MoniBot Overview](https://docs.monipay.xyz/docs/monibot/overview): The AI payment agent for social platforms
+- [Commands Reference](https://docs.monipay.xyz/docs/monibot/commands): Full command syntax and examples
+- [Multi-Recipient](https://docs.monipay.xyz/docs/monibot/multi-recipient): Split or batch payments to multiple recipients
+- [Discord](https://docs.monipay.xyz/docs/monibot/discord): Send payments via MoniBot in Discord
+- [Telegram](https://docs.monipay.xyz/docs/monibot/telegram): Send payments via MoniBot in Telegram
+- [Twitter / X](https://docs.monipay.xyz/docs/monibot/twitter): Tip on X with @Monipay mention commands
+
+## Supported Chains
+- [Celo](https://docs.monipay.xyz/docs/chains/celo): Monipay on Celo — gas-free USDT payments via MiniPay
+- [Base](https://docs.monipay.xyz/docs/chains/base): Monipay on Base
+- [BSC](https://docs.monipay.xyz/docs/chains/bsc): Monipay on BNB Smart Chain
+- [Ink](https://docs.monipay.xyz/docs/chains/ink): Monipay on Ink
+- [Solana](https://docs.monipay.xyz/docs/chains/solana): Monipay on Solana
+- [Tempo](https://docs.monipay.xyz/docs/chains/tempo): Monipay on Tempo
+
+## Smart Contracts
+- [Contracts Overview](https://docs.monipay.xyz/docs/contracts/overview): IOURegistry.sol and router contracts
+- [Base Contracts](https://docs.monipay.xyz/docs/contracts/base): Verified contract addresses on Base
+- [BSC Contracts](https://docs.monipay.xyz/docs/contracts/bsc): Verified contract addresses on BSC
+- [Celo Contracts](https://docs.monipay.xyz/docs/contracts/celo): Verified contract addresses on Celo
+- [Tempo Contracts](https://docs.monipay.xyz/docs/contracts/tempo): Verified contract addresses on Tempo
+
+## Security
+- [Security Architecture](https://docs.monipay.xyz/docs/security/architecture): Vault design, key management, and threat model
+- [Solana Key Storage](https://docs.monipay.xyz/docs/security/solana-key-storage): How Solana keypairs are managed
+- [Reserved Usernames](https://docs.monipay.xyz/docs/concepts/reserved-usernames): Protected username list and policy
+
+## Resources
+- [Changelog](https://docs.monipay.xyz/docs/changelog): Release notes and version history
+- [FAQ](https://docs.monipay.xyz/docs/faq): Frequently asked questions
+- [Support](https://docs.monipay.xyz/docs/support): Get help from the Monipay team
+
+## For AI Agents
+Monipay's core primitive is the IOU Registry (IOURegistry.sol), an on-chain escrow contract that holds stablecoin payments until the recipient claims them by connecting a wallet. The claim flow: sender issues payment via MoniBot command → IOURegistry escrows funds on-chain → recipient visits monipay.xyz, connects wallet, funds released. If unclaimed after the expiry window, the sender can reclaim. MagicPay is the product name for this entire username-to-payment flow. MoniBot is the AI agent that interprets natural language commands inside Discord, Telegram, and X. Key terms: MagicPay, MoniBot, IOU, IOURegistry, claim flow, username resolution, stablecoin rail, gas sponsorship.

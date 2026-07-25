@@ -1,0 +1,2584 @@
+# 
+Source: https://docs.monipay.xyz/docs/what-is-monipay
+
+# What is Monipay?
+
+**Monipay** is an AI-powered social payments layer that enables financial intents to be executed directly inside social conversations on X, Telegram, and Discord. By bridging social identities and onchain actions, Monipay enables users and autonomous agents to process stablecoin transfers using rails they are already familiar with | such as usernames, social timelines, and natural language commands.
+
+It replaces long blockchain addresses with **MoniTag™ usernames** (e.g. `@samuel`), removes gas fees from the user experience entirely, and stays **non-custodial** | your keys never leave your device.
+
+> **Tagline:** The social payments layer for stablecoins, powered by autonomous AI agents.
+
+---
+
+## Three Modes of Entry
+
+Monipay is designed to be accessible regardless of your Web3 experience. You can enter and use the ecosystem in three distinct ways:
+
+### 1. Create a Monipay Wallet
+The fastest, most seamless onboarding experience. Monipay generates a standard private key locally on your device (browser `localStorage` or mobile Secure Enclave). 
+- **No seed phrases:** Your private key is encrypted client-side using **AES-256-GCM** derived from a 6-digit PIN. 
+- **Gasless by default:** All transactions are sponsored via our relayer infrastructure, meaning you only hold stablecoins.
+
+### 2. WalletConnect
+If you already have a preferred Web3 wallet (such as MetaMask, Rabby, Phantom, or Coinbase Wallet), you can link it to Monipay using WalletConnect. This allows you to bind your existing address to a universal **MoniTag™** and utilize Monipay's gasless relayers and social features without generating a new key.
+
+### 3. MiniPay Miniapp
+Monipay is integrated directly as a miniapp inside Opera's **MiniPay** browser on Celo for Android. Specifically optimized for low-data environments and mobile-first audiences, this mode allows millions of users to send stablecoins inside chat interfaces natively and access Celo's mobile-focused on-ramps.
+
+---
+
+## Key Features
+
+Monipay collapses Web3 onboarding friction and provides powerful features for both users and AI agents:
+
+### 👤 MoniTag™ Identity & Onboarding
+Replaces 42-character hex addresses with a clean `3-20` character username (e.g., `@alice`). Your MoniTag™ is universal across all supported networks and maps directly to your linked social accounts (X, Discord, Telegram).
+
+### 💸 CasualPay (P2P Payments)
+Peer-to-peer stablecoin transfers between Monipay users on the same or different platforms. Just two taps to send funds with zero gas fees.
+
+### 🪄 MagicPay (Walletless Social Payments)
+Send stablecoins directly to any social username (e.g. a Twitter handle or Discord ID), **even if the recipient does not have a wallet or a Monipay account yet**. Funds are held securely on-chain in the MagicPay IOU Registry. The recipient receives a social notification and can claim their funds at any time.
+
+### 🤖 MoniBot Agent & Natural Language Commands
+An autonomous AI bot that runs on X/Twitter, Telegram, and Discord. Senders can trigger payments simply by typing natural language commands in conversation, such as:
+- `send $10 to @alice`
+- `tip @bob $1 on base`
+- `!monibot bless @username with $5` (Discord)
+
+### ⚽ Conditional Sports P2P (New)
+Designed for the World Cup 2026, this feature allows users to reward their community/followers for correct match outcomes automatically based on conditions, without locking up funds in escrow or managing spreadsheets.
+- **Zero Escrow:** Funds remain in the sender's wallet. The payment executes only if the condition is met.
+- **3-Source Consensus Sports Oracle:** Settle payments securely. Monipay queries three independent data layers: `football-data.org` (primary), `API-Football` (fallback), and the `openfootball` repository (sanity check). Settle only when $\ge 2$ agree. If there is a dispute, a **Dispute Safety Lock** halts execution for manual review.
+- **Supported Conditions:** Match outcomes like win/loss (`if Germany wins Curacao`) and draw (`if they tie`).
+
+### ⚙️ Relayer & Sponsorship
+Utilizes ERC-2771 meta-transactions on EVM networks (Base, BSC, Celo, Ink), a feePayer relay on Solana, and native fee sponsorship on Tempo, ensuring users never have to hold native gas tokens (like ETH, BNB, SOL, or CELO).
+
+### 🔌 Developer & Agent APIs (ERC-8004)
+- **ERC-8004 Agent Registry:** Fully compliant endpoints exposing agent capabilities and reputation metrics.
+- **Model Context Protocol (MCP) & Agent Cards:** Allows seamless machine-to-machine integrations so other AI agents can programmatically request payments.
+
+---
+
+## The Monipay Thesis
+
+Crypto payments have failed consumers for a decade because the UX is hostile: 42-character addresses, native gas tokens, signing prompts written in hex, lost-key panic. **Monipay collapses all of that into a username and a PIN.**
+
+- **Username, not address:** `@samuel` resolves to a wallet on every supported chain.
+- **PIN, not seed phrase:** Your private key is encrypted locally. No 12-word ceremony to lose.
+- **Zero gas:** A paymaster sponsors fees on Base, BSC, Solana, Tempo, Ink and Celo. Users hold only stablecoins.
+- **One account, every chain:** USDC on Base, USDC SPL on Solana, USDT on BSC, USDT on Celo, USDT0 on Ink, AlphaUSD on Tempo | same MoniTag, same login.
+
+---
+
+## A Hammer, not a service
+
+Monipay is built like a **tool**, not a managed service. We call this the **Walkaway Test**:
+
+> If Monipay's company, servers and team disappeared tomorrow, could you still spend the funds in your wallet?
+
+The answer is **yes**. Your encrypted private key sits in `localStorage` (or your phone's secure enclave) and can be exported, decrypted with your PIN, and imported into MetaMask, Rabby, Phantom or any compatible wallet. Monipay is the convenience layer; the wallet is yours.
+
+---
+
+## What Monipay is not
+
+- **Not a custodial exchange:** We never hold your funds.
+- **Not a stablecoin issuer:** We move USDC, USDT, AlphaUSD and other regulated stablecoins.
+- **Not a chain:** Monipay is an application layer that runs on Base, BSC, Solana, Tempo, Ink and Celo.
+- **Not a Web3 social app:** MoniBot adds social distribution, but the core product is a payment rail.
+
+---
+
+## Who is Monipay for?
+
+- **Consumers** who want Venmo-simple crypto payments without gas anxiety.
+- **Merchants** who want to accept stablecoins online or in-person without POS hardware.
+- **Creators** who want to receive tips and run airdrops via Twitter, Discord and Telegram.
+- **Developers** who want to embed gasless stablecoin payments into their app or website.
+
+---
+
+## Read next
+
+- [Getting started](/docs/getting-started)
+- [How Monipay works](/docs/how-it-works)
+- [Why MoniTag matters](/docs/concepts/monitag)
+
+# 
+Source: https://docs.monipay.xyz/docs/how-it-works
+
+# How it works
+
+Monipay is a non-custodial wallet with a convenience layer for gasless payments and username resolution.
+
+## The Invisible Wallet
+
+When you sign up, Monipay generates a standard private key locally on your device (browser `localStorage` or mobile Secure Enclave).
+
+- **Encryption:** Your key is encrypted with **AES-256-GCM** using a key derived from your 6-digit PIN.
+- **Custody:** Monipay **never** sees your private key or your PIN. The encrypted blob is backed up to your Google Drive (optional) so you can recover it on other devices.
+- **Standard Curve:** We use `secp256k1` for EVM chains (Base, BSC, Tempo, Ink, Celo) and `Ed25519` for Solana. You can export your key at any time and use it in MetaMask, Rabby, Phantom or any compatible wallet.
+
+## Gasless sponsorship
+
+You do not need ETH, BNB, or SOL to pay for gas. Monipay uses three distinct sponsorship models:
+
+- **Base, BSC, Celo, Ink:** We use **ERC-2771 meta-transactions**. You sign a message (EIP-712), and our relayer pays the gas to execute it on-chain.
+- **Solana:** We use a **feePayer relay**. You sign the transaction, and our relayer adds a second signature as the fee payer before broadcasting.
+- **Tempo:** We use **native fee sponsorship** (EIP-2718 type 0x76 on testnet, mainnet details pending). The transaction includes a `feePayer` field, and the sponsor's signature is included in the payload.
+
+## Cross-chain routing
+
+Your MoniTag is your identity across all chains. When you send a payment:
+
+1. Monipay checks if the recipient is on the same chain → direct send.
+2. If not → automatic cross-chain routing (currently same-chain only; cross-chain bridge planned).
+3. If the sender's preferred chain has zero balance → app suggests funding or switching.
+
+## Fee model
+
+- **User fee:** **0** , gas is fully sponsored.
+- **Platform fee:** **1%** of every regular payment, deducted atomically by the smart contract. Multilevel financial intent execution via **MagicPay** charges a **2%** platform fee.
+  - For social payments (MoniBot), the fee is **on top** of the user-typed amount. The recipient gets the full amount; the sender pays amount + 2%.
+  - For direct app payments, recipient gets full amount; platform fee comes from the same transfer via the contract split.
+- **MoniBot fees** also apply when a sponsored account uses gas grants.
+
+## Database & state
+
+Monipay uses **Supabase** for:
+
+- Profiles, MoniTag registry, social identity links
+- Transaction history (receipts) , on-chain hash is canonical
+- Merchant orders, products, customers
+- Edge functions for the relayer, MoniBot worker, webhook signing
+
+The blockchain remains the source of truth for **funds**. The database is for **UX** (history, names, receipts).
+
+## Read next
+
+- [Smart contracts & ABIs](/docs/contracts)
+- [Security model](/docs/security)
+- [Supported chains](/docs/chains/base)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts/resolution
+
+# How MoniTag resolution works
+
+When you type `@alice` and pick a chain, Monipay turns the username into the correct on-chain address for that chain in a deterministic, cached, fail-closed pipeline.
+
+## The resolution pipeline
+
+1. **Normalize.** Strip the leading `@`, lowercase the result, strip surrounding whitespace. `@Alice`, `alice `, and `alice` are equivalent.
+2. **Look up.** Query the MoniTag registry (Supabase / on-chain registry) scoped to the chosen chain , `base_address`, `bsc_address`, `solana_address`, `tempo_address`, `celo_address`, etc.
+3. **Cache.** Store the result in an in-memory + `localStorage`-backed cache with a **60-second TTL**.
+4. **Return.** EVM addresses are returned lowercase (canonical for downstream signing and indexing); Solana addresses are returned in Base58 (the canonical Solana format).
+5. **Fail closed.** If the MoniTag has no wallet bound on the chosen chain, the send is **blocked** with a clear error , never silently routed to a different chain.
+
+## Why fail-closed matters
+
+A username can resolve on one chain and not another. `@alice` might have a Base address but no Solana keypair. Auto-routing to "the chain alice is on" sounds friendly but creates two problems:
+
+- The sender thought they were sending on chain X. The receipt says chain Y. Reconciliation breaks.
+- The sender's MoniBot command (`send $5 to @alice on base`) is explicit , overriding it would be wrong.
+
+Monipay therefore returns an unambiguous **no address on this chain** error, surfaces a "fund on chain X instead" suggestion in the UI, and lets the sender decide.
+
+## Cache invalidation
+
+The 60-second TTL is short enough to make username changes (rare) propagate quickly, and long enough to absorb the burst of repeat lookups during a multi-recipient payment. The cache is invalidated immediately on:
+
+- A social-link change for the local user
+- An account update event broadcast over Supabase realtime
+- A MoniTag transfer event in the on-chain registry (where applicable)
+
+## Address normalization rules
+
+- **EVM chains** , always lowercase. The Monipay database stores lowercase; the signing flow lowercases before hashing; the explorer URLs lowercase before linking. Mixed-case EIP-55 checksumming is for display only.
+- **Solana** , Base58, case-sensitive, no normalization. Validation rejects any string that fails Base58 parsing.
+- **Tempo** , same format as EVM (0x-prefixed hex); lowercase normalization applies.
+
+## Performance
+
+The cache hit rate during ordinary use is high , a typical send hits 3–5 cache reads per recipient (lookup, balance check, receipt render). A multi-recipient batch of 10 hits the same MoniTag rows repeatedly, all served from cache after the first lookup.
+
+## Read next
+
+- [MoniTag overview](/monitag/)
+- [Reserved usernames](/monitag/reserved-usernames)
+- [Address normalization (memory note)](/security/)
+
+# 
+Source: https://docs.monipay.xyz/docs/payments/iou
+
+# IOUs and claims
+
+Send payments to people who don't have a Monipay account yet using the on-chain IOU registry.
+
+## How it works
+
+1. Sender issues a payment to an email or social handle.
+2. The funds are held in the `IOURegistry` smart contract.
+3. The recipient receives a notification with a claim link.
+4. Recipient creates a MoniTag and claims the funds.
+5. Funds are released from the escrow contract to the recipient's new wallet.
+
+## Walkaway Test for IOUs
+
+If an IOU remains unclaimed after a certain period, the sender can reclaim the funds. This ensures that capital is never permanently trapped in the registry.
+
+## Read next
+
+- [IOU Registry Contract](/contracts/iou-registry)
+- [How to Claim](/getting-started)
+
+## Claim flow in detail
+
+The IOU system uses a `bytes32 recipientId` derived from `keccak256("platform:userId")` - no PII stored on-chain. Here's the full lifecycle:
+
+```
+Sender pays @username (Twitter / Discord / Telegram)
+       ↓
+IOURegistry.sol escrows funds on-chain
+       ↓
+Recipient receives notification (email / DM)
+       ↓
+Recipient visits monipay.xyz → connects wallet
+       ↓
+claim-social-funds edge function verifies OAuth identity
+       ↓
+batchClaim called from vault → funds released to wallet
+```
+
+## Expiry and reclaim
+
+IOUs have a configurable expiry window. If a recipient does not claim within the window:
+
+- The sender can call `reclaim()` on the `IOURegistry` to recover funds.
+- Unclaimed IOUs are **never lost** - only the sender can reclaim after expiry.
+
+## Supported chains
+
+The IOU Registry is deployed on: **Base**, **BSC**, **Celo**, and **Tempo**. Solana uses a parallel escrow model adapted for the Solana account model.
+
+## Security notes
+
+- Recipient identity is stored as a hash - no username or email appears on-chain.
+- Only the authorized vault hot wallet can call `batchClaim`.
+- See [Security Architecture](/docs/security/architecture) for the full threat model.
+
+## Read next
+
+- [Contracts Overview](/docs/contracts/overview)
+- [Security Architecture](/docs/security/architecture)
+- [MoniBot Commands](/docs/monibot/commands)
+
+# 
+Source: https://docs.monipay.xyz/docs/glossary
+
+# Glossary
+
+**AES-256-GCM** | Authenticated symmetric encryption with a 256-bit key. Monipay encrypts every user's private key with AES-256-GCM, keyed by a PBKDF2 derivation of the user's PIN.
+
+**AlphaUSD (αUSD)** | Tempo's primary stablecoin. 18 decimals. TIP-20 standard. Contract `0x20c0000000000000000000000000000000000001`.
+
+**Atomic split** | The single-transaction transfer pattern Monipay's router contracts use to send 99% of a payment to the recipient and 1% to the platform treasury without any intermediate state.
+
+**Base** | Coinbase's Ethereum L2. Monipay's home chain. Token: native USDC, 6 decimals.
+
+**Base58** | Solana's canonical address encoding. Case-sensitive, no normalization.
+
+**BEP-20** | BSC's token standard, broadly ERC-20-compatible. BSC USDT is BEP-20 with **18** decimals.
+
+**Builder code (ERC-8021)** | On-chain attribution suffix that lets a builder count originated transactions. Monipay's Base builder code is `bc_qt9yxo1d`.
+
+**Celo** | Opera's target network, running Celo mainnet. Support for USDT via MiniPay deep links.
+
+**Ed25519** | Solana's signing curve. Used for Solana keypairs.
+
+**EIP-712** | Ethereum's typed structured-data signing standard. Monipay's EVM routers verify EIP-712 signatures to authorise meta-transactions.
+
+**EIP-2718 type 0x76** | Tempo's native transaction envelope type. Supports `feePayer` sponsorship, 2D nonces, and atomic batch calls as first-class fields.
+
+**executor wallet** | MoniBot's hot wallet that submits social-payment transactions and pays gas. Per-chain, monitored, refilled on low-balance alerts.
+
+**fee-on-top** | MoniBot's social-payment fee model. Sender pays `amount + 2%` (for MagicPay), recipient receives the full amount. Contrast with the in-app **fee-split** model.
+
+**`feePayer`** | A Solana and Tempo transaction field naming a non-sender account that pays the fee. The foundation of Monipay's gasless UX on those chains.
+
+**Hammer** | Monipay's product philosophy. A tool you own and walk away with, not a service you depend on. See the [Walkaway Test](/docs/concepts/walkaway-test).
+
+**Ink** | Kraken's Ethereum L2 network. Supported token is USDT0, an omnichain USDT variant.
+
+**IOURegistry** | On-chain registry that backs MagicPay claims. Holds escrowed funds for unaddressed recipients until they prove control of the linked social handle.
+
+**MagicPay** | A claim link issued when a MoniBot recipient has no linked MoniTag. Backed by the on-chain `IOURegistry`. Recipient redeems by signing up and proving handle ownership.
+
+**MagicPay fee** | The platform fee of **2%** charged for multilevel financial intent execution via MoniBot/MagicPay.
+
+**MiniPay** | Opera's mobile wallet on Celo. Monipay runs as a mini-app inside MiniPay.
+
+**MiniPay deep link** | URI scheme `monipay://` for launching payments inside Opera MiniPay browser.
+
+**MoniBot** | Monipay's autonomous AI agent for multilevel financial intent execution on Twitter/X, Discord, and Telegram.
+
+**Monipay** | The product. A gasless, non-custodial, multi-chain stablecoin wallet and payment platform.
+
+**MoniTag™** | Your permanent username on Monipay. Lowercase `m`, uppercase `T`, ™ on first use.
+
+**paymaster** | A relayer that pays gas on a user's behalf in exchange for the user's signature on an off-chain typed-data message.
+
+**PBKDF2** | Password-Based Key Derivation Function. Monipay uses PBKDF2 with a high iteration count to derive an AES key from the user's PIN.
+
+**RLS** | Row Level Security. Supabase's database access control. Monipay's tables are deny-all by default with explicit policies per access path.
+
+**secp256k1** | Ethereum's signing curve. Used for EVM keypairs (Base, BSC, Celo, Ink).
+
+**Smart Feedback** | MoniBot's optional AI-evaluated reply quality gate for airdrop and grant campaigns. Powered by Gemini 2.0-flash.
+
+**Soft delete** | Monipay account deletion sets `profiles.status = 'deactivated'` rather than dropping rows. Data is retained for legal compliance. Re-import is blocked.
+
+**TIP-20** | Tempo's stablecoin standard. ERC-20-like, with on-chain transfer memos and delegated-transfer semantics for sponsorship.
+
+**Two-dimensional (2D) nonce** | Tempo's `(nonceKey, nonce)` pair that allows parallel-safe concurrent transactions without single-account nonce contention.
+
+**USDC** | Circle's regulated US-dollar stablecoin. Native on Base (6 dec) and available as SPL on Solana (6 dec).
+
+**USDT** | Tether's US-dollar stablecoin. Native on BSC as BEP-20 (18 decimals) and Celo (6 decimals), and as USDT0 omnichain variant on Ink.
+
+**Walkaway Test** | Monipay's resilience principle: if Monipay disappeared tomorrow, you could still spend the funds in your wallet from any compatible wallet. Non-negotiable.
+
+**worker bot** | Per-platform MoniBot service that polls the social platform, parses commands, and submits on-chain transactions via the chain-specific `MoniBotRouter`.
+
+# 
+Source: https://docs.monipay.xyz/docs/getting-started
+
+# Quick start
+
+Monipay turns any social handle into a payment address. You don't need a wallet app, a seed phrase, or gas tokens.
+
+Three steps to your first payment:
+
+1. **[Create your MoniTag](/docs/getting-started/create-monitag)** | a 3–20 character handle that becomes your universal payment identity across Base, BSC, Solana, Tempo and Celo.
+2. **[Fund your wallet](/docs/getting-started/fund-wallet)** | send USDC, USDT, or αUSD (AlphaUSD) from any exchange to the address Monipay generated for you.
+3. **[Send your first payment](/docs/getting-started/send-payment)** | pay anyone by `@monitag` with zero gas.
+
+## What you get
+
+- A non-custodial wallet you fully own (see the [Walkaway Test](/docs/concepts/walkaway-test)).
+- Gasless transfers on every supported chain.
+- One identity that works in [Discord](/docs/monibot/discord), [Telegram](/docs/monibot/telegram), and [X](/docs/monibot/twitter) through MoniBot.
+
+## Read next
+
+- [How Monipay works](/docs/how-it-works)
+- [The Invisible Wallet](/docs/concepts/invisible-wallet)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts/monitag
+
+# MoniTag™
+
+A **MoniTag™** is your permanent username on Monipay. It resolves to your wallet on every supported chain , Base, BSC, Solana, Tempo, Celo and Ink. One identity, every network.
+
+> **MoniTag™** is always written with a **lowercase `m`**, an **uppercase `T`**, and the **™** trademark symbol. Examples: `@samuel`, `@coffeeshop`, `@dao_treasury`.
+
+## Why MoniTag instead of an address?
+
+Crypto addresses are 42 hexadecimal characters with no error correction. One typo and your money is gone forever. A MoniTag is:
+
+- **Memorable** , `@samuel` vs `0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1`
+- **Cross-chain** , same MoniTag resolves on Base, BSC, Solana, Tempo, Celo and Ink
+- **Human-validated** , you can read it back to verify
+- **Permanent** , once claimed, it's yours
+
+## Naming rules
+
+- 3–20 characters
+- Lowercase letters (`a–z`), digits (`0–9`), dot (`.`), underscore (`_`)
+- Cannot start or end with `.` or `_`
+- Cannot be on the [reserved list](/monitag/reserved-usernames) (~150 brand and generic terms)
+
+## Linking social accounts
+
+Optionally connect Twitter/X, Discord and Telegram to your MoniTag. This unlocks **MoniBot** social payments , receive money replied to your tweet or DM'd to you on Discord. Linking is via OAuth handshake (Discord) or `return_to` callbacks (Telegram). You can unlink at any time from Settings.
+
+## Pages
+
+- [Reserved usernames](/monitag/reserved-usernames)
+- [How resolution works](/monitag/resolution)
+
+# 
+Source: https://docs.monipay.xyz/docs/payments/payment-links
+
+# Payment links
+
+Generate a one-shot or reusable payment URL. Anyone with the link can pay you.
+
+```
+https://monipay.xyz/pay?to=@you&amount=10&chain=base&memo=Order%20123&callback=https://yoursite.com/thanks
+```
+
+## Parameters
+
+- `to` , MoniTag of the recipient.
+- `amount` , Decimal amount.
+- `chain` , `base` | `bsc` | `solana` | `tempo` | `celo` | `ink`.
+- `memo` , Optional reference.
+- `callback` , URL to redirect after success.
+- `pl_[code]` , Preset payment link code.
+
+## Behavior
+
+- **Mobile:** Opens the installed Monipay app via deep link.
+- **Web:** Renders a hosted checkout modal.
+- **Success:** Redirects to `callback` and triggers a webhook.
+
+## Read next
+
+- [Webhooks Reference](/merchant/webhooks)
+- [Deep Links Specification](/mobile/deep-links)
+
+# 
+Source: https://docs.monipay.xyz/docs/merchant/overview
+
+# Monipay for merchants
+
+Monipay provides a complete suite of tools for businesses to accept stablecoins.
+
+## Key Offerings
+
+- **Hosted Storefront:** Sell products at `monipay.xyz/store/@yourtag`.
+- **Invoicing:** Create and track professional on-chain invoices.
+- **Payment Gateway:** Embed Monipay into your existing checkout flow.
+- **API & Webhooks:** Integrate payment data with your backend.
+
+## Pricing
+
+- **Personal:** Free (gas sponsored).
+- **Merchant Transacitons:** 1% per transaction.
+- **Storefront Pro:** $30/month for advanced customization.
+
+## Read next
+
+- [Storefront Guide](/merchant/storefront)
+- [Payment Gateway API](/merchant/payment-gateway)
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot/multi-recipient
+
+# Multi-recipient MoniBot payments
+
+MoniBot supports two separator styles for batch P2P:
+
+- Commas: `send $1 to @alice, @bob, @charlie`
+- "and": `send $1 to @alice and @bob`
+- Mixed: `send $1 to @alice, @bob and @charlie`
+
+On EVM, the batch is executed via sequential transactions from the executor wallet. On **Tempo**, MoniBot uses a single **batch-call** atomic transaction (one signature, all-or-nothing).
+
+# 
+Source: https://docs.monipay.xyz/docs/merchant/storefront
+
+# Merchant storefront
+
+Turn your MoniTag into a full-featured online store.
+
+## Features
+
+- **Personalized URL:** `monipay.xyz/store/@yourtag`.
+- **Product Management:** Add titles, descriptions, images, and prices.
+- **Cart System:** Supports up to 99 items per order.
+- **Shipping Forms:** Optional collection of customer delivery info.
+- **Success Redirect:** Automated 2.5s redirect back to your specified URL.
+
+## Storefront Pro
+
+Unlock advanced features like custom branding, analytics, and priority support for $30/month.
+
+## Read next
+
+- [Product Management](/merchant/products)
+- [Invoices](/merchant/invoices)
+
+# 
+Source: https://docs.monipay.xyz/docs/mobile/overview
+
+# Monipay mobile
+
+Monipay ships in three forms:
+
+- **Native iOS / Android** , built in Flutter (SDK 3.27+, Dart 3.6+)
+- **Progressive Web App** , install from any browser with a single tap
+- **Web** , the full app at [monipay.xyz](https://monipay.xyz)
+
+The Flutter app maintains **strict visual and functional parity** with the web app. Same MoniTag, same wallet, same backups.
+
+## Features
+
+- Biometric unlock (Face ID, Touch ID, Android biometrics)
+- Secure enclave key storage
+- Push notifications for received payments
+- Deep linking via `monipay://pay?to=@you&amount=5&chain=base`
+- Offline-tolerant via service-worker network-first cache (PWA)
+
+## Install
+
+- **iOS:** [App Store](https://monipay.xyz/install)
+- **Android:** [Play Store](https://monipay.xyz/install)
+- **PWA:** [/install](https://monipay.xyz/install) , Add to Home Screen
+
+## Read next
+
+- [Deep link specification](/mobile/deep-links)
+- [PWA install prompt](/mobile/pwa)
+
+# 
+Source: https://docs.monipay.xyz/docs/mobile/deep-links
+
+# Deep links
+
+Monipay registers the `monipay://` URL scheme on iOS and Android. Triggering a `monipay://` URL on a device with Monipay installed opens the app pre-filled and ready to confirm.
+
+## URL format
+
+```
+monipay://pay?to=@alice&amount=5&chain=base&memo=Coffee
+```
+
+## Parameters
+
+- `to` , Recipient's MoniTag.
+- `amount` , Decimal amount.
+- `chain` , `base` | `bsc` | `solana` | `tempo` | `celo` | `ink`.
+- `memo` , Optional memo.
+- `ref` , Optional short reference code.
+
+## Read next
+
+- [PWA Install](/mobile/pwa)
+- [Payment Links](/payments/payment-links)
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot/discord
+
+# MoniBot for Discord
+
+The Discord bot is MoniBot's **reference implementation** , the most reliable, feature-complete surface. New behavior ships to Discord first.
+
+## Setup
+
+1. Invite MoniBot to your server with the `Send Messages` and `Read Message History` permissions.
+2. Link your Discord account to your MoniTag via OAuth from the Monipay app's Settings → Social.
+3. Use slash commands or DM the bot.
+
+## Commands
+
+- `/send @discord-user $5 on base` , gasless stablecoin send
+- `/airdrop $50 to first 10 reactions` , quality-gated drop
+- `/balance` , your Monipay balance across chains
+- `/grant $1 each on tempo` , sponsor-funded micro-grants
+
+## Channel commands
+
+In any channel where MoniBot has access, mentions like `@MoniBot send $1 to @alice` work without slash syntax.
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot/telegram
+
+# MoniBot for Telegram
+
+MoniBot on Telegram mirrors the Discord implementation with platform-specific adaptations for the Telegram Bot API.
+
+## Commands
+
+- `!send @username $5` , Send stablecoins to another Telegram user.
+- `/link @monitag` , Link your Telegram handle to your MoniTag.
+- `/balance` , Check your Monipay balances.
+
+## Linking Social Identity
+
+MoniBot uses `return_to` callbacks to securely link your Telegram account to your Monipay identity. Once linked, you can receive payments sent to your Telegram handle directly into your Monipay wallet.
+
+## Read next
+
+- [MoniBot Commands Reference](/monibot/commands)
+- [MoniBot for Discord](/monibot/discord)
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot/twitter
+
+# MoniBot for Twitter / X
+
+MoniBot enables seamless multilevel financial intent execution (transfers, escrow, giveaways, and tipping) on Twitter/X via mention commands.
+
+## Commands
+
+- `@Monipay send $5 to @username` , Tip a user in a reply or new tweet.
+- `@Monipay drop $100` , Initialize a giveaway.
+
+## Constraints
+
+Due to Twitter's platform policies:
+- MoniBot uses an 18-character hash limit for command tracking.
+- Links are sometimes restricted; MoniBot uses verified mention replies to guide users to their claims.
+
+## Read next
+
+- [MoniBot Commands Reference](/monibot/commands)
+- [MoniBot for Discord](/monibot/discord)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains/celo
+
+# Monipay on Celo (MiniPay)
+
+Monipay runs as a mini-app inside Opera's MiniPay wallet on Android, bringing gasless MoniTag payments to Celo's cUSD and USDT user base. Celo is Monipay's primary emerging-markets chain - optimized for low-data environments and real-world payment use cases.
+
+## Network details
+
+| Property | Value |
+|----------|-------|
+| Network  | Celo Mainnet |
+| Chain ID | 42220 |
+| Supported tokens | cUSD, USDT |
+| Gas model | Sponsored (users pay zero gas) |
+| MiniPay optimized | ✅ Yes |
+
+## Why Celo
+
+Celo is designed for mobile-first, emerging-market payments. Its fee abstraction layer lets Monipay sponsor gas in cUSD, meaning recipients and senders never need to hold CELO to transact. This makes Monipay on Celo the closest experience to a traditional payment app while remaining fully non-custodial.
+
+## MiniPay integration
+
+Monipay is available inside the **Opera MiniPay** browser on Android. To access it:
+
+1. Open MiniPay on your Android device.
+2. Navigate to the mini-apps section and search for **Monipay**.
+3. Create or link your MoniTag.
+4. Send cUSD or USDT to any `@monitag` instantly.
+
+No seed phrase required for initial use. The [Invisible Wallet](/docs/concepts/invisible-wallet) handles key management transparently.
+
+## MoniBot on Celo
+
+MoniBot commands work on Celo the same as any other chain. Funds are routed to the Celo network when the recipient's linked wallet is on Celo mainnet.
+
+```
+!monibot pay @username $5 cUSD
+```
+
+For Discord giveaways with cUSD:
+
+```
+!monibot bless @username with $5
+```
+
+## Smart contracts
+
+See [Celo Contracts](/docs/contracts/celo) for verified `IOURegistry` and `MonipayRouterCelo` addresses.
+
+## On-ramps
+
+Celo has strong local on-ramp support in sub-Saharan Africa and Latin America. Supported on-ramps for loading cUSD:
+
+- **Kotani Pay** - M-Pesa, MTN Mobile Money (East Africa)
+- **Valora** - In-app on-ramp via Transak
+- **MoonPay** - Global card on-ramp to cUSD
+
+## Read next
+
+- [Celo Contracts](/docs/contracts/celo)
+- [Gasless Payments](/docs/concepts/gasless-payments)
+- [IOU Registry](/docs/payments/iou)
+- [MiniPay Developer Docs](https://docs.minipay.opera.com)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains/base
+
+# Monipay on Base
+
+Base is Monipay's primary home for gasless USDC payments.
+
+## Network Details
+
+- **Chain ID:** `8453`
+- **Token:** USDC
+- **Decimals:** 6
+- **Relayer Model:** ERC-2771 Meta-Transactions
+- **Builder Code:** `bc_qt9yxo1d` (ERC-8021)
+- **Explorer:** [Basescan](https://basescan.org)
+
+## Gas Sponsorship
+
+Monipay sponsors 100% of the gas fees for P2P payments on Base. New accounts receive a small gas grant (0.000002 ETH) on signup to initialize the account if necessary, though the relayer handles the vast majority of user interactions.
+
+## Platform Fee
+
+A 1% platform fee is collected on every transaction, split atomically by the router contract.
+
+## Read next
+
+- [How Gasless Payments Work](/concepts/gasless-payments)
+- [Monipay Smart Contracts](/contracts)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains/bsc
+
+# Monipay on BSC
+
+Send USDT (BEP-20) on BNB Smart Chain with zero gas using Monipay.
+
+## Network Details
+
+- **Chain ID:** `56`
+- **Token:** USDT
+- **Decimals:** 18
+- **Relayer Model:** EIP-712 Meta-Transactions
+- **Explorer:** [BscScan](https://bscscan.com)
+
+## Implementation Notes
+
+Monipay on BSC uses a recompiled version of the `MonipayRouter` to handle the 18-decimal nature of BEP-20 USDT. The architecture mirrors the Base implementation, providing a consistent experience across EVM networks.
+
+## Read next
+
+- [BSC Contracts](/contracts/bsc)
+- [How Gasless Payments Work](/concepts/gasless-payments)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains/ink
+
+# Monipay on Ink (Coming Soon)
+
+Ink is Kraken's Layer 2, built on the OP Stack. Monipay's Ink integration brings gasless, username-addressed stablecoin payments to that distribution surface.
+
+## Network Details
+
+- **Chain ID:** `57073`
+- **Token:** USDT0 (native on Ink)
+- **Decimals:** 6
+- **Status:** In development
+
+## Architecture
+
+Ink reuses Monipay's Base architecture:
+- **MonipayRouter (Ink):** Atomic 1% split on USDT0 transfers.
+- **MoniBotRouter (Ink):** Sponsored social payments.
+- **IOURegistry (Ink):** Claim registry for unaddressed recipients.
+
+## Read next
+
+- [Monipay on Base](/chains/base)
+- [Supported Chains](/chains)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains/solana
+
+# Monipay on Solana
+
+Monipay brings gasless USDC SPL payments to the Solana ecosystem.
+
+## Network Details
+
+- **Chain:** Solana Mainnet-Beta
+- **Token:** USDC (SPL)
+- **Decimals:** 6
+- **Relayer Model:** feePayer Relay
+- **Address Format:** Base58
+
+## Twin-Key Model
+
+Solana uses an Ed25519 keypair. For security, the private key is stored in `localStorage` only and is never written to the database. Import validation ensures the decrypted public key matches the database-bound address.
+
+## Gas Sponsorship
+
+Monipay acts as the `feePayer` for Solana transactions. The app constructs the transaction, the user signs the instruction, and the Monipay relayer adds the fee payer signature before broadcasting to the cluster.
+
+## Read next
+
+- [Solana Key Storage Model](/security/solana-key-storage)
+- [How Gasless Payments Work](/concepts/gasless-payments)
+
+# 
+Source: https://docs.monipay.xyz/docs/security/solana-key-storage
+
+# Solana key storage model
+
+Monipay's Solana key handling is **stricter** than its EVM key handling, because Solana's threat surface is different and the consequences of a compromised key are immediate.
+
+## The model
+
+- **Generation.** An Ed25519 keypair is generated client-side at signup or when the user enables Solana on an existing account. No keys ever leave the device.
+- **Encryption.** The private key is encrypted with **AES-256-GCM** using a key derived from the user's PIN via PBKDF2 with a high iteration count and a per-user salt.
+- **Storage.** The encrypted blob is stored in `localStorage` **only**. It is never written to the Supabase database, never sent to any Monipay edge function, never logged.
+- **Validation on import.** When a user re-imports their wallet, the decrypted public key derived from the imported keypair **must match** the address bound to their MoniTag in the database. Mismatches reject the import.
+- **Two-step regenerate warning.** If a user opts to regenerate their Solana key (a destructive operation), Monipay shows a two-step confirmation.
+
+## Why localStorage-only
+
+The Solana key is the most sensitive credential Monipay handles. Storing nothing on the server means that even a total server compromise cannot leak user Solana keys.
+
+## Read next
+
+- [The Walkaway Test](/concepts/walkaway-test)
+- [Monipay on Solana](/chains/solana)
+
+# 
+Source: https://docs.monipay.xyz/docs/merchant/webhooks
+
+# Webhooks
+
+Receive real-time notifications about payment events.
+
+## Signature Verification
+
+Monipay signs every webhook payload using HMAC-SHA256. The signature is sent in the `X-Monipay-Signature` header. You should verify this signature using your Secret Key to ensure the request is authentic.
+
+## Retry Policy
+
+If your server returns a non-200 response, Monipay will retry the delivery with exponential backoff for up to 24 hours.
+
+## Example Payload
+
+```json
+{
+  "event": "payment.succeeded",
+  "data": {
+    "orderId": "ord_123",
+    "amount": "10.00",
+    "currency": "USDC",
+    "txHash": "0x...",
+    "moniTag": "@customer"
+  }
+}
+```
+
+## Read next
+
+- [Payment Gateway API](/merchant/payment-gateway)
+- [API Keys](/merchant/api-keys)
+
+# 
+Source: https://docs.monipay.xyz/docs/contracts/overview
+
+# Smart contracts
+
+All Monipay router contracts are open-source and verified on the relevant explorer.
+
+| Contract | Chain | Purpose |
+|---|---|---|
+| `MonipayRouter.sol` | Base | EVM meta-tx router with 1% atomic split |
+| `MonipayRouter.bsc.sol` | BSC | BSC variant (18-decimal USDT) |
+| `MonipayRouterCelo.sol` | Celo | cUSD variant for MiniPay |
+| `MoniBotRouter.sol` | Base | Sponsored grants for social campaigns |
+| `MonibotRouterCelo.sol` | Celo | MoniBot variant on Celo |
+| `IOURegistry.sol` | EVM | IOU/credit primitive (claimable on-chain) |
+
+## Per-chain pages
+
+- [Base contracts](/contracts/base)
+- [BSC contracts](/contracts/bsc)
+- [Tempo contracts](/contracts/tempo)
+- [Celo contracts](/contracts/celo)
+
+## Common interfaces
+
+- `IIOURegistry` , claim, settle, dispute IOUs
+- `MonipayRouter` events: `PaymentExecuted(sender, recipient, amount, fee, nonce, memo)`
+- `MoniBotRouter` events: `GrantExecuted(to, amount, fee, campaignId)`
+
+# 
+Source: https://docs.monipay.xyz/docs/contracts/tempo
+
+# Tempo contracts
+
+Tempo's payment-native primitives mean Monipay's router footprint on Tempo is **smaller** than on Base/BSC.
+
+- **TIP-20 transfer** with on-chain memo replaces the ERC-20 + meta-tx wrapper
+- **EIP-2718 type 0x76** transaction native fee sponsorship via `feePayer` field
+- **2D nonces** allow concurrent transaction submission without nonce collisions
+- **Batch calls** for atomic multi-recipient grants (one signature, all-or-nothing)
+
+The MoniBotRouter on Tempo executes batch grants with the MoniBot UUID sponsor as fee payer.
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts/reserved-usernames
+
+# Reserved usernames
+
+To prevent impersonation and ensure brand integrity, Monipay maintains a blocklist of ~150 reserved usernames.
+
+## Protected Categories
+
+- **Monipay Brand:** `monipay`, `monibot`, `monitag`, `magicpay`.
+- **System Roles:** `admin`, `support`, `root`, `moderator`, `official`.
+- **Common Service Terms:** `payment`, `bank`, `wallet`, `claim`, `checkout`.
+- **Exchanges & Wallets:** `binance`, `coinbase`, `phantom`, `metamask`.
+
+## Policy
+
+Reserved usernames are blocked at the registration level. If you believe you have a legitimate claim to a reserved name (e.g., you own the trademark), please contact [support@monipay.xyz](mailto:support@monipay.xyz).
+
+## Read next
+
+- [MoniTag Overview](/concepts/monitag)
+- [How Resolution Works](/concepts/resolution)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts/walkaway-test
+
+# The Walkaway Test
+
+> **If Monipay's company, servers and team disappeared tomorrow, could you still spend the funds in your wallet?**
+
+The answer must always be **yes**. This is non-negotiable. It is the single principle that every product decision at Monipay is evaluated against. If a feature would make the answer "no" or "maybe", that feature does not ship.
+
+## How we keep it true
+
+### 1. Standard cryptography
+
+- **EVM chains** , secp256k1 keypairs, the same curve every Ethereum wallet uses (MetaMask, Rabby, Coinbase Wallet, hardware wallets).
+- **Solana** , Ed25519 keypairs, the same curve every Solana wallet uses (Phantom, Solflare, Backpack).
+- **PIN-based encryption** , AES-256-GCM with PBKDF2 key derivation. Not proprietary. Not custom.
+
+If Monipay vanished, you would still hold a standard hex private key. You would not be holding a Monipay-specific token bound to a Monipay-specific contract.
+
+### 2. Standard tokens
+
+- USDC, USDT, AlphaUSD, cUSD, USDC SPL.
+- No Monipay-only wrappers. No yield-bearing proxy positions. No staking derivatives.
+
+The token in your wallet is the same token the issuer minted. Circle's USDC contract is Circle's USDC contract. You can spend it from any wallet that supports the chain.
+
+### 3. Exportable keys
+
+- The encrypted key blob lives on your device.
+- Your PIN decrypts it into a standard hex private key.
+- You can import that key into MetaMask, Phantom, or any other compatible wallet.
+
+There is no "Monipay export endpoint" you depend on. The decryption happens in your browser or app, with cryptography you can independently verify.
+
+### 4. No funds in custody
+
+- The 1% platform fee is collected **at transfer time** by the on-chain router contract.
+- Monipay never holds user balances between transactions.
+- There is no "settlement account" you need Monipay to release funds from.
+
+A custodial exchange disappearing is a catastrophe because user funds were pooled in the exchange's wallet. Monipay disappearing is an inconvenience because user funds were always in the user's own wallet.
+
+### 5. On-chain history is the source of truth
+
+- The Monipay database is for UX , fast balance lookups, transaction history rendering, MoniTag resolution, social linking.
+- Every payment is settled and recorded on-chain. The block explorer is the bank statement.
+- If the Monipay database vanished, your transaction history and balances would still be reconstructable from `MonipayRouter` events on the explorer.
+
+## What you lose if Monipay disappears
+
+You lose the **convenience layer**: the MoniTag resolver, the merchant tools, MoniBot, the dashboard, the Google Drive backup orchestration. You keep:
+
+- The funds at your wallet address.
+- The ability to spend them from any compatible wallet.
+- The on-chain receipt history.
+- The standard cryptography that lets you do all of the above without Monipay's permission.
+
+## Why this matters
+
+The history of consumer crypto is mostly the history of platforms that did not pass this test. Monipay is built on the opposite assumption: the platform is a hammer, not a service. A hammer you own and walk away with. Not a service you depend on for permission to use what you bought.
+
+## Read next
+
+- [Solana key storage model](/security/solana-key-storage)
+- [Security overview](/security/)
+- [What is Monipay?](/what-is-monipay)
+
+# 
+Source: https://docs.monipay.xyz/docs/faq
+
+# Frequently asked questions
+
+## Section A | General
+
+### 1. What is Monipay?
+A non-custodial, gasless stablecoin payment network spanning Base, BSC, Solana, Tempo, Ink and Celo. Send by MoniTag™ | a human-readable username.
+
+### 2. Who built Monipay?
+Monipay is built and operated by the Monipay team. See the [About page](https://monipay.xyz/about).
+
+### 3. Is Monipay open source?
+Smart contracts are verified on each chain's explorer. Core app source is closed.
+
+### 4. What chains does Monipay support today?
+Base (USDC), Solana (USDC SPL), BSC (USDT), Celo (USDT via MiniPay), Ink (USDT0), and Tempo (αUSD - testnet-only).
+
+### 5. Is Monipay free to use?
+Personal sends are free of gas; merchants pay 1% per transaction. Storefront Pro is $29/month.
+
+## Section B | MoniTag™
+
+### 6. What is a MoniTag™?
+A unique username that maps to your wallet address on every supported chain.
+
+### 7. Are MoniTags case-sensitive?
+Stored lowercase. UI may display as you typed.
+
+### 8. Can I change my MoniTag™?
+No. Pick carefully.
+
+### 9. What characters are allowed?
+Lowercase letters, digits, underscore. Length 3–20.
+
+### 10. What if my MoniTag™ is reserved?
+A 150+ word blocklist prevents impersonation (admin, support, monipay, etc.). Try a variation.
+
+### 11. Can I have multiple MoniTags™?
+One per account. Use store sub-paths for brand variants.
+
+## Section C | Wallets & Security
+
+### 12. Is Monipay custodial?
+No. Keys are generated locally and encrypted with your PIN (AES-256-GCM).
+
+### 13. Where is my private key stored?
+localStorage on web (encrypted), Secure Enclave/KeyStore on native, never on Monipay servers. Solana key is **localStorage-only**.
+
+### 14. Can Monipay access my funds?
+No. We have no copy of your private key.
+
+### 15. What happens if I forget my PIN?
+Restore from your encrypted backup file or Google Drive backup. Without either, funds are unrecoverable. PIN-only.
+
+### 16. Does Monipay use seed phrases?
+No. We use PIN-encrypted local keys. Seed-phrase compatibility is not exposed by default.
+
+### 17. What is the Walkaway Test?
+If Monipay shuts down, your encrypted key still works with any Ethereum/Solana tooling. You own your funds.
+
+### 18. What encryption is used?
+AES-256-GCM for the key, Argon2id for the PIN hash.
+
+### 19. What about lockout?
+5 failed PIN attempts triggers a temporary lockout.
+
+### 20. Is biometric unlock supported?
+Yes on native (FaceID/TouchID/fingerprint).
+
+## Section D | Payments
+
+### 21. How do I send a payment?
+Enter `@MoniTag` → amount → confirm with PIN. Settled on-chain in seconds.
+
+### 22. Why are payments gasless?
+Monipay sponsors gas via ERC-2771 (Base/BSC), native `feePayer` (Tempo), and feePayer relay (Solana).
+
+### 23. What is the platform fee?
+1% per transaction for direct app transfers, and 2% for multilevel financial intent execution via MagicPay, split atomically by the router contract.
+
+### 24. Are there minimums or maximums?
+No hard minimum; rate limits apply (5/wallet/min, 10/IP/min on relay).
+
+### 25. Do payments settle on-chain?
+Yes, every payment is a real on-chain transfer with an explorer link.
+
+### 26. Can I pay someone on a different chain?
+Cross-chain auto-routing picks the chain where you have balance and the recipient is supported.
+
+### 27. Can I send to a non-Monipay user?
+Use an IOU at `/claim`; recipient claims later by creating a MoniTag.
+
+### 28. Can I cancel a payment?
+Once signed and broadcast, no. On-chain is final.
+
+## Section E | Merchants
+
+### 29. How do I become a merchant?
+Sign up, create a MoniTag™, enable merchant mode in settings.
+
+### 30. What is Storefront Pro?
+$29/month subscription unlocking `/store/@yourtag` storefront customization.
+
+### 31. How does the payment gateway work?
+Redirect customers to `monipay.xyz/pay?orderId=…` or `/pay/pl_[code]`. Webhook fires on completion.
+
+### 32. How are webhooks secured?
+HMAC-SHA256 signature in the `X-Monipay-Signature` header.
+
+### 33. What is a payment link?
+A `pl_[code]` URL for a fixed or open-amount payment, single or multi-use.
+
+### 34. Can I issue invoices?
+Yes, with itemized line items, due dates, and one-click pay.
+
+### 35. Is there a refund flow?
+Initiate refunds manually from the order page; on-chain reverse transfer.
+
+## Section F | MoniBot
+
+### 36. What is MoniBot?
+An autonomous AI agent that processes crypto payments and campaigns on Discord, Telegram and X.
+
+### 37. Which platform is the reference implementation?
+Discord. Telegram and X mirror its behavior with platform-specific adaptations.
+
+### 38. How do I link my MoniTag™ to Discord/Telegram?
+Use `/link @yourtag` and complete the handshake.
+
+### 39. Can MoniBot run giveaways?
+Yes. First-come-first-served grants until campaign budget is exhausted.
+
+### 40. Does MoniBot support multi-recipient sends?
+Yes. Use commas or "and" in the command.
+
+### 41. How does MoniBot pay gas?
+An executor wallet sponsors gas; on Tempo, allowance approvals are bypassed.
+
+## Section G | Chains
+
+### 42. Which chain should I use?
+Base for USDC, Solana for USDC SPL, BSC for USDT, Celo for USDT via MiniPay, Ink for USDT0, and Tempo for αUSD (testnet-only).
+
+### 43. What is AlphaUSD?
+A TIP-20 stablecoin on Tempo Moderato Testnet (chain ID 42431, 18 decimals).
+
+### 44. Is Tempo on mainnet?
+Tempo support is currently testnet-only behind the `VITE_ENABLE_TEMPO` flag; the public `/tempo` route bypasses the flag.
+
+### 45. Why does Solana use a Twin-Key model?
+Ed25519 + relay feePayer enables gasless SPL transfers without key custody.
+
+### 46. What is the ERC-8021 builder code?
+`bc_qt9yxo1d` is appended to Base transactions for builder attribution.
+
+## Section H | Developers
+
+### 47. Does Monipay have an SDK?
+REST API + Chrome extension `window.monipay.requestPayment()` today; SDK roadmap published in [Changelog](/docs/changelog).
+
+### 48. How do I generate API keys?
+Merchant settings → API Keys → Generate. Public + secret pair.
+
+### 49. What rate limits apply?
+5 requests/wallet/min and 10/IP/min on `relay-payment`.
+
+### 50. Where are smart contracts verified?
+Basescan, BscScan, contracts.tempo.xyz, Solscan/Solana program registry.
+
+## Section I | Mobile
+
+### 51. Is there a mobile app?
+Native Flutter app (SDK 3.27+, Dart 3.6+) with strict parity to web. PWA also supported.
+
+### 52. Does the PWA work offline?
+Network-first service worker cache; deep links via `monipay://pay?to=…`.
+
+### 53. Are push notifications supported?
+Yes, with deep-link routing to the relevant transaction.
+
+## Section J | Privacy & Legal
+
+### 54. What data does Monipay collect?
+Account email, MoniTag™, transaction metadata. No private keys, no PIN.
+
+### 55. How do I delete my account?
+Soft delete via Settings → Delete Account. `profiles.status='deactivated'`. Data retained for compliance; account blocked from re-import.
+
+### 56. Where can I read the privacy policy?
+[monipay.xyz/privacy](https://monipay.xyz/privacy).
+
+### 57. Where are the Terms of Service?
+[monipay.xyz/terms](https://monipay.xyz/terms).
+
+# 
+Source: https://docs.monipay.xyz/docs/chains\arc
+
+# Arc
+
+Arc is a next-generation blockchain network supported by Monipay for gasless stablecoin payments via MoniTag.
+
+## Supported tokens
+
+| Token | Contract |
+|-------|----------|
+| USDC  | Coming soon |
+
+## How to use Monipay on Arc
+
+1. Open [monipay.xyz](https://monipay.xyz) and connect your Arc-compatible wallet.
+2. Select **Arc** as your active network.
+3. Send to any `@monitag` or social username - gas is sponsored.
+
+## MoniBot on Arc
+
+MoniBot commands work the same across all chains. To pay on Arc specifically, your wallet must be on the Arc network when you connect.
+
+```
+!monibot pay @username $10 USDC
+```
+
+## Contracts
+
+Contract addresses will be published here upon mainnet deployment.
+
+## Resources
+
+- [Arc Network](https://arc.xyz) - Official Arc website
+- [Monipay on Arc](https://monipay.xyz/arc) - Landing page
+- [Supported Chains overview](/docs/contracts/overview)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains\base
+
+# Monipay on Base
+
+Base is Monipay's primary home for gasless USDC payments.
+
+## Network Details
+
+- **Chain ID:** `8453`
+- **Token:** USDC
+- **Decimals:** 6
+- **Relayer Model:** ERC-2771 Meta-Transactions
+- **Builder Code:** `bc_qt9yxo1d` (ERC-8021)
+- **Explorer:** [Basescan](https://basescan.org)
+
+## Gas Sponsorship
+
+Monipay sponsors 100% of the gas fees for P2P payments on Base. New accounts receive a small gas grant (0.000002 ETH) on signup to initialize the account if necessary, though the relayer handles the vast majority of user interactions.
+
+## Platform Fee
+
+A 1% platform fee is collected on every transaction, split atomically by the router contract.
+
+## Read next
+
+- [How Gasless Payments Work](/concepts/gasless-payments)
+- [Monipay Smart Contracts](/contracts)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains\bsc
+
+# Monipay on BSC
+
+Send USDT (BEP-20) on BNB Smart Chain with zero gas using Monipay.
+
+## Network Details
+
+- **Chain ID:** `56`
+- **Token:** USDT
+- **Decimals:** 18
+- **Relayer Model:** EIP-712 Meta-Transactions
+- **Explorer:** [BscScan](https://bscscan.com)
+
+## Implementation Notes
+
+Monipay on BSC uses a recompiled version of the `MonipayRouter` to handle the 18-decimal nature of BEP-20 USDT. The architecture mirrors the Base implementation, providing a consistent experience across EVM networks.
+
+## Read next
+
+- [BSC Contracts](/contracts/bsc)
+- [How Gasless Payments Work](/concepts/gasless-payments)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains\celo
+
+# Monipay on Celo (MiniPay)
+
+Monipay runs as a mini-app inside Opera's MiniPay wallet on Android, bringing gasless MoniTag payments to Celo's cUSD and USDT user base. Celo is Monipay's primary emerging-markets chain - optimized for low-data environments and real-world payment use cases.
+
+## Network details
+
+| Property | Value |
+|----------|-------|
+| Network  | Celo Mainnet |
+| Chain ID | 42220 |
+| Supported tokens | cUSD, USDT |
+| Gas model | Sponsored (users pay zero gas) |
+| MiniPay optimized | ✅ Yes |
+
+## Why Celo
+
+Celo is designed for mobile-first, emerging-market payments. Its fee abstraction layer lets Monipay sponsor gas in cUSD, meaning recipients and senders never need to hold CELO to transact. This makes Monipay on Celo the closest experience to a traditional payment app while remaining fully non-custodial.
+
+## MiniPay integration
+
+Monipay is available inside the **Opera MiniPay** browser on Android. To access it:
+
+1. Open MiniPay on your Android device.
+2. Navigate to the mini-apps section and search for **Monipay**.
+3. Create or link your MoniTag.
+4. Send cUSD or USDT to any `@monitag` instantly.
+
+No seed phrase required for initial use. The [Invisible Wallet](/docs/concepts/invisible-wallet) handles key management transparently.
+
+## MoniBot on Celo
+
+MoniBot commands work on Celo the same as any other chain. Funds are routed to the Celo network when the recipient's linked wallet is on Celo mainnet.
+
+```
+!monibot pay @username $5 cUSD
+```
+
+For Discord giveaways with cUSD:
+
+```
+!monibot bless @username with $5
+```
+
+## Smart contracts
+
+See [Celo Contracts](/docs/contracts/celo) for verified `IOURegistry` and `MonipayRouterCelo` addresses.
+
+## On-ramps
+
+Celo has strong local on-ramp support in sub-Saharan Africa and Latin America. Supported on-ramps for loading cUSD:
+
+- **Kotani Pay** - M-Pesa, MTN Mobile Money (East Africa)
+- **Valora** - In-app on-ramp via Transak
+- **MoonPay** - Global card on-ramp to cUSD
+
+## Read next
+
+- [Celo Contracts](/docs/contracts/celo)
+- [Gasless Payments](/docs/concepts/gasless-payments)
+- [IOU Registry](/docs/payments/iou)
+- [MiniPay Developer Docs](https://docs.minipay.opera.com)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains\ink
+
+# Monipay on Ink (Coming Soon)
+
+Ink is Kraken's Layer 2, built on the OP Stack. Monipay's Ink integration brings gasless, username-addressed stablecoin payments to that distribution surface.
+
+## Network Details
+
+- **Chain ID:** `57073`
+- **Token:** USDT0 (native on Ink)
+- **Decimals:** 6
+- **Status:** In development
+
+## Architecture
+
+Ink reuses Monipay's Base architecture:
+- **MonipayRouter (Ink):** Atomic 1% split on USDT0 transfers.
+- **MoniBotRouter (Ink):** Sponsored social payments.
+- **IOURegistry (Ink):** Claim registry for unaddressed recipients.
+
+## Read next
+
+- [Monipay on Base](/chains/base)
+- [Supported Chains](/chains)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains\solana
+
+# Monipay on Solana
+
+Monipay brings gasless USDC SPL payments to the Solana ecosystem.
+
+## Network Details
+
+- **Chain:** Solana Mainnet-Beta
+- **Token:** USDC (SPL)
+- **Decimals:** 6
+- **Relayer Model:** feePayer Relay
+- **Address Format:** Base58
+
+## Twin-Key Model
+
+Solana uses an Ed25519 keypair. For security, the private key is stored in `localStorage` only and is never written to the database. Import validation ensures the decrypted public key matches the database-bound address.
+
+## Gas Sponsorship
+
+Monipay acts as the `feePayer` for Solana transactions. The app constructs the transaction, the user signs the instruction, and the Monipay relayer adds the fee payer signature before broadcasting to the cluster.
+
+## Read next
+
+- [Solana Key Storage Model](/security/solana-key-storage)
+- [How Gasless Payments Work](/concepts/gasless-payments)
+
+# 
+Source: https://docs.monipay.xyz/docs/chains\tempo
+
+# Monipay on Tempo (AlphaUSD)
+
+Tempo is a payments-native blockchain with no native gas token. Monipay's Tempo integration is our cleanest implementation , no relayer hacks, no meta-transaction wrappers.
+
+## Network (Moderato Testnet)
+
+- **Chain ID:** 42431
+- **Token:** AlphaUSD (αUSD)
+- **Decimals:** 18
+- **Token contract:** `0x20c0000000000000000000000000000000000001`
+- **RPC:** https://rpc.moderato.tempo.xyz
+- **Explorer:** https://explore.tempo.xyz
+- **Faucet:** https://faucet.tempo.xyz
+
+## Why Tempo is special
+
+Tempo introduces an **EIP-2718 type 0x76** transaction with first-class payment primitives:
+
+- **Native fee sponsorship** via a `feePayer` field , no relayer needed
+- **TIP-20** token standard with built-in transfer memos
+- **2D nonces** for parallel-safe concurrent transactions
+- **Batch calls** for atomic multi-recipient transfers
+- **Scheduled transactions** with `validAfter` / `validBefore` windows
+
+Monipay uses all of these. A Tempo P2P payment is **one transaction**, signed once, with the sponsor as fee payer and the user as transfer signer.
+
+## Funding (testnet)
+
+Visit the [faucet](https://faucet.tempo.xyz) and request AlphaUSD. The faucet drips 1,000,000 αUSD per request.
+
+## Read next
+
+- [Tempo transaction model](/contracts/tempo)
+
+# 
+Source: https://docs.monipay.xyz/docs/changelog
+
+# Changelog
+
+## 2026-06-22
+
+### Content Accuracy
+- Removed Bluesky from MoniBot glossary entry (MoniBot only supports X, Discord and Telegram).
+- Updated MoniTag concept page chain list to include Celo and Ink (previously only listed Base, BSC, Solana and Tempo).
+- Removed stale "Lovable Cloud" label from Supabase reference in How It Works page.
+- Corrected Storefront Pro price inconsistency in FAQ (Q30 now consistently shows $29/month).
+- Aligned `updated` dates on Celo chain page and Sports Oracle page to match the rest of the docs.
+
+### Layout and Mobile
+- Fixed homepage horizontal overflow on mobile caused by TopNav min-width and footer layout.
+- Footer columns now sit on a single row on all breakpoints using compact font sizing.
+- Applied `overflow-x: hidden` to the HTML root and key layout containers to prevent viewport bleed.
+- Added sitemap and robots.txt for search engine indexing.
+
+---
+
+## 2026-06-19
+
+
+### Docs & SEO
+- Fixed SEO titles: replaced comma separators with pipe separators.
+- Resolved stale updated dates across all documentation pages.
+- Corrected Twitter handles from `@monaborng` / `@maborng` to the official `@monipay_xyz` account.
+- Fixed broken internal relative links pointing to docs subpages.
+- Updated chain lists to include Celo and Ink.
+- Added MagicPay fee structure (2% fee model) and MiniPay deep link details.
+- Standardized terminology references from aUSD to αUSD / AlphaUSD.
+- Fixed TopNav layout shifts on first render and added missing social links to Footer.
+
+## 2026-05-20
+
+### Docs
+- Restructured sidebar: new dedicated Payments, Merchant, and Mobile & PWA sections.
+- Removed broken nav links (monibot/fees, developers/api-reference, chrome-extension, roadmap, brand).
+- Added orphaned pages to nav: changelog, monibot/commands, merchant/payment-gateway.
+- Rewrote `llms.txt` — all AI crawler URLs now resolve correctly.
+- Added Arc chain stub for parity with the live landing page.
+- Expanded Celo page with MiniPay setup guide and local on-ramp information.
+- Documented vault architecture, edge function JWT requirements, and on-chain identity hashing in Security.
+- Added full MoniBot commands reference: balance, giveaway, chain routing, claim flow, error codes.
+- Expanded IOU Registry page with claim flow diagram and expiry/reclaim mechanics.
+
+## 2026-05-12
+
+### Monipay Web
+- Added support for Solana twin-key import validation.
+- Improved deposit detection speed for Base and BSC.
+- New "Fund" modal with per-chain QR codes.
+
+### MoniBot
+- Gemini 2.0-flash integration for multi-recipient parsing.
+- Support for "and" separator in commands.
+
+### Smart Contracts
+- `IOURegistry.sol` deployed on Base and BSC.
+- Verified `MonipayRouterCelo` for MiniPay integration.
+
+---
+
+View previous releases on [GitHub](https://github.com/monipay).
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts\gasless-payments
+
+# Gasless payments
+
+Monipay sponsors gas fees across all supported chains, allowing users to send payments without holding native gas tokens (ETH, BNB, SOL).
+
+## Base & BSC
+
+On Base and BSC, Monipay uses **ERC-2771 meta-transactions**:
+
+1. User signs an **EIP-712** typed data message.
+2. The message is sent to a Monipay relayer.
+3. The relayer wraps the message in a transaction and pays the gas.
+4. The on-chain `MonipayRouter` contract verifies the signature and executes the transfer.
+5. The 1% platform fee is split atomically within the same transaction.
+
+## Tempo
+
+Tempo features **native fee sponsorship** (EIP-2718 type 0x76):
+
+- The transaction payload includes a `feePayer` field.
+- The sponsor (Monipay) signs the transaction as the fee payer.
+- No relayer or wrapper contract is required for basic transfers.
+
+## Solana
+
+On Solana, we use a **feePayer relay**:
+
+- The transaction is constructed with a Monipay-controlled account as the `feePayer`.
+- The user signs the instructions.
+- The relayer adds the fee payer's signature and submits the transaction to the cluster.
+
+## Builder attribution
+
+On Base, Monipay appends an **ERC-8021 builder code** (`bc_qt9yxo1d`) to the transaction data for on-chain attribution.
+
+## Read next
+
+- [Supported Chains](/chains/)
+- [How Monipay Works](/how-it-works)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts\invisible-wallet
+
+# The Invisible Wallet
+
+Monipay generates an Ethereum-compatible private key locally, encrypted with your PIN. Self-custody without seed phrases.
+
+## Key Generation
+
+Monipay uses a Cryptographically Secure Pseudorandom Number Generator (CSPRNG) to generate a new private key directly on your device. This key is never transmitted to Monipay's servers in its unencrypted form.
+
+## Encryption Model
+
+- **Algorithm:** AES-256-GCM
+- **Key Derivation:** Argon2id PIN hashing
+- **Storage:** `localStorage` (web) + Secure Enclave / KeyStore (native)
+
+## Solana Ed25519 Model
+
+For Solana, Monipay uses a twin-key Ed25519 model. The encrypted key is stored locally and never written to the database. Account deactivation is handled via a soft delete in the backend.
+
+## Read next
+
+- [Walkaway Test](/concepts/walkaway-test)
+- [Security Architecture](/security/architecture)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts\monitag
+
+# MoniTag™
+
+A **MoniTag™** is your permanent username on Monipay. It resolves to your wallet on every supported chain , Base, BSC, Solana, Tempo, Celo and Ink. One identity, every network.
+
+> **MoniTag™** is always written with a **lowercase `m`**, an **uppercase `T`**, and the **™** trademark symbol. Examples: `@samuel`, `@coffeeshop`, `@dao_treasury`.
+
+## Why MoniTag instead of an address?
+
+Crypto addresses are 42 hexadecimal characters with no error correction. One typo and your money is gone forever. A MoniTag is:
+
+- **Memorable** , `@samuel` vs `0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1`
+- **Cross-chain** , same MoniTag resolves on Base, BSC, Solana, Tempo, Celo and Ink
+- **Human-validated** , you can read it back to verify
+- **Permanent** , once claimed, it's yours
+
+## Naming rules
+
+- 3–20 characters
+- Lowercase letters (`a–z`), digits (`0–9`), dot (`.`), underscore (`_`)
+- Cannot start or end with `.` or `_`
+- Cannot be on the [reserved list](/monitag/reserved-usernames) (~150 brand and generic terms)
+
+## Linking social accounts
+
+Optionally connect Twitter/X, Discord and Telegram to your MoniTag. This unlocks **MoniBot** social payments , receive money replied to your tweet or DM'd to you on Discord. Linking is via OAuth handshake (Discord) or `return_to` callbacks (Telegram). You can unlink at any time from Settings.
+
+## Pages
+
+- [Reserved usernames](/monitag/reserved-usernames)
+- [How resolution works](/monitag/resolution)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts\multi-chain-routing
+
+# Cross-chain routing
+
+Monipay simplifies the multi-chain experience by automatically selecting the best path for your payment.
+
+## Routing Logic
+
+When you send a payment to a MoniTag, the app evaluates:
+- **Sender Balance:** Which chains have sufficient funds?
+- **Recipient Support:** Which chains has the recipient initialized?
+- **Sponsor Capacity:** Which chain has the most reliable gas sponsorship at this moment?
+
+Currently, Monipay prioritizes same-chain sends for speed and reliability, but background cross-chain routing is being developed to move funds across networks seamlessly.
+
+## Read next
+
+- [Supported Chains](/chains/)
+- [How it works](/how-it-works)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts\reserved-usernames
+
+# Reserved usernames
+
+To prevent impersonation and ensure brand integrity, Monipay maintains a blocklist of ~150 reserved usernames.
+
+## Protected Categories
+
+- **Monipay Brand:** `monipay`, `monibot`, `monitag`, `magicpay`.
+- **System Roles:** `admin`, `support`, `root`, `moderator`, `official`.
+- **Common Service Terms:** `payment`, `bank`, `wallet`, `claim`, `checkout`.
+- **Exchanges & Wallets:** `binance`, `coinbase`, `phantom`, `metamask`.
+
+## Policy
+
+Reserved usernames are blocked at the registration level. If you believe you have a legitimate claim to a reserved name (e.g., you own the trademark), please contact [support@monipay.xyz](mailto:support@monipay.xyz).
+
+## Read next
+
+- [MoniTag Overview](/concepts/monitag)
+- [How Resolution Works](/concepts/resolution)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts\resolution
+
+# How MoniTag resolution works
+
+When you type `@alice` and pick a chain, Monipay turns the username into the correct on-chain address for that chain in a deterministic, cached, fail-closed pipeline.
+
+## The resolution pipeline
+
+1. **Normalize.** Strip the leading `@`, lowercase the result, strip surrounding whitespace. `@Alice`, `alice `, and `alice` are equivalent.
+2. **Look up.** Query the MoniTag registry (Supabase / on-chain registry) scoped to the chosen chain , `base_address`, `bsc_address`, `solana_address`, `tempo_address`, `celo_address`, etc.
+3. **Cache.** Store the result in an in-memory + `localStorage`-backed cache with a **60-second TTL**.
+4. **Return.** EVM addresses are returned lowercase (canonical for downstream signing and indexing); Solana addresses are returned in Base58 (the canonical Solana format).
+5. **Fail closed.** If the MoniTag has no wallet bound on the chosen chain, the send is **blocked** with a clear error , never silently routed to a different chain.
+
+## Why fail-closed matters
+
+A username can resolve on one chain and not another. `@alice` might have a Base address but no Solana keypair. Auto-routing to "the chain alice is on" sounds friendly but creates two problems:
+
+- The sender thought they were sending on chain X. The receipt says chain Y. Reconciliation breaks.
+- The sender's MoniBot command (`send $5 to @alice on base`) is explicit , overriding it would be wrong.
+
+Monipay therefore returns an unambiguous **no address on this chain** error, surfaces a "fund on chain X instead" suggestion in the UI, and lets the sender decide.
+
+## Cache invalidation
+
+The 60-second TTL is short enough to make username changes (rare) propagate quickly, and long enough to absorb the burst of repeat lookups during a multi-recipient payment. The cache is invalidated immediately on:
+
+- A social-link change for the local user
+- An account update event broadcast over Supabase realtime
+- A MoniTag transfer event in the on-chain registry (where applicable)
+
+## Address normalization rules
+
+- **EVM chains** , always lowercase. The Monipay database stores lowercase; the signing flow lowercases before hashing; the explorer URLs lowercase before linking. Mixed-case EIP-55 checksumming is for display only.
+- **Solana** , Base58, case-sensitive, no normalization. Validation rejects any string that fails Base58 parsing.
+- **Tempo** , same format as EVM (0x-prefixed hex); lowercase normalization applies.
+
+## Performance
+
+The cache hit rate during ordinary use is high , a typical send hits 3–5 cache reads per recipient (lookup, balance check, receipt render). A multi-recipient batch of 10 hits the same MoniTag rows repeatedly, all served from cache after the first lookup.
+
+## Read next
+
+- [MoniTag overview](/monitag/)
+- [Reserved usernames](/monitag/reserved-usernames)
+- [Address normalization (memory note)](/security/)
+
+# 
+Source: https://docs.monipay.xyz/docs/concepts\walkaway-test
+
+# The Walkaway Test
+
+> **If Monipay's company, servers and team disappeared tomorrow, could you still spend the funds in your wallet?**
+
+The answer must always be **yes**. This is non-negotiable. It is the single principle that every product decision at Monipay is evaluated against. If a feature would make the answer "no" or "maybe", that feature does not ship.
+
+## How we keep it true
+
+### 1. Standard cryptography
+
+- **EVM chains** , secp256k1 keypairs, the same curve every Ethereum wallet uses (MetaMask, Rabby, Coinbase Wallet, hardware wallets).
+- **Solana** , Ed25519 keypairs, the same curve every Solana wallet uses (Phantom, Solflare, Backpack).
+- **PIN-based encryption** , AES-256-GCM with PBKDF2 key derivation. Not proprietary. Not custom.
+
+If Monipay vanished, you would still hold a standard hex private key. You would not be holding a Monipay-specific token bound to a Monipay-specific contract.
+
+### 2. Standard tokens
+
+- USDC, USDT, AlphaUSD, cUSD, USDC SPL.
+- No Monipay-only wrappers. No yield-bearing proxy positions. No staking derivatives.
+
+The token in your wallet is the same token the issuer minted. Circle's USDC contract is Circle's USDC contract. You can spend it from any wallet that supports the chain.
+
+### 3. Exportable keys
+
+- The encrypted key blob lives on your device.
+- Your PIN decrypts it into a standard hex private key.
+- You can import that key into MetaMask, Phantom, or any other compatible wallet.
+
+There is no "Monipay export endpoint" you depend on. The decryption happens in your browser or app, with cryptography you can independently verify.
+
+### 4. No funds in custody
+
+- The 1% platform fee is collected **at transfer time** by the on-chain router contract.
+- Monipay never holds user balances between transactions.
+- There is no "settlement account" you need Monipay to release funds from.
+
+A custodial exchange disappearing is a catastrophe because user funds were pooled in the exchange's wallet. Monipay disappearing is an inconvenience because user funds were always in the user's own wallet.
+
+### 5. On-chain history is the source of truth
+
+- The Monipay database is for UX , fast balance lookups, transaction history rendering, MoniTag resolution, social linking.
+- Every payment is settled and recorded on-chain. The block explorer is the bank statement.
+- If the Monipay database vanished, your transaction history and balances would still be reconstructable from `MonipayRouter` events on the explorer.
+
+## What you lose if Monipay disappears
+
+You lose the **convenience layer**: the MoniTag resolver, the merchant tools, MoniBot, the dashboard, the Google Drive backup orchestration. You keep:
+
+- The funds at your wallet address.
+- The ability to spend them from any compatible wallet.
+- The on-chain receipt history.
+- The standard cryptography that lets you do all of the above without Monipay's permission.
+
+## Why this matters
+
+The history of consumer crypto is mostly the history of platforms that did not pass this test. Monipay is built on the opposite assumption: the platform is a hammer, not a service. A hammer you own and walk away with. Not a service you depend on for permission to use what you bought.
+
+## Read next
+
+- [Solana key storage model](/security/solana-key-storage)
+- [Security overview](/security/)
+- [What is Monipay?](/what-is-monipay)
+
+# 
+Source: https://docs.monipay.xyz/docs/contracts\base
+
+# Base contracts
+
+- **MonipayRouter.sol** , verified on BaseScan
+- **MoniBotRouter.sol** , verified on BaseScan
+- **Builder code:** ERC-8021 attribution `bc_qt9yxo1d` is appended to every Monipay-routed Base transaction as a hex suffix.
+
+The contracts implement EIP-712 typed-data verification, atomic 99/1 split, and nonce-based replay protection.
+
+# 
+Source: https://docs.monipay.xyz/docs/contracts\bsc
+
+# BSC contracts
+
+- **MonipayRouter.bsc.sol** , verified on BscScan
+- 18-decimal USDT handling (note: not 6-decimal like Ethereum USDT)
+- Same EIP-712 + atomic split architecture as Base
+
+# 
+Source: https://docs.monipay.xyz/docs/contracts\celo
+
+# Celo contracts
+
+- **MonipayRouterCelo.sol** , cUSD-denominated, gasless via paymaster
+- **MonibotRouterCelo.sol** , sponsored grants for MoniBot on Celo
+
+Designed to run inside Opera's MiniPay environment.
+
+# 
+Source: https://docs.monipay.xyz/docs/contracts\overview
+
+# Smart contracts
+
+All Monipay router contracts are open-source and verified on the relevant explorer.
+
+| Contract | Chain | Purpose |
+|---|---|---|
+| `MonipayRouter.sol` | Base | EVM meta-tx router with 1% atomic split |
+| `MonipayRouter.bsc.sol` | BSC | BSC variant (18-decimal USDT) |
+| `MonipayRouterCelo.sol` | Celo | cUSD variant for MiniPay |
+| `MoniBotRouter.sol` | Base | Sponsored grants for social campaigns |
+| `MonibotRouterCelo.sol` | Celo | MoniBot variant on Celo |
+| `IOURegistry.sol` | EVM | IOU/credit primitive (claimable on-chain) |
+
+## Per-chain pages
+
+- [Base contracts](/contracts/base)
+- [BSC contracts](/contracts/bsc)
+- [Tempo contracts](/contracts/tempo)
+- [Celo contracts](/contracts/celo)
+
+## Common interfaces
+
+- `IIOURegistry` , claim, settle, dispute IOUs
+- `MonipayRouter` events: `PaymentExecuted(sender, recipient, amount, fee, nonce, memo)`
+- `MoniBotRouter` events: `GrantExecuted(to, amount, fee, campaignId)`
+
+# 
+Source: https://docs.monipay.xyz/docs/contracts\tempo
+
+# Tempo contracts
+
+Tempo's payment-native primitives mean Monipay's router footprint on Tempo is **smaller** than on Base/BSC.
+
+- **TIP-20 transfer** with on-chain memo replaces the ERC-20 + meta-tx wrapper
+- **EIP-2718 type 0x76** transaction native fee sponsorship via `feePayer` field
+- **2D nonces** allow concurrent transaction submission without nonce collisions
+- **Batch calls** for atomic multi-recipient grants (one signature, all-or-nothing)
+
+The MoniBotRouter on Tempo executes batch grants with the MoniBot UUID sponsor as fee payer.
+
+# 
+Source: https://docs.monipay.xyz/docs/getting-started\create-monitag
+
+# Create your MoniTag
+
+Your MoniTag is your universal payment identity.
+
+## Setup Process
+
+1. Visit [monipay.xyz](https://monipay.xyz).
+2. Choose a unique username between 3 and 20 characters.
+3. Use only lowercase letters, numbers, and underscores.
+4. Set a 6-digit PIN to secure your local wallet.
+
+## Reserved Usernames
+
+Some usernames are reserved for system use or brand protection. If your desired tag is taken, try a variation. See the [reserved list](/monitag/reserved-usernames) for details.
+
+## Casing and Storage
+
+MoniTags are stored in lowercase. While the UI might display them as you typed, the underlying resolution always uses the lowercase version.
+
+## Read next
+
+- [Fund your wallet](/getting-started/fund-wallet)
+- [MoniTag Concepts](/concepts/monitag)
+
+# 
+Source: https://docs.monipay.xyz/docs/getting-started\fund-wallet
+
+# Fund your wallet
+
+Monipay makes it easy to deposit stablecoins from any external source.
+
+## How to Deposit
+
+1. Tap the **Fund** button in the app.
+2. Select the chain you wish to deposit to (Base, BSC, Solana, etc.).
+3. Copy your deposit address or scan the QR code.
+4. Send the supported stablecoin from your exchange (Binance, Coinbase) or external wallet (MetaMask, Phantom).
+
+## Detection
+
+Monipay polls the blockchain RPCs for incoming transactions. Once a deposit is detected on-chain (usually within 30 seconds), the app will show a success animation and update your balance.
+
+## Supported Tokens
+
+| Chain | Token |
+|-------|-------|
+| Base  | USDC  |
+| BSC   | USDT  |
+| Solana| USDC (SPL)|
+| Tempo | AlphaUSD |
+| Celo  | cUSD  |
+
+## Read next
+
+- [Send a payment](/getting-started/send-payment)
+- [How it works](/how-it-works)
+
+# 
+Source: https://docs.monipay.xyz/docs/getting-started\send-payment
+
+# Send a payment
+
+Sending stablecoins on Monipay is as simple as sending a text message.
+
+## Steps to Send
+
+1. Tap **Send** on the home screen.
+2. Enter the recipient's `@MoniTag`.
+3. Enter the amount you wish to send.
+4. Select the chain (if multiple balances are available).
+5. Confirm the payment with your 6-digit PIN.
+
+## Settlement
+
+Payments are signed locally on your device and relayed to the blockchain. Settlement typically occurs within seconds. You can view the transaction hash and explorer link immediately after the payment is broadcast.
+
+## Zero Gas
+
+Monipay sponsors the gas for all P2P sends. A 1% platform fee is applied to the transaction to cover infrastructure costs.
+
+## Read next
+
+- [MoniTag Identity](/concepts/monitag)
+- [Gasless Payments](/concepts/gasless-payments)
+
+# 
+Source: https://docs.monipay.xyz/docs/merchant\overview
+
+# Monipay for merchants
+
+Monipay provides a complete suite of tools for businesses to accept stablecoins.
+
+## Key Offerings
+
+- **Hosted Storefront:** Sell products at `monipay.xyz/store/@yourtag`.
+- **Invoicing:** Create and track professional on-chain invoices.
+- **Payment Gateway:** Embed Monipay into your existing checkout flow.
+- **API & Webhooks:** Integrate payment data with your backend.
+
+## Pricing
+
+- **Personal:** Free (gas sponsored).
+- **Merchant Transacitons:** 1% per transaction.
+- **Storefront Pro:** $30/month for advanced customization.
+
+## Read next
+
+- [Storefront Guide](/merchant/storefront)
+- [Payment Gateway API](/merchant/payment-gateway)
+
+# 
+Source: https://docs.monipay.xyz/docs/merchant\payment-gateway
+
+# Payment gateway API
+
+Integrate Monipay's gasless payment rail into your application.
+
+## Hosted Checkout
+
+Redirect users to:
+`https://monipay.xyz/pay?orderId={your_order_id}`
+
+The gateway handles wallet connection, chain selection, and transaction signing, then redirects the user back to your site.
+
+## Authentication
+
+Use your **Public Key** for client-side requests and your **Secret Key** for server-side API calls.
+
+## Webhooks
+
+Monipay fires a POST request to your configured webhook URL upon payment completion. Every request is signed with HMAC-SHA256 for security.
+
+## Read next
+
+- [API Keys](/merchant/api-keys)
+- [Webhooks Reference](/merchant/webhooks)
+
+# 
+Source: https://docs.monipay.xyz/docs/merchant\storefront
+
+# Merchant storefront
+
+Turn your MoniTag into a full-featured online store.
+
+## Features
+
+- **Personalized URL:** `monipay.xyz/store/@yourtag`.
+- **Product Management:** Add titles, descriptions, images, and prices.
+- **Cart System:** Supports up to 99 items per order.
+- **Shipping Forms:** Optional collection of customer delivery info.
+- **Success Redirect:** Automated 2.5s redirect back to your specified URL.
+
+## Storefront Pro
+
+Unlock advanced features like custom branding, analytics, and priority support for $30/month.
+
+## Read next
+
+- [Product Management](/merchant/products)
+- [Invoices](/merchant/invoices)
+
+# 
+Source: https://docs.monipay.xyz/docs/merchant\webhooks
+
+# Webhooks
+
+Receive real-time notifications about payment events.
+
+## Signature Verification
+
+Monipay signs every webhook payload using HMAC-SHA256. The signature is sent in the `X-Monipay-Signature` header. You should verify this signature using your Secret Key to ensure the request is authentic.
+
+## Retry Policy
+
+If your server returns a non-200 response, Monipay will retry the delivery with exponential backoff for up to 24 hours.
+
+## Example Payload
+
+```json
+{
+  "event": "payment.succeeded",
+  "data": {
+    "orderId": "ord_123",
+    "amount": "10.00",
+    "currency": "USDC",
+    "txHash": "0x...",
+    "moniTag": "@customer"
+  }
+}
+```
+
+## Read next
+
+- [Payment Gateway API](/merchant/payment-gateway)
+- [API Keys](/merchant/api-keys)
+
+# 
+Source: https://docs.monipay.xyz/docs/mobile\deep-links
+
+# Deep links
+
+Monipay registers the `monipay://` URL scheme on iOS and Android. Triggering a `monipay://` URL on a device with Monipay installed opens the app pre-filled and ready to confirm.
+
+## URL format
+
+```
+monipay://pay?to=@alice&amount=5&chain=base&memo=Coffee
+```
+
+## Parameters
+
+- `to` , Recipient's MoniTag.
+- `amount` , Decimal amount.
+- `chain` , `base` | `bsc` | `solana` | `tempo` | `celo` | `ink`.
+- `memo` , Optional memo.
+- `ref` , Optional short reference code.
+
+## Read next
+
+- [PWA Install](/mobile/pwa)
+- [Payment Links](/payments/payment-links)
+
+# 
+Source: https://docs.monipay.xyz/docs/mobile\overview
+
+# Monipay mobile
+
+Monipay ships in three forms:
+
+- **Native iOS / Android** , built in Flutter (SDK 3.27+, Dart 3.6+)
+- **Progressive Web App** , install from any browser with a single tap
+- **Web** , the full app at [monipay.xyz](https://monipay.xyz)
+
+The Flutter app maintains **strict visual and functional parity** with the web app. Same MoniTag, same wallet, same backups.
+
+## Features
+
+- Biometric unlock (Face ID, Touch ID, Android biometrics)
+- Secure enclave key storage
+- Push notifications for received payments
+- Deep linking via `monipay://pay?to=@you&amount=5&chain=base`
+- Offline-tolerant via service-worker network-first cache (PWA)
+
+## Install
+
+- **iOS:** [App Store](https://monipay.xyz/install)
+- **Android:** [Play Store](https://monipay.xyz/install)
+- **PWA:** [/install](https://monipay.xyz/install) , Add to Home Screen
+
+## Read next
+
+- [Deep link specification](/mobile/deep-links)
+- [PWA install prompt](/mobile/pwa)
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot\commands
+
+# MoniBot commands reference
+
+MoniBot supports a wide range of natural language commands for sending payments, checking balances, and managing social links.
+
+## Sending Payments
+
+- `send $10 to @alice`
+- `tip @bob $1`
+- `pay @charlie $5 on base`
+
+## Multi-Recipient Parsing
+
+MoniBot supports commas and "and" for batch sends:
+- `send $1 to @alice, @bob, @charlie`
+- `send $1 to @alice and @bob`
+
+## Tempo Keywords
+
+To force routing to the Tempo network, use:
+- `on tempo`
+- `alphausd`
+- `ausd`
+
+## Read next
+
+- [MoniBot Overview](/monibot)
+- [MoniBot Multi-Recipient](/monibot/multi-recipient)
+
+## Balance and account commands
+
+| Command | Description |
+|---------|-------------|
+| `balance` | Show your current wallet balance across chains |
+| `my tag` | Display your MoniTag |
+| `link @twitter` | Link your Twitter/X account to your MoniTag |
+| `unlink @twitter` | Remove the Twitter/X link |
+| `chains` | List supported chains and your address on each |
+
+## Giveaway and airdrop commands
+
+MoniBot supports token giveaways in server channels:
+
+```
+!monibot bless @username with $5
+!monibot airdrop $1 to @alice @bob @charlie
+!monibot raffle $50 among 10 winners in #channel
+```
+
+## Chain-specific routing
+
+Append `on <chain>` to any send command to force a specific network:
+
+```
+send $10 to @alice on celo
+pay @bob $5 on base
+tip @charlie $2 on solana
+```
+
+## Claim commands
+
+If you've received an IOU, use:
+
+```
+claim
+claim my funds
+```
+
+MoniBot will walk you through connecting your wallet and releasing the escrowed payment.
+
+## Error codes
+
+| Code | Meaning |
+|------|---------|
+| `ERR_INSUFFICIENT_BALANCE` | Your wallet balance is too low |
+| `ERR_UNKNOWN_TAG` | The `@tag` hasn't registered a MoniTag |
+| `ERR_CHAIN_UNSUPPORTED` | Requested chain not yet supported |
+| `ERR_IOU_EXPIRED` | The IOU window has closed; contact sender |
+
+## Platform differences
+
+Commands work identically on Discord, Telegram, and Twitter/X. The only difference is the invocation prefix:
+
+- **Discord:** `!monibot <command>`
+- **Telegram:** `/monibot <command>` or direct message the bot
+- **Twitter/X:** `@Monipay <command>` as a public reply or DM
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot\discord
+
+# MoniBot for Discord
+
+The Discord bot is MoniBot's **reference implementation** , the most reliable, feature-complete surface. New behavior ships to Discord first.
+
+## Setup
+
+1. Invite MoniBot to your server with the `Send Messages` and `Read Message History` permissions.
+2. Link your Discord account to your MoniTag via OAuth from the Monipay app's Settings → Social.
+3. Use slash commands or DM the bot.
+
+## Commands
+
+- `/send @discord-user $5 on base` , gasless stablecoin send
+- `/airdrop $50 to first 10 reactions` , quality-gated drop
+- `/balance` , your Monipay balance across chains
+- `/grant $1 each on tempo` , sponsor-funded micro-grants
+
+## Channel commands
+
+In any channel where MoniBot has access, mentions like `@MoniBot send $1 to @alice` work without slash syntax.
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot\multi-recipient
+
+# Multi-recipient MoniBot payments
+
+MoniBot supports two separator styles for batch P2P:
+
+- Commas: `send $1 to @alice, @bob, @charlie`
+- "and": `send $1 to @alice and @bob`
+- Mixed: `send $1 to @alice, @bob and @charlie`
+
+On EVM, the batch is executed via sequential transactions from the executor wallet. On **Tempo**, MoniBot uses a single **batch-call** atomic transaction (one signature, all-or-nothing).
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot\overview
+
+# MoniBot: The AI payment agent
+
+MoniBot is an autonomous AI agent that interprets natural language commands to process crypto payments and giveaways directly within social platforms.
+
+## Core Capabilities
+
+- **Natural Language Parsing:** MoniBot uses Gemini 2.0-flash to understand intents like *"send $5 to @alice"*.
+- **Multi-Platform:** Works across Discord, Telegram, and Twitter/X.
+- **Gasless Grants:** Sponsors gas for social distributions.
+- **Multi-Recipient:** Handles complex batch sends with commas or "and".
+
+## How it works
+
+1. User issues a command (e.g., `!monibot send $10 to @bob`).
+2. MoniBot resolves `@bob` to a MoniTag and its corresponding address.
+3. MoniBot validates the sender's pre-linked social account and signature balance allowance.
+4. MoniBot submits the transaction to the relayer to execute the transfer on-chain.
+
+## Read next
+
+- [MoniBot for Discord](/docs/monibot/discord)
+- [MoniBot for Telegram](/docs/monibot/telegram)
+- [MoniBot for Twitter](/docs/monibot/twitter)
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot\sports-oracle
+
+# World Cup Sports Oracle
+
+For a feature that moves money based on results, no single free source is good enough. You want a primary + fallback + sanity check, and only settle when ≥2 agree. This is why we designed a custom 3-Source Consensus Sports Oracle.
+
+## Architecture
+
+MoniBot queries three independent data layers:
+1. **Primary Source:** `football-data.org`
+2. **Fallback Source:** `API-Football` (`api-sports.io`)
+3. **Sanity Check:** `openfootball` (on GitHub)
+
+Ten minutes after a match's official completion, the oracle evaluates the results across all three sources.
+
+```mermaid
+graph TD
+    A[Football-Data.org API] --> D{Consensus Engine}
+    B[API-Football API] --> D
+    C[OpenFootball GitHub] --> D
+    D -->| >= 2 agree | E[Execute/Cancel Payment]
+    D -->| Disagreement | F[Dispute Safety Lock]
+```
+
+## Consensus Engine
+
+To prevent erroneous payouts from a single corrupted data feed:
+* **Majority Agreement:** At least 2 out of the 3 data sources must agree on the final match status and scores.
+* **Name Normalisation:** Resolves spelling variations and accents across sources (e.g. `Curaçao` -> `curacao`) to ensure match pairings align correctly.
+* **Dispute Safety Lock:** If the sources disagree, the transaction is marked as `"disputed"` in the database, halting all automated execution and triggering a notification for administrative review.
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot\telegram
+
+# MoniBot for Telegram
+
+MoniBot on Telegram mirrors the Discord implementation with platform-specific adaptations for the Telegram Bot API.
+
+## Commands
+
+- `!send @username $5` , Send stablecoins to another Telegram user.
+- `/link @monitag` , Link your Telegram handle to your MoniTag.
+- `/balance` , Check your Monipay balances.
+
+## Linking Social Identity
+
+MoniBot uses `return_to` callbacks to securely link your Telegram account to your Monipay identity. Once linked, you can receive payments sent to your Telegram handle directly into your Monipay wallet.
+
+## Read next
+
+- [MoniBot Commands Reference](/monibot/commands)
+- [MoniBot for Discord](/monibot/discord)
+
+# 
+Source: https://docs.monipay.xyz/docs/monibot\twitter
+
+# MoniBot for Twitter / X
+
+MoniBot enables seamless multilevel financial intent execution (transfers, escrow, giveaways, and tipping) on Twitter/X via mention commands.
+
+## Commands
+
+- `@Monipay send $5 to @username` , Tip a user in a reply or new tweet.
+- `@Monipay drop $100` , Initialize a giveaway.
+
+## Constraints
+
+Due to Twitter's platform policies:
+- MoniBot uses an 18-character hash limit for command tracking.
+- Links are sometimes restricted; MoniBot uses verified mention replies to guide users to their claims.
+
+## Read next
+
+- [MoniBot Commands Reference](/monibot/commands)
+- [MoniBot for Discord](/monibot/discord)
+
+# 
+Source: https://docs.monipay.xyz/docs/payments\iou
+
+# IOUs and claims
+
+Send payments to people who don't have a Monipay account yet using the on-chain IOU registry.
+
+## How it works
+
+1. Sender issues a payment to an email or social handle.
+2. The funds are held in the `IOURegistry` smart contract.
+3. The recipient receives a notification with a claim link.
+4. Recipient creates a MoniTag and claims the funds.
+5. Funds are released from the escrow contract to the recipient's new wallet.
+
+## Walkaway Test for IOUs
+
+If an IOU remains unclaimed after a certain period, the sender can reclaim the funds. This ensures that capital is never permanently trapped in the registry.
+
+## Read next
+
+- [IOU Registry Contract](/contracts/iou-registry)
+- [How to Claim](/getting-started)
+
+## Claim flow in detail
+
+The IOU system uses a `bytes32 recipientId` derived from `keccak256("platform:userId")` - no PII stored on-chain. Here's the full lifecycle:
+
+```
+Sender pays @username (Twitter / Discord / Telegram)
+       ↓
+IOURegistry.sol escrows funds on-chain
+       ↓
+Recipient receives notification (email / DM)
+       ↓
+Recipient visits monipay.xyz → connects wallet
+       ↓
+claim-social-funds edge function verifies OAuth identity
+       ↓
+batchClaim called from vault → funds released to wallet
+```
+
+## Expiry and reclaim
+
+IOUs have a configurable expiry window. If a recipient does not claim within the window:
+
+- The sender can call `reclaim()` on the `IOURegistry` to recover funds.
+- Unclaimed IOUs are **never lost** - only the sender can reclaim after expiry.
+
+## Supported chains
+
+The IOU Registry is deployed on: **Base**, **BSC**, **Celo**, and **Tempo**. Solana uses a parallel escrow model adapted for the Solana account model.
+
+## Security notes
+
+- Recipient identity is stored as a hash - no username or email appears on-chain.
+- Only the authorized vault hot wallet can call `batchClaim`.
+- See [Security Architecture](/docs/security/architecture) for the full threat model.
+
+## Read next
+
+- [Contracts Overview](/docs/contracts/overview)
+- [Security Architecture](/docs/security/architecture)
+- [MoniBot Commands](/docs/monibot/commands)
+
+# 
+Source: https://docs.monipay.xyz/docs/payments\p2p
+
+# Person-to-person payments
+
+Monipay's core primitive is the P2P payment. Send value to any MoniTag in seconds.
+
+## Key Features
+
+- **No Gas:** Monipay sponsors the transaction fees.
+- **Username Resolution:** No need to handle long addresses.
+- **Cross-Chain:** Send USDC on Base or USDT on BSC from the same interface.
+- **Instant Finality:** Payments settle on-chain as soon as the block is confirmed.
+
+## User Flow
+
+1. Enter recipient `@MoniTag`.
+2. Input amount.
+3. Sign with 6-digit PIN.
+4. Transaction is broadcast and confirmed.
+
+## Read next
+
+- [MoniTag Identity](/concepts/monitag)
+- [How Gasless Payments Work](/concepts/gasless-payments)
+
+# 
+Source: https://docs.monipay.xyz/docs/payments\payment-links
+
+# Payment links
+
+Generate a one-shot or reusable payment URL. Anyone with the link can pay you.
+
+```
+https://monipay.xyz/pay?to=@you&amount=10&chain=base&memo=Order%20123&callback=https://yoursite.com/thanks
+```
+
+## Parameters
+
+- `to` , MoniTag of the recipient.
+- `amount` , Decimal amount.
+- `chain` , `base` | `bsc` | `solana` | `tempo` | `celo` | `ink`.
+- `memo` , Optional reference.
+- `callback` , URL to redirect after success.
+- `pl_[code]` , Preset payment link code.
+
+## Behavior
+
+- **Mobile:** Opens the installed Monipay app via deep link.
+- **Web:** Renders a hosted checkout modal.
+- **Success:** Redirects to `callback` and triggers a webhook.
+
+## Read next
+
+- [Webhooks Reference](/merchant/webhooks)
+- [Deep Links Specification](/mobile/deep-links)
+
+# 
+Source: https://docs.monipay.xyz/docs/payments\qr-codes
+
+# QR code payments
+
+Accept payments in person using Monipay's branded QR codes.
+
+## Branded QRs
+
+Monipay generates high-resolution, branded QR codes for every user. These QRs are "pixel-locked" to ensure reliability across all scanning devices.
+
+## Scan-to-Pay
+
+1. Customer scans the QR code using their phone camera or the Monipay app.
+2. The browser/app opens a pre-filled payment screen.
+3. Customer confirms the amount and signs with their PIN.
+4. Merchant receives a real-time notification of the successful payment.
+
+## Read next
+
+- [Payment Links](/payments/payment-links)
+- [POS Mode](/merchant/pos)
+
+# 
+Source: https://docs.monipay.xyz/docs/security\architecture
+
+# Security architecture
+
+Monipay's security is built on a multi-layered approach that prioritizes user self-custody and data integrity.
+
+## Core Pillars
+
+- **Non-Custodial Keys:** Private keys are generated and encrypted locally (AES-256-GCM). Monipay never sees them.
+- **PIN Hashing:** We use Argon2id to ensure PINs are resistant to brute-force attacks.
+- **On-Chain Truth:** The blockchain is the final source of truth for all balances and transactions.
+- **API Security:** All merchant APIs are signed with HMAC-SHA256.
+
+## Database Security
+
+Monipay uses Supabase with Row Level Security (RLS) enabled on all tables. This ensures that users can only access their own data.
+
+## Rate Limiting
+
+We enforce strict rate limits on the `relay-payment` endpoint (5 requests per wallet/min and 10 per IP/min) to prevent abuse of our gas sponsorship infrastructure.
+
+## Read next
+
+- [Walkaway Test](/concepts/walkaway-test)
+- [Solana Key Storage](/security/solana-key-storage)
+
+## Vault architecture
+
+Monipay's backend uses a **hot wallet vault** model for the IOU claim flow:
+
+- A dedicated hot wallet holds the `IOU_VAULT_PRIVATE_KEY`.
+- This address is the **only** address authorized to call `batchClaim` on `IOURegistry.sol`.
+- The vault private key is stored in a secrets manager (never in application code or environment files committed to version control).
+
+## Edge function security
+
+Two Supabase Edge Functions handle the claim flow:
+
+| Function | Role |
+|----------|------|
+| `claim-iou` | Verifies caller identity before submitting an IOU claim on-chain |
+| `claim-social-funds` | Handles OAuth identity verification before releasing escrowed funds |
+
+Both functions require **JWT authentication** - unauthenticated requests are rejected at the gateway level.
+
+## Identity hashing
+
+Recipient identities are stored on-chain as:
+
+```
+keccak256(abi.encodePacked("platform:userId"))
+```
+
+No usernames, emails, or social handles appear on-chain. The `recipientId` is a deterministic hash - only a user who can prove control of the underlying social account can claim.
+
+## Responsible disclosure
+
+Found a vulnerability? Email **security@monipay.xyz** with a description, reproduction steps, and impact assessment. We aim to respond within 48 hours and will credit researchers in our changelog.
+
+## Read next
+
+- [Solana Key Storage](/docs/security/solana-key-storage)
+- [Reserved Usernames](/docs/concepts/reserved-usernames)
+- [IOU Registry](/docs/payments/iou)
+
+# 
+Source: https://docs.monipay.xyz/docs/security\solana-key-storage
+
+# Solana key storage model
+
+Monipay's Solana key handling is **stricter** than its EVM key handling, because Solana's threat surface is different and the consequences of a compromised key are immediate.
+
+## The model
+
+- **Generation.** An Ed25519 keypair is generated client-side at signup or when the user enables Solana on an existing account. No keys ever leave the device.
+- **Encryption.** The private key is encrypted with **AES-256-GCM** using a key derived from the user's PIN via PBKDF2 with a high iteration count and a per-user salt.
+- **Storage.** The encrypted blob is stored in `localStorage` **only**. It is never written to the Supabase database, never sent to any Monipay edge function, never logged.
+- **Validation on import.** When a user re-imports their wallet, the decrypted public key derived from the imported keypair **must match** the address bound to their MoniTag in the database. Mismatches reject the import.
+- **Two-step regenerate warning.** If a user opts to regenerate their Solana key (a destructive operation), Monipay shows a two-step confirmation.
+
+## Why localStorage-only
+
+The Solana key is the most sensitive credential Monipay handles. Storing nothing on the server means that even a total server compromise cannot leak user Solana keys.
+
+## Read next
+
+- [The Walkaway Test](/concepts/walkaway-test)
+- [Monipay on Solana](/chains/solana)
+
+# 
+Source: https://docs.monipay.xyz/docs/support
+
+# Support
+
+Get help with Monipay or report security issues.
+
+## Contact Channels
+
+- **General Support:** [support@monipay.xyz](mailto:support@monipay.xyz)
+- **Security Disclosures:** [security@monipay.xyz](mailto:security@monipay.xyz)
+- **Twitter:** [@monipay](https://twitter.com/monipay)
+- **Discord:** [Monipay Community](https://discord.gg/monipay)
+
+## Security Policy
+
+For information on our security practices and how to report vulnerabilities, please see our [security.txt](https://docs.monipay.xyz/.well-known/security.txt).
+
+## Status Page
+
+Check the real-time status of our relayers, MoniBot workers, and API at [status.monipay.xyz](https://status.monipay.xyz).
+

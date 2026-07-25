@@ -1,0 +1,27 @@
+---
+title: "Cross-Chain Routing in Monipay"
+description: "Monipay picks the optimal chain based on sender balance, recipient support, and gas-sponsor capacity."
+canonical: "https://docs.monipay.xyz/docs/concepts/multi-chain-routing"
+ogImage: "/og/multi-chain.png"
+updated: "2026-06-19"
+section: "Concepts"
+tags: ["technical", "multichain", "routing"]
+---
+
+# Cross-chain routing
+
+Monipay simplifies the multi-chain experience by automatically selecting the best path for your payment.
+
+## Routing Logic
+
+When you send a payment to a MoniTag, the app evaluates:
+- **Sender Balance:** Which chains have sufficient funds?
+- **Recipient Support:** Which chains has the recipient initialized?
+- **Sponsor Capacity:** Which chain has the most reliable gas sponsorship at this moment?
+
+Currently, Monipay prioritizes same-chain sends for speed and reliability, but background cross-chain routing is being developed to move funds across networks seamlessly.
+
+## Read next
+
+- [Supported Chains](/chains/)
+- [How it works](/how-it-works)
