@@ -1,0 +1,48 @@
+---
+title: "Gasless Payments | How Monipay Sponsors Gas"
+description: "Monipay uses ERC-2771 meta-transactions on Base/BSC, native fee sponsorship on Tempo, and feePayer relays on Solana."
+canonical: "https://docs.monipay.xyz/docs/concepts/gasless-payments"
+ogImage: "/og/gasless.png"
+updated: "2026-06-19"
+section: "Concepts"
+tags: ["gasless", "technical", "sponsorship"]
+---
+
+# Gasless payments
+
+Monipay sponsors gas fees across all supported chains, allowing users to send payments without holding native gas tokens (ETH, BNB, SOL).
+
+## Base & BSC
+
+On Base and BSC, Monipay uses **ERC-2771 meta-transactions**:
+
+1. User signs an **EIP-712** typed data message.
+2. The message is sent to a Monipay relayer.
+3. The relayer wraps the message in a transaction and pays the gas.
+4. The on-chain `MonipayRouter` contract verifies the signature and executes the transfer.
+5. The 1% platform fee is split atomically within the same transaction.
+
+## Tempo
+
+Tempo features **native fee sponsorship** (EIP-2718 type 0x76):
+
+- The transaction payload includes a `feePayer` field.
+- The sponsor (Monipay) signs the transaction as the fee payer.
+- No relayer or wrapper contract is required for basic transfers.
+
+## Solana
+
+On Solana, we use a **feePayer relay**:
+
+- The transaction is constructed with a Monipay-controlled account as the `feePayer`.
+- The user signs the instructions.
+- The relayer adds the fee payer's signature and submits the transaction to the cluster.
+
+## Builder attribution
+
+On Base, Monipay appends an **ERC-8021 builder code** (`bc_qt9yxo1d`) to the transaction data for on-chain attribution.
+
+## Read next
+
+- [Supported Chains](/chains/)
+- [How Monipay Works](/how-it-works)
