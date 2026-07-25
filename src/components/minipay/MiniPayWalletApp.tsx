@@ -67,4 +67,39 @@ export function MiniPayWalletApp({ address }: Props) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6 bg-background">
         <div className="max-w-sm text-center space-y-3">
-          <h1 className="text-lg font-semibold">Couldn't start your session</h1>
+          <h1 className="text-lg font-semibold">Couldn't start your session</h1>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-2 h-11 px-5 rounded-xl bg-foreground text-background text-sm font-semibold"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Legacy MoniPay-account holders linked into MiniPay still get the
+  // full account dashboard. Pure wallet-only sessions get the new
+  // MiniPay-themed dashboard with balance hero + compact MoniBot.
+  if (isLegacy) {
+    return (
+      <WalletDashboard
+        walletAddress={address}
+        profileId={profileId}
+        sessionType="minipay"
+        isLegacy
+      />
+    );
+  }
+
+  return (
+    <MiniPayDashboard
+      walletAddress={address}
+      profileId={profileId}
+      isLegacy={false}
+    />
+  );
+}
