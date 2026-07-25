@@ -1,0 +1,744 @@
+/* Fonts are loaded via HTML preconnect / link tags in index.html to prevent render blocking */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Safe Area Insets for Native Apps */
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+    
+    /* Universal motion easing — apply to every transition for consistency.
+       Quintic ease-out feels premium: fast start, gentle settle. */
+    --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Trantor-inspired Light Theme — off-white */
+    --background: 210 20% 97%;
+    --foreground: 215 28% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 10%;
+
+    /* Base Blue Primary */
+    --primary: 220 91% 54%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 95%;
+    --secondary-foreground: 215 28% 10%;
+
+    --muted: 220 14% 95%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 220 91% 54%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 220 91% 54%;
+
+    --radius: 1rem;
+
+    /* PayTag Custom Tokens */
+    --base-blue: 220 91% 54%;
+    --base-black: 220 20% 10%;
+    --balance-card: 220 20% 10%;
+    --balance-card-merchant: 220 91% 54%;
+    --success: 142 72% 38%;
+    --success-foreground: 0 0% 100%;
+    
+    /* Trantor Accent Chips */
+    --chip-mint: 160 60% 90%;
+    --chip-peach: 20 80% 92%;
+    --chip-lavender: 260 50% 92%;
+    
+    /* Shadows — soft, editorial */
+    --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.04);
+    --shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.06);
+    --shadow-lg: 0 12px 32px -6px hsl(0 0% 0% / 0.1);
+    --shadow-card: 0 2px 12px -3px hsl(0 0% 0% / 0.06);
+    --shadow-nav: 0 -4px 24px -4px hsl(0 0% 0% / 0.08);
+
+    /* Font */
+    --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  .dark {
+    /* Near-black, not pure black */
+    --background: 240 10% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 240 10% 10%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 240 10% 10%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 220 91% 58%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 10% 15%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 240 10% 15%;
+    --muted-foreground: 215 16% 56%;
+
+    --accent: 220 91% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 10% 16%;
+    --input: 240 10% 16%;
+    --ring: 220 91% 58%;
+    
+    /* Dark mode custom tokens */
+    --base-blue: 220 91% 60%;
+    --base-black: 220 20% 10%;
+    --balance-card: 220 20% 10%;
+    --balance-card-merchant: 220 91% 58%;
+    --success: 142 72% 42%;
+    
+    /* Accent chips – muted for dark */
+    --chip-mint: 160 30% 20%;
+    --chip-peach: 20 40% 20%;
+    --chip-lavender: 260 25% 20%;
+    
+    /* Dark shadows */
+    --shadow-card: 0 2px 12px -3px hsl(0 0% 0% / 0.25);
+    --shadow-nav: 0 -4px 24px -4px hsl(0 0% 0% / 0.35);
+  }
+
+  /* User Mode Theme Override */
+  .theme-user {
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 0 0% 0%;
+    --accent-foreground: 0 0% 100%;
+    --ring: 0 0% 0%;
+  }
+
+  .dark .theme-user {
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 0 0% 0%;
+  }
+
+  /* Tempo Theme — Geometric Precision */
+  .tempo-theme {
+    --radius: 0;
+    --base-blue: 222 47% 11%;
+    --shadow-card: none;
+  }
+}
+
+/* Sharp corners for interactive elements in Tempo theme */
+.tempo-theme button,
+.tempo-theme input,
+.tempo-theme textarea,
+.tempo-theme [class*="rounded-2xl"],
+.tempo-theme [class*="rounded-xl"],
+.tempo-theme [class*="rounded-3xl"],
+.tempo-theme [class*="rounded-lg"] {
+  border-radius: 0 !important;
+}
+
+/* ─── MiniPay scoped tokens (light + dark) ───
+   Applied via [data-minipay] on the /minipay page root.
+   Tokens are raw HSL values so they can be used as
+   hsl(var(--mp-primary)) or directly with arbitrary classes.        */
+[data-minipay] {
+  --mp-primary: 154 91% 28%;          /* #068655 - darkened from 31% for WCAG AA contrast ratio */
+  --mp-primary-strong: 154 92% 26%;
+  --mp-primary-soft: 154 60% 95%;
+  --mp-ink: 226 11% 18%;              /* #2A2C34 */
+  --mp-surface: 150 28% 90%;          /* greener, ~10% less brightness */
+  --mp-surface-elev: 150 30% 94%;
+  --mp-border: 154 22% 80%;
+  --mp-muted: 226 8% 37%;             /* darkened from 45% for WCAG AA contrast ratio */
+  --mp-faint: 150 18% 86%;
+}
+[data-minipay].dark,
+.dark [data-minipay] {
+  --mp-primary: 154 70% 45%;
+  --mp-primary-strong: 154 80% 38%;
+  --mp-primary-soft: 154 30% 14%;
+  --mp-ink: 0 0% 98%;
+  --mp-surface: 226 14% 8%;           /* #11131A-ish */
+  --mp-surface-elev: 226 13% 12%;     /* #161821-ish */
+  --mp-border: 226 10% 22%;
+  --mp-muted: 226 8% 65%;
+  --mp-faint: 226 12% 18%;
+}
+:where([data-minipay]) {
+  background: hsl(var(--mp-surface));
+  color: hsl(var(--mp-ink));
+  position: relative;
+}
+
+/* ── MiniPay light-mode backdrop: subtle green doodles + drifting blobs ── */
+[data-minipay]:not(.dark):not(.wallet-dashboard-surface)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle at 18% 12%, hsl(154 60% 70% / 0.28) 0, transparent 38%),
+    radial-gradient(circle at 88% 22%, hsl(80 65% 70% / 0.22) 0, transparent 36%),
+    radial-gradient(circle at 12% 78%, hsl(154 55% 65% / 0.22) 0, transparent 40%),
+    radial-gradient(circle at 92% 86%, hsl(180 50% 70% / 0.20) 0, transparent 38%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'><g fill='none' stroke='%2307955F' stroke-opacity='0.10' stroke-width='1.3' stroke-linecap='round'><circle cx='30' cy='30' r='10'/><path d='M70 50 q10 -14 22 0 t22 0'/><circle cx='160' cy='40' r='4'/><path d='M180 90 l12 -6 -2 12 -10 -6z'/><circle cx='50' cy='150' r='6'/><path d='M110 120 q14 8 0 22 q-14 -14 0 -22z'/><path d='M170 170 l14 0 m-7 -7 l0 14'/><circle cx='200' cy='130' r='3'/><path d='M20 100 q14 -10 28 0'/></g></svg>");
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+  background-size: 60% 50%, 55% 45%, 55% 50%, 50% 45%, 220px 220px;
+  animation: mp-backdrop-drift 28s ease-in-out infinite alternate;
+}
+[data-minipay]:not(.dark) > :not(.fixed) { position: relative; z-index: 1; }
+@keyframes mp-backdrop-drift {
+  0%   { background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%, 0 0; }
+  100% { background-position: 6% 4%, 94% 6%, 4% 96%, 96% 94%, 40px 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-minipay]:not(.dark):not(.wallet-dashboard-surface)::before { animation: none; }
+}
+
+[data-minipay].wallet-dashboard-surface {
+  min-height: 100dvh;
+  background-attachment: fixed, fixed, fixed, fixed, scroll;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat;
+}
+
+/* ─── MiniPay → shadcn token bridge ───
+   Inside any [data-minipay] subtree, remap the default shadcn semantic
+   tokens (--background, --primary, --card, --border, --input, --ring,
+   --radius, --muted, --accent, --popover, --secondary, --destructive)
+   to the MiniPay palette. This way <Button>, <Input>, <Card>,
+   <Select>, <Dialog>, etc. automatically adopt the MiniPay aesthetic
+   without per-component overrides.
+
+   Also exposes shared MiniPay extras:
+     --mp-radius        16px (rounded-2xl baseline)
+     --mp-radius-pill   9999px
+     --mp-shadow-cta    soft green-tinted CTA shadow
+     --mp-shadow-card   resting card elevation
+     --mp-ring          focus ring color
+*/
+[data-minipay] {
+  /* Radius — rounded-2xl by default, pills for primary CTAs */
+  --radius: 1rem;
+  --mp-radius: 1rem;
+  --mp-radius-pill: 9999px;
+
+  /* Surface mapping */
+  --background: var(--mp-surface);
+  --foreground: var(--mp-ink);
+  --card: var(--mp-surface);
+  --card-foreground: var(--mp-ink);
+  --popover: var(--mp-surface);
+  --popover-foreground: var(--mp-ink);
+
+  /* Brand → Celo green */
+  --primary: var(--mp-primary);
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary → soft ink wash */
+  --secondary: var(--mp-faint);
+  --secondary-foreground: var(--mp-ink);
+
+  /* Muted / accent */
+  --muted: var(--mp-faint);
+  --muted-foreground: var(--mp-muted);
+  --accent: var(--mp-primary-soft);
+  --accent-foreground: var(--mp-ink);
+
+  /* Inputs, borders, focus ring */
+  --border: var(--mp-border);
+  --input: var(--mp-border);
+  --ring: var(--mp-primary);
+
+  /* Destructive kept from base theme (red) but tinted for MiniPay */
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Shared shadow + ring extras (consumed via arbitrary classes) */
+  --mp-shadow-cta: 0 14px 32px -12px hsl(var(--mp-primary) / 0.55);
+  --mp-shadow-card: 0 10px 30px -16px hsl(var(--mp-ink) / 0.18);
+  --mp-ring: 0 0 0 2px hsl(var(--mp-primary));
+}
+
+/* Default rounded radius for shadcn primitives inside MiniPay.
+   Components that explicitly set rounded-full / rounded-none keep
+   their override (Tailwind utility specificity wins). */
+[data-minipay] .rounded-md,
+[data-minipay] [class*="rounded-md"] {
+  border-radius: var(--mp-radius);
+}
+
+/* Premium CTA — apply via className="mp-cta" on any <button>/<Button>.
+   Yields a Celo-green pill with the shared soft shadow. */
+[data-minipay] .mp-cta {
+  background: hsl(var(--mp-primary));
+  color: hsl(var(--primary-foreground));
+  border-radius: var(--mp-radius-pill);
+  box-shadow: var(--mp-shadow-cta);
+  font-weight: 700;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+[data-minipay] .mp-cta:hover  { background: hsl(var(--mp-primary-strong)); transform: scale(1.01); }
+[data-minipay] .mp-cta:active { transform: scale(0.99); }
+[data-minipay] .mp-cta:disabled { opacity: 0.74; transform: none; cursor: not-allowed; }
+
+/* Outline CTA companion */
+[data-minipay] .mp-cta-outline {
+  background: transparent;
+  color: hsl(var(--mp-primary));
+  border: 2px solid hsl(var(--mp-primary));
+  border-radius: var(--mp-radius-pill);
+  font-weight: 700;
+}
+[data-minipay] .mp-cta-outline:hover { background: hsl(var(--mp-primary) / 0.08); }
+
+/* Premium card surface */
+[data-minipay] .mp-card {
+  background: hsl(var(--mp-surface));
+  border: 1px solid hsl(var(--mp-border));
+  border-radius: var(--mp-radius);
+  box-shadow: var(--mp-shadow-card);
+}
+
+[data-minipay] .mp-panel {
+  background: hsl(var(--mp-surface));
+  border: 1px solid hsl(var(--mp-border));
+  border-radius: var(--mp-radius);
+  box-shadow: var(--mp-shadow-card);
+}
+
+/* Premium icon frame — rounded-2xl, soft ring, theme-aware fill.
+   Light: white frame, green icon. Dark: black frame, white icon,
+   green ring (matches landing). */
+[data-minipay] .mp-icon-frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--mp-radius);
+  background: hsl(var(--mp-surface));
+  color: hsl(var(--mp-primary));
+  box-shadow: var(--mp-ring), 0 14px 30px -10px hsl(var(--mp-ink) / 0.18);
+}
+.dark [data-minipay] .mp-icon-frame,
+[data-minipay].dark .mp-icon-frame {
+  background: #000;
+  color: #fff;
+  box-shadow: var(--mp-ring), 0 14px 30px -10px hsl(var(--mp-ink) / 0.4);
+}
+
+[data-minipay] ::selection {
+  background: hsl(var(--mp-primary) / 0.25);
+}
+
+/* SVG path draw util used by the MiniPay hero */
+@keyframes mp-dash {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes mp-pulse-dot {
+  0%   { offset-distance: 0%;   opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes mp-drop {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes mp-bubble-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 0.35; }
+}
+[data-minipay] svg circle[style*="mp-bubble-pop"] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-minipay] [data-mp-path] { stroke-dashoffset: 0 !important; animation: none !important; }
+  [data-minipay] [data-mp-dot] { display: none; }
+}
+
+/* ─── Arc scoped tokens (light + dark) ───
+   /arc landing reuses the MiniPay component system but recolors the
+   --mp-* tokens to Arc's brand palette (teal primary, navy ink,
+   sunset-tinted surface). Circle's payment-native L1.                */
+[data-arc] {
+  --mp-primary: 192 78% 38%;          /* Arc teal */
+  --mp-primary-strong: 192 85% 30%;
+  --mp-primary-soft: 192 60% 95%;
+  --mp-ink: 210 35% 12%;              /* deep navy */
+  --mp-surface: 36 40% 99%;           /* warm off-white */
+  --mp-surface-elev: 30 35% 97%;
+  --mp-border: 200 18% 88%;
+  --mp-muted: 210 12% 42%;
+  --mp-faint: 30 25% 94%;
+}
+[data-arc].dark,
+.dark [data-arc] {
+  --mp-primary: 188 75% 52%;
+  --mp-primary-strong: 188 80% 45%;
+  --mp-primary-soft: 210 30% 14%;
+  --mp-ink: 30 25% 96%;
+  --mp-surface: 210 35% 7%;
+  --mp-surface-elev: 210 30% 11%;
+  --mp-border: 210 20% 20%;
+  --mp-muted: 210 12% 65%;
+  --mp-faint: 210 22% 16%;
+}
+[data-arc] {
+  background: hsl(var(--mp-surface));
+  color: hsl(var(--mp-ink));
+  --radius: 1rem;
+  --background: var(--mp-surface);
+  --foreground: var(--mp-ink);
+  --card: var(--mp-surface);
+  --card-foreground: var(--mp-ink);
+  --popover: var(--mp-surface);
+  --popover-foreground: var(--mp-ink);
+  --primary: var(--mp-primary);
+  --primary-foreground: 0 0% 100%;
+  --secondary: var(--mp-faint);
+  --secondary-foreground: var(--mp-ink);
+  --muted: var(--mp-faint);
+  --muted-foreground: var(--mp-muted);
+  --accent: var(--mp-primary-soft);
+  --accent-foreground: var(--mp-ink);
+  --border: var(--mp-border);
+  --input: var(--mp-border);
+  --ring: var(--mp-primary);
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+}
+[data-arc] ::selection {
+  background: hsl(var(--mp-primary) / 0.25);
+}
+
+/* ─── Base scoped tokens (light + dark) ───
+   /base landing reuses the MiniPay component system but recolors the
+   --mp-* tokens to Base's brand palette (Coinbase blue #0052FF).      */
+[data-base] {
+  --mp-primary: 217 100% 50%;          /* Base blue #0052FF */
+  --mp-primary-strong: 217 100% 42%;
+  --mp-primary-soft: 217 100% 96%;
+  --mp-ink: 222 25% 12%;
+  --mp-surface: 0 0% 100%;
+  --mp-surface-elev: 217 33% 98%;
+  --mp-border: 217 18% 90%;
+  --mp-muted: 222 10% 42%;
+  --mp-faint: 217 30% 95%;
+}
+[data-base].dark,
+.dark [data-base] {
+  --mp-primary: 217 100% 62%;
+  --mp-primary-strong: 217 100% 55%;
+  --mp-primary-soft: 217 50% 16%;
+  --mp-ink: 0 0% 98%;
+  --mp-surface: 222 30% 7%;
+  --mp-surface-elev: 222 25% 11%;
+  --mp-border: 222 18% 22%;
+  --mp-muted: 222 12% 65%;
+  --mp-faint: 222 22% 16%;
+}
+[data-base] {
+  background: hsl(var(--mp-surface));
+  color: hsl(var(--mp-ink));
+  --radius: 1rem;
+  --background: var(--mp-surface);
+  --foreground: var(--mp-ink);
+  --card: var(--mp-surface);
+  --card-foreground: var(--mp-ink);
+  --popover: var(--mp-surface);
+  --popover-foreground: var(--mp-ink);
+  --primary: var(--mp-primary);
+  --primary-foreground: 0 0% 100%;
+  --secondary: var(--mp-faint);
+  --secondary-foreground: var(--mp-ink);
+  --muted: var(--mp-faint);
+  --muted-foreground: var(--mp-muted);
+  --accent: var(--mp-primary-soft);
+  --accent-foreground: var(--mp-ink);
+  --border: var(--mp-border);
+  --input: var(--mp-border);
+  --ring: var(--mp-primary);
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+}
+[data-base] ::selection {
+  background: hsl(var(--mp-primary) / 0.25);
+}
+
+/* ─── Ink scoped tokens (light + dark) ───
+   /ink reuses the MiniPay component system but recolors the --mp-*
+   tokens to Ink's brand palette (deep purple primary on a near-black
+   surface in dark mode; light lavender wash in light mode). Kraken's
+   L2 on the Optimism Superchain.                                       */
+[data-ink] {
+  --mp-primary: 262 83% 58%;          /* Ink purple #7C3AED */
+  --mp-primary-strong: 262 80% 48%;
+  --mp-primary-soft: 262 60% 96%;
+  --mp-ink: 260 30% 12%;
+  --mp-surface: 0 0% 100%;
+  --mp-surface-elev: 260 30% 98%;
+  --mp-border: 260 20% 90%;
+  --mp-muted: 260 10% 42%;
+  --mp-faint: 260 25% 94%;
+}
+[data-ink].dark,
+.dark [data-ink] {
+  --mp-primary: 262 90% 68%;
+  --mp-primary-strong: 262 85% 60%;
+  --mp-primary-soft: 262 40% 16%;
+  --mp-ink: 260 20% 96%;
+  --mp-surface: 260 25% 7%;
+  --mp-surface-elev: 260 22% 11%;
+  --mp-border: 260 18% 22%;
+  --mp-muted: 260 12% 65%;
+  --mp-faint: 260 22% 16%;
+}
+[data-ink] {
+  background: hsl(var(--mp-surface));
+  color: hsl(var(--mp-ink));
+  --radius: 1rem;
+  --background: var(--mp-surface);
+  --foreground: var(--mp-ink);
+  --card: var(--mp-surface);
+  --card-foreground: var(--mp-ink);
+  --popover: var(--mp-surface);
+  --popover-foreground: var(--mp-ink);
+  --primary: var(--mp-primary);
+  --primary-foreground: 0 0% 100%;
+  --secondary: var(--mp-faint);
+  --secondary-foreground: var(--mp-ink);
+  --muted: var(--mp-faint);
+  --muted-foreground: var(--mp-muted);
+  --accent: var(--mp-primary-soft);
+  --accent-foreground: var(--mp-ink);
+  --border: var(--mp-border);
+  --input: var(--mp-border);
+  --ring: var(--mp-primary);
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+}
+[data-ink] ::selection {
+  background: hsl(var(--mp-primary) / 0.25);
+}
+
+/* ─── BSC scoped tokens (light + dark) ───
+   /bsc landing reuses the MiniPay component system but recolors the
+   --mp-* tokens to BNB Chain's gold palette (#F0B90B).               */
+[data-bsc] {
+  --mp-primary: 45 89% 49%;            /* BNB gold #F0B90B */
+  --mp-primary-strong: 38 92% 42%;
+  --mp-primary-soft: 45 90% 95%;
+  --mp-ink: 222 25% 12%;
+  --mp-surface: 0 0% 100%;
+  --mp-surface-elev: 45 60% 98%;
+  --mp-border: 45 30% 88%;
+  --mp-muted: 222 10% 42%;
+  --mp-faint: 45 40% 95%;
+}
+[data-bsc].dark,
+.dark [data-bsc] {
+  --mp-primary: 45 92% 55%;
+  --mp-primary-strong: 45 92% 48%;
+  --mp-primary-soft: 45 40% 16%;
+  --mp-ink: 0 0% 98%;
+  --mp-surface: 222 30% 7%;
+  --mp-surface-elev: 222 25% 11%;
+  --mp-border: 222 18% 22%;
+  --mp-muted: 222 12% 65%;
+  --mp-faint: 222 22% 16%;
+}
+[data-bsc] {
+  background: hsl(var(--mp-surface));
+  color: hsl(var(--mp-ink));
+  --radius: 1rem;
+  --background: var(--mp-surface);
+  --foreground: var(--mp-ink);
+  --card: var(--mp-surface);
+  --card-foreground: var(--mp-ink);
+  --popover: var(--mp-surface);
+  --popover-foreground: var(--mp-ink);
+  --primary: var(--mp-primary);
+  --primary-foreground: 222 25% 12%;
+  --secondary: var(--mp-faint);
+  --secondary-foreground: var(--mp-ink);
+  --muted: var(--mp-faint);
+  --muted-foreground: var(--mp-muted);
+  --accent: var(--mp-primary-soft);
+  --accent-foreground: var(--mp-ink);
+  --border: var(--mp-border);
+  --input: var(--mp-border);
+  --ring: var(--mp-primary);
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+}
+[data-bsc] ::selection {
+  background: hsl(var(--mp-primary) / 0.25);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+    max-width: 100vw;
+    letter-spacing: -0.01em;
+  }
+  
+  #root {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* html5-qrcode: ensure camera feed is crisp + fills the scanner area */
+  #qr-reader {
+    width: 100%;
+    height: 100%;
+  }
+
+  #qr-reader video,
+  #qr-reader canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 1.25rem;
+  }
+
+  /* Hide the library's default controls (we provide our own UI) */
+  #qr-reader__dashboard_section {
+    display: none !important;
+  }
+}
+
+/* ── Shimmer skeleton animation ── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    105deg,
+    hsl(var(--muted)) 40%,
+    hsl(var(--card)) 50%,
+    hsl(var(--muted)) 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── MoniBot AI Premium Card: animated flowing gradient border ── */
+  .monibot-flow-border {
+    background: conic-gradient(
+      from var(--mb-angle, 0deg),
+      #0052FF,
+      #9945FF,
+      #14F195,
+      #F0B90B,
+      #FF6B35,
+      #0052FF
+    );
+    animation: monibot-rotate 6s linear infinite;
+  }
+  @property --mb-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes monibot-rotate {
+    to { --mb-angle: 360deg; }
+  }
+  @supports not (background: conic-gradient(from 0deg, red, blue)) {
+    .monibot-flow-border {
+      background: linear-gradient(90deg, #0052FF, #9945FF, #14F195, #F0B90B, #0052FF);
+      background-size: 300% 100%;
+      animation: monibot-slide 4s linear infinite;
+    }
+    @keyframes monibot-slide {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+  }
+
+  /* Subtle pulse halo around verified badge */
+  .monibot-pulse-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .monibot-pulse-badge::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(0,82,255,0.45) 0%, transparent 70%);
+    animation: monibot-badge-pulse 2.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes monibot-badge-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.25); }
+  }
+}
+/* MiniPay: tint inner cards inside Allowance & Social settings to match outer yellow→green gradient */
+.minipay-tint-children .bg-card,
+.minipay-tint-children .bg-card\/60,
+.minipay-tint-children .bg-muted\/30,
+.minipay-tint-children .bg-white\/85,
+.minipay-tint-children .bg-white\/50,
+.minipay-tint-children .bg-black\/\[0\.06\] {
+  background: linear-gradient(160deg, hsl(60 100% 90%) 0%, hsl(80 70% 86%) 55%, hsl(154 65% 88%) 100%) !important;
+  color: #000 !important;
+  border-color: rgba(0,0,0,0.15) !important;
+}
+.minipay-tint-children .text-muted-foreground {
+  color: rgba(0,0,0,0.65) !important;
+}
+.dark .minipay-tint-children {
+  filter: brightness(0.78);
+}
