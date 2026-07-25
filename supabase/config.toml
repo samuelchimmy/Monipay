@@ -1,0 +1,125 @@
+project_id = "vdaeojxonqmzejwiioaq"
+
+[functions.check-paytag]
+verify_jwt = false
+
+[functions.relay-payment]
+verify_jwt = false
+
+[functions.products]
+verify_jwt = false
+
+[functions.invoices]
+verify_jwt = false
+
+[functions.feedback]
+verify_jwt = false
+
+[functions.support]
+verify_jwt = false
+
+[functions.activation-funder]
+verify_jwt = false
+
+[functions.api-keys]
+verify_jwt = false
+
+[functions.payment-links]
+verify_jwt = false
+
+[functions.orders]
+verify_jwt = false
+
+[functions.customers]
+verify_jwt = false
+
+[functions.social-identity]
+verify_jwt = false
+
+[functions.twitter-webhook]
+verify_jwt = false
+
+[functions.twitter-subscription-manager]
+verify_jwt = false
+
+[functions.twitter-poll-verification]
+verify_jwt = false
+
+[functions.monibot-stats]
+verify_jwt = false
+
+[functions.monibot-sync]
+verify_jwt = false
+
+[functions.monibot-campaign]
+verify_jwt = false
+
+[functions.monibot-ai]
+verify_jwt = false
+
+[functions.bot-logs]
+verify_jwt = false
+
+[functions.monibot-chat]
+verify_jwt = false
+
+[functions.discord-oauth]
+verify_jwt = false
+
+[functions.telegram-oauth]
+verify_jwt = false
+
+[functions.scheduled-executor]
+verify_jwt = false
+
+[functions.parse-schedule]
+verify_jwt = false
+
+[functions.merchant-subscription]
+verify_jwt = false
+
+[functions.infra-subscriptions]
+verify_jwt = false
+
+[functions.relay-solana-payment]
+verify_jwt = false
+
+[functions.activate-solana]
+verify_jwt = false
+
+[functions.relay-payment-ink]
+verify_jwt = false
+
+[functions.claim-social-funds]
+verify_jwt = false
+
+[functions.claim-iou]
+verify_jwt = false
+
+[functions.create-iou]
+verify_jwt = false
+
+[functions.backfill-x-user-ids]
+verify_jwt = false
+
+
+[functions.send-transactional-email]
+verify_jwt = true
+
+[functions.preview-transactional-email]
+verify_jwt = false
+
+[functions.handle-email-unsubscribe]
+verify_jwt = false
+
+[functions.handle-email-suppression]
+verify_jwt = false
+
+[functions.monibot-x402]
+verify_jwt = false
+
+[functions.list-recurring-payments]
+verify_jwt = false
+
+[functions.platform-stats]
+verify_jwt = false
