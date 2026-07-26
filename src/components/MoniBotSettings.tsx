@@ -42,31 +42,18 @@ import { AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { feedback } from "@/lib/feedback";
 import { supabase } from "@/integrations/supabase/client";
-import { createPublicClient, createWalletClient, http, parseUnits, formatUnits, erc20Abi, defineChain } from "viem";
-import { base, bsc, celo, ink } from "viem/chains";
+import { createPublicClient, createWalletClient, http, parseUnits, formatUnits, erc20Abi } from "viem";
+import { celo } from "viem/chains";
 import { CHAIN_CONFIGS } from "@/config/chains";
 
-const tempoTestnet = defineChain({
-  id: 42431,
-  name: "Tempo Testnet",
-  nativeCurrency: { name: "USD", symbol: "USD", decimals: 18 },
-  rpcUrls: { default: { http: ["https://rpc.moderato.tempo.xyz"] } },
-});
-
-function getViemChain(network: SupportedNetwork) {
-  if (network === "bsc") return bsc;
-  if (network === "tempo") return tempoTestnet;
-  if (network === "celo") return celo;
-  if (network === "ink") return ink;
-  return base;
+function getViemChain(_network: SupportedNetwork) {
+  return celo;
 }
 
 function getDefaultRpc(network: SupportedNetwork) {
   const cfg = (CHAIN_CONFIGS as any)[network];
   if (cfg?.rpcUrls?.[0]) return cfg.rpcUrls[0];
-  if (network === "bsc") return "https://bsc-dataseed.binance.org";
-  if (network === "tempo") return "https://rpc.moderato.tempo.xyz";
-  return "https://mainnet.base.org";
+  return "https://forno.celo.org";
 }
 import { decryptPrivateKey, getRpcOverride, setRpcOverride, getAvailableRpcEndpoints } from "@/lib/wallet";
 import { privateKeyToAccount } from "viem/accounts";
@@ -866,7 +853,7 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
   const NETWORK_OPTIONS: SupportedNetwork[] = ["base", "bsc", "solana", "ink", "celo"];
   const selectableNetworks = NETWORK_OPTIONS.filter((n) => NETWORK_THEMES[n]);
 
-  const isLightTheme = network === "celo" || network === "bsc";
+  const isLightTheme = true; // Celo uses the light theme
   const innerSurface = isLightTheme ? "bg-black/5 border-black/10" : "bg-white/[0.08] border-white/10";
   const innerSurfaceSolid = isLightTheme ? "bg-black/[0.06]" : "bg-white/[0.07]";
   const dividerColor = isLightTheme ? "border-black/10" : "border-white/10";
