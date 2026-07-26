@@ -45,9 +45,9 @@ export function NetworkActivationStatus({
   const [isActivating, setIsActivating] = useState(false);
 
   const config = getChainConfig(network);
-  const isTempo = network === 'tempo';
-  const isCelo = network === 'celo';
-  const isSolana = network === 'solana';
+  const isTempo = false;
+  const isCelo = true;
+  const isSolana = false;
   const hasRouter = Boolean(config.monipayRouter);
   const [hasBalance, setHasBalance] = useState<boolean | null>(null);
 
@@ -66,7 +66,7 @@ export function NetworkActivationStatus({
       // For Tempo, also check if user has aUSD balance (needed to pay approval tx fee)
       if (isTempo && !result.isActivated) {
         try {
-          const balance = await getTokenBalance(walletAddress as `0x${string}`, 'tempo');
+          const balance = await getTokenBalance(walletAddress as `0x${string}`, 'celo');
           setHasBalance(Number.isFinite(balance) && balance > 0.01);
         } catch {
           setHasBalance(false);
@@ -103,11 +103,7 @@ export function NetworkActivationStatus({
     try {
       // Tempo: no native gas; AlphaUSD pays fees. Skip funding.
       // Base/BSC/Celo/Ink: request a tiny native-gas drip from activation-funder.
-      const fundChain =
-        network === 'bsc'  ? 'BSC'  :
-        network === 'celo' ? 'CELO' :
-        network === 'ink'  ? 'INK'  :
-        network === 'base' ? 'BASE' : null;
+      const fundChain = 'CELO';
 
       if (!isTempo && fundChain) {
         try {
