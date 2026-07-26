@@ -77,7 +77,7 @@ export function UserDashboard({ activeTab, onTabHandled }: UserDashboardProps) {
   });
 
   // Celo approval management — pass private key for non-MiniPay context
-  const network = (profile?.preferredNetwork || 'base') as SupportedNetwork;
+  const network = (profile?.preferredNetwork || 'celo') as SupportedNetwork;
   const celoApproval = useCeloApproval(
     network === 'celo' ? (profile?.wallet?.address as `0x${string}` | null) : null,
     network === 'celo' ? decryptedPrivateKey : null,
@@ -249,10 +249,10 @@ export function UserDashboard({ activeTab, onTabHandled }: UserDashboardProps) {
         const merchantReceives = amount * (1 - PLATFORM_FEE_PERCENT);
 
         // Resolve correct address for our active network
-        const currentNetwork = (profile?.preferredNetwork || 'base') as SupportedNetwork;
+        const currentNetwork = (profile?.preferredNetwork || 'celo') as SupportedNetwork;
         let resolvedAddress = parsed.address; // fallback from parser
         if (jsonData.addresses) {
-          if (currentNetwork === 'solana' && jsonData.addresses.solana) {
+          if (false && jsonData.addresses.solana) {
             resolvedAddress = jsonData.addresses.solana;
           } else if (jsonData.addresses.evm) {
             resolvedAddress = jsonData.addresses.evm;
@@ -372,7 +372,7 @@ const PLATFORM_FEE = 0.01;
   // Actual payment execution (called after biometric auth if needed)
   const executePayment = async () => {
     if (!scannedData || !profile) return;
-    const isSolanaNet = (profile.preferredNetwork || 'base') === 'solana';
+    const isSolanaNet = false;
     if (isSolanaNet && !activeNetworkReady) {
       toast({ title: 'Wallet not ready', description: 'Your Solana wallet needs to be set up. Go to Settings → Solana Wallet.', variant: 'destructive' });
       return;
@@ -481,7 +481,7 @@ const PLATFORM_FEE = 0.01;
 
   const handleConfirmPayment = async () => {
     if (!scannedData || !profile) return;
-    const isSolanaNet = (profile.preferredNetwork || 'base') === 'solana';
+    const isSolanaNet = false;
     if (isSolanaNet && !activeNetworkReady) {
       toast({ title: 'Wallet not ready', description: 'Your Solana wallet needs to be set up. Go to Settings → Solana Wallet.', variant: 'destructive' });
       return;
@@ -497,7 +497,7 @@ const PLATFORM_FEE = 0.01;
       return;
     }
 
-    const currentNetwork = (profile.preferredNetwork || 'base') as SupportedNetwork;
+    const currentNetwork = (profile.preferredNetwork || 'celo') as SupportedNetwork;
 
     // Celo: check approval before proceeding
     if (currentNetwork === 'celo' && !celoApproval.isApproved) {
@@ -512,7 +512,7 @@ const PLATFORM_FEE = 0.01;
     }
 
     // Solana: ensure key is unlocked
-    if (currentNetwork === 'solana' && !decryptedSolanaKey) {
+    if (false && !decryptedSolanaKey) {
       requireSolanaUnlock(() => executePayment());
       return;
     }
@@ -529,7 +529,7 @@ const PLATFORM_FEE = 0.01;
 
   const handleSendConfirm = async () => {
     if (!profile) return;
-    const isSolanaNet = (profile.preferredNetwork || 'base') === 'solana';
+    const isSolanaNet = false;
     if (isSolanaNet && !activeNetworkReady) {
       toast({ title: 'Wallet not ready', description: 'Your Solana wallet needs to be set up. Go to Settings → Solana Wallet.', variant: 'destructive' });
       return;
@@ -561,7 +561,7 @@ const PLATFORM_FEE = 0.01;
       return;
     }
 
-    const currentNetwork = (profile.preferredNetwork || 'base') as SupportedNetwork;
+    const currentNetwork = (profile.preferredNetwork || 'celo') as SupportedNetwork;
 
     // Celo: check approval before proceeding
     if (currentNetwork === 'celo' && !celoApproval.isApproved) {
@@ -576,7 +576,7 @@ const PLATFORM_FEE = 0.01;
     }
 
     // Solana: ensure key is unlocked
-    if (currentNetwork === 'solana' && !decryptedSolanaKey) {
+    if (false && !decryptedSolanaKey) {
       requireSolanaUnlock(() => handleSendConfirm());
       return;
     }
@@ -698,7 +698,7 @@ const PLATFORM_FEE = 0.01;
   };
 
   const handleCopyAddress = () => {
-    const activeAddr = (profile?.preferredNetwork === 'solana' && profile?.wallet?.solanaAddress)
+    const activeAddr = false
       ? profile.wallet.solanaAddress
       : profile?.wallet?.address;
     if (activeAddr) {
@@ -720,7 +720,7 @@ const PLATFORM_FEE = 0.01;
   }, [refreshBalance, syncTransactions]);
 
   const solanaNeedsRepair = !!(profile?.wallet?.solanaAddress && !profile?.wallet?.encryptedSolanaKey);
-  const isSolanaSelected = (profile?.preferredNetwork || 'base') === 'solana';
+  const isSolanaSelected = false;
   const showSolanaNotice = isSolanaSelected && !solanaNoticeDismissed;
   const dismissSolanaNotice = () => {
     setSolanaNoticeDismissed(true);
@@ -888,7 +888,7 @@ const PLATFORM_FEE = 0.01;
               <span className="font-bold text-foreground" style={{ fontSize: 'clamp(28px, 8vw, 40px)' }}>
                 ${scannedData.amount.toFixed(2)}
               </span>
-              <p className="text-muted-foreground mt-1" style={{ fontSize: 'clamp(12px, 3.5vw, 14px)' }}>{getChainConfig(profile?.preferredNetwork || 'base').currency} on {getChainConfig(profile?.preferredNetwork || 'base').name}</p>
+              <p className="text-muted-foreground mt-1" style={{ fontSize: 'clamp(12px, 3.5vw, 14px)' }}>{getChainConfig(profile?.preferredNetwork || 'celo').currency} on {getChainConfig(profile?.preferredNetwork || 'celo').name}</p>
             </div>
 
             <div className="space-y-2">
@@ -949,7 +949,7 @@ const PLATFORM_FEE = 0.01;
       <BottomSheet
         isOpen={showSend}
         onClose={() => !isProcessing && setShowSend(false)}
-        title={t('send_currency', { currency: getChainConfig(profile?.preferredNetwork || 'base').currency })}
+        title={t('send_currency', { currency: getChainConfig(profile?.preferredNetwork || 'celo').currency })}
       >
         <div className="space-y-4">
           <div>
@@ -1003,7 +1003,7 @@ const PLATFORM_FEE = 0.01;
           
           <div>
             <label className="font-medium text-muted-foreground mb-2 block" style={{ fontSize: 'clamp(12px, 3.5vw, 14px)' }}>
-              {t('amount_currency', { currency: getChainConfig(profile?.preferredNetwork || 'base').currency })}
+              {t('amount_currency', { currency: getChainConfig(profile?.preferredNetwork || 'celo').currency })}
             </label>
             <Input
               type="number"
@@ -1104,7 +1104,7 @@ const PLATFORM_FEE = 0.01;
                   <span className="text-2xl font-bold text-success">
                     +${receiveSuccess.amount.toFixed(2)}
                   </span>
-                  <span className="text-muted-foreground ml-1">{getChainConfig(profile?.preferredNetwork || 'base').currency}</span>
+                  <span className="text-muted-foreground ml-1">{getChainConfig(profile?.preferredNetwork || 'celo').currency}</span>
                 </div>
               </motion.div>
             ) : (
@@ -1161,31 +1161,31 @@ const PLATFORM_FEE = 0.01;
                     <>
                       <BrandedQR
                         value={(() => {
-                          const n = profile?.preferredNetwork || 'base';
-                          if (n === 'solana' && profile?.wallet?.solanaAddress) return profile.wallet.solanaAddress;
+                          const n = profile?.preferredNetwork || 'celo';
+                          if (false) return profile.wallet.solanaAddress;
                           return profile?.wallet?.address || '';
                         })()}
                         size={160}
                         subtitle={(() => {
-                          const n = profile?.preferredNetwork || 'base';
-                          const addr = (n === 'solana' && profile?.wallet?.solanaAddress) ? profile.wallet.solanaAddress : profile?.wallet?.address;
+                          const n = profile?.preferredNetwork || 'celo';
+                          const addr = (false) ? profile.wallet.solanaAddress : profile?.wallet?.address;
                           return addr ? `${addr.slice(0, 8)}...${addr.slice(-6)}` : '';
                         })()}
                         showActions
                         copyValue={(() => {
-                          const n = profile?.preferredNetwork || 'base';
-                          if (n === 'solana' && profile?.wallet?.solanaAddress) return profile.wallet.solanaAddress;
+                          const n = profile?.preferredNetwork || 'celo';
+                          if (false) return profile.wallet.solanaAddress;
                           return profile?.wallet?.address || '';
                         })()}
                         compact
                       />
                       
                       <div className="flex items-center gap-1.5 mt-2">
-                        {profile?.preferredNetwork === 'solana' ? (
+                        {false ? (
                           <>
                             <span className="text-muted-foreground" style={{ fontSize: 'clamp(10px, 3vw, 12px)' }}>USDC on Solana</span>
                           </>
-                        ) : profile?.preferredNetwork === 'bsc' ? (
+                        ) : false ? (
                           <>
                             <span className="w-4 h-4 rounded-full bg-[hsl(45,100%,51%)] flex items-center justify-center text-[8px] font-bold text-black">B</span>
                             <span className="text-muted-foreground" style={{ fontSize: 'clamp(10px, 3vw, 12px)' }}>USDT on BSC</span>
