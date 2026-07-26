@@ -6,15 +6,9 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { getChainConfig, type SupportedNetwork } from "@/config/chains";
-import { TEMPO_ENABLED } from "@/lib/featureFlags";
 
 const NETWORKS: { id: SupportedNetwork; label: string; color: string; suffix: string }[] = [
-  { id: "base", label: "BASE", color: "hsl(221, 100%, 58%)", suffix: "USDC" },
-  { id: "bsc", label: "BSC", color: "hsl(44, 100%, 50%)", suffix: "USDT" },
   { id: "celo", label: "CELO", color: "hsl(55, 100%, 66%)", suffix: "USDT" },
-  { id: "ink", label: "INK", color: "hsl(260, 70%, 55%)", suffix: "USDT0" },
-  { id: "solana", label: "SOLANA", color: "hsl(168, 80%, 50%)", suffix: "USDC" },
-  { id: "tempo", label: "TEMPO", color: "hsl(220, 80%, 60%)", suffix: "αUSD" },
 ];
 
 interface ModalNetworkToggleProps {
@@ -37,9 +31,7 @@ export function ModalNetworkToggle({ value, onChange, locked }: ModalNetworkTogg
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  const available = NETWORKS.filter(
-    (n) => n.id !== "tempo" || TEMPO_ENABLED
-  );
+  const available = NETWORKS;
 
   const current = available.find((n) => n.id === value) || available[0];
 
