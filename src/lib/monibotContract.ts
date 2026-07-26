@@ -10,20 +10,11 @@
  * 3. 1% platform fee is automatically deducted
  */
 
-import { createPublicClient, http, formatUnits, parseUnits, erc20Abi, defineChain } from 'viem';
-import { base, bsc } from 'viem/chains';
+import { createPublicClient, http, formatUnits, parseUnits, erc20Abi } from 'viem';
+import { celo } from 'viem/chains';
 
-const tempoTestnet = defineChain({
-  id: 42431,
-  name: 'Tempo Testnet',
-  nativeCurrency: { name: 'USD', symbol: 'USD', decimals: 18 },
-  rpcUrls: { default: { http: ['https://rpc.moderato.tempo.xyz'] } },
-});
-
-function getViemChain(network: SupportedNetwork) {
-  if (network === 'bsc') return bsc;
-  if (network === 'tempo') return tempoTestnet;
-  return base;
+function getViemChain(_network: SupportedNetwork) {
+  return celo;
 }
 import { getChainConfig, type SupportedNetwork } from '@/config/chains';
 import { getActiveRpc } from '@/components/monibot/SystemTab';
