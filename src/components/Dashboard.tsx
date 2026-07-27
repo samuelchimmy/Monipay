@@ -169,8 +169,8 @@ export function Dashboard() {
   };
 
   const displayBalance = profile?.balance || 0;
-  const currentNetwork = (profile?.preferredNetwork || "base") as SupportedNetwork;
-  const isTempoNetwork = currentNetwork === "tempo";
+  const currentNetwork = (profile?.preferredNetwork || "celo") as SupportedNetwork;
+  const isTempoNetwork = false;
 
   return (
     <motion.div
@@ -232,7 +232,7 @@ export function Dashboard() {
         <DentedCard
           className={`
             p-5 pt-10 relative overflow-hidden shadow-lg
-            ${mode === "merchant" ? ((currentNetwork === 'bsc' || currentNetwork === 'celo' || currentNetwork === 'solana') ? "text-black" : "text-white") : "text-white bg-balance-card"}
+            ${mode === "merchant" ? "text-black" : "text-white bg-balance-card"}
           `}
           style={mode === "merchant" ? { backgroundColor: `hsl(${getChainConfig(currentNetwork).accentColor})` } : undefined}
         >
@@ -350,7 +350,7 @@ export function Dashboard() {
                     setShowMoniBot(true);
                   }}
                   className="flex-1 h-[52px] rounded-full text-[13px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                  style={{ backgroundColor: `hsl(${getChainConfig(currentNetwork).accentColor})`, color: currentNetwork === 'bsc' || currentNetwork === 'celo' ? '#000' : '#fff' }}
+                  style={{ backgroundColor: `hsl(${getChainConfig(currentNetwork).accentColor})`, color: '#000' }}
                 >
                   <Bot className="w-4 h-4" />
                   {t('monibot_ai')}
