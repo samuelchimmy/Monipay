@@ -129,7 +129,7 @@ export function ProductCatalog({ products, onProductsChange, onClose, bypassSecu
     setIsSubscribing(true);
     setSubscribeStep('paying');
     try {
-      const network = (profile.preferredNetwork || 'base') as SupportedNetwork;
+      const network = (profile.preferredNetwork || 'celo') as SupportedNetwork;
       const config = getChainConfig(network);
 
       // Lookup monibot's wallet address
