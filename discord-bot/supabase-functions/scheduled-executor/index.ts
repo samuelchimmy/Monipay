@@ -38,7 +38,7 @@ function chooseEffectiveChain(sender: any, recipient: any, requested?: string | 
   const chain = (requested || "").toLowerCase();
   if (chain) return chain;
   if (isMiniPay(sender) || isMiniPay(recipient)) return "celo";
-  return (sender?.preferred_network || "base").toLowerCase();
+  return (sender?.preferred_network || "celo").toLowerCase();
 }
 
 // ─── Retry classification ─────────────────────────────────────────────────────
