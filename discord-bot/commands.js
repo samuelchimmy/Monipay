@@ -54,23 +54,14 @@ const RECURRING_ALIAS = /\b(daily|hourly|weekly|monthly)\s*,?\s*(?:(?:for\s+)?(\
 // Set Default Chain
 const SET_CHAIN = /(?:set-chain|change network to|change preferred network to|change chain to|change preferred chain to|switch to|use network|set network to|on)\s+(\w+)/i;
 
-// Network detection
-const BSC_KEYWORDS = ['usdt', 'bnb', 'bsc'];
-const TEMPO_KEYWORDS = ['on tempo', 'tempo', 'alphausd', 'αusd'];
-const SOLANA_KEYWORDS = ['on solana', 'solana', 'sol', 'spl'];
+// Network detection (Celo-only)
 const CELO_KEYWORDS = ['on celo', 'celo', 'minipay'];
-const INK_KEYWORDS = ['on ink', 'ink chain', 'ink network', 'inkonchain'];
-const BASE_KEYWORDS = ['on base', 'base chain', 'base network'];
 
-// Token symbols that unambiguously map to a single chain
+// Token symbols that unambiguously map to a single chain (Celo-only)
 const TOKEN_CHAIN_MAP = {
   'g$': 'celo',
   'gooddollar': 'celo',
   'usdm': 'celo',
-  'αusd': 'tempo',
-  'alphausd': 'tempo',
-  'usdt0': 'ink',
-  'spl': 'solana',
 };
 
 // Detect explicit token symbol from raw message text
@@ -79,9 +70,7 @@ export function detectToken(text) {
   if (l.includes('g$') || l.includes('gooddollar')) return 'G$';
   if (l.includes('usdm')) return 'USDm';
   if (l.includes('usdc')) return 'USDC';
-  if (l.includes('usdt0')) return 'USDT0';
   if (l.includes('usdt')) return 'USDT';
-  if (l.includes('αusd') || l.includes('alphausd')) return 'αUSD';
   return null;
 }
 
@@ -96,11 +85,6 @@ export function detectChain(text) {
     if (lower.includes(token)) return chain;
   }
   if (CELO_KEYWORDS.some(kw => lower.includes(kw))) return 'celo';
-  if (INK_KEYWORDS.some(kw => lower.includes(kw))) return 'ink';
-  if (SOLANA_KEYWORDS.some(kw => lower.includes(kw))) return 'solana';
-  if (TEMPO_KEYWORDS.some(kw => lower.includes(kw))) return 'tempo';
-  if (BSC_KEYWORDS.some(kw => lower.includes(kw))) return 'bsc';
-  if (BASE_KEYWORDS.some(kw => lower.includes(kw))) return 'base';
   return null;
 }
 
