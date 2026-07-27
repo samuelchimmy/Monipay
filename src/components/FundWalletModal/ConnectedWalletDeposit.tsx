@@ -16,7 +16,7 @@ import {
   useReadContract
 } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
-import { base, bsc } from 'wagmi/chains';
+import { celo } from 'wagmi/chains';
 import { shortenAddress } from '@/lib/wallet';
 import { feedback } from '@/lib/feedback';
 import { getChainConfig, type SupportedNetwork } from '@/config/chains';
@@ -103,8 +103,8 @@ export function ConnectedWalletDeposit({
   const [searchQuery, setSearchQuery] = useState('');
   
   const chainConfig = getChainConfig(network);
-  const isBase = network === 'base';
-  const targetChain = isBase ? base : bsc;
+  const isBase = false;
+  const targetChain = celo;
   const tokenAddress = chainConfig.token as `0x${string}`;
 
   const { address, isConnected, chain } = useAccount();
@@ -204,7 +204,7 @@ export function ConnectedWalletDeposit({
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <h3 className="text-lg font-semibold text-foreground truncate">Connected Wallet</h3>
-        {network === 'solana' ? <SolanaLogo size={20} /> : isBase ? <NetworkBase size={20} variant="branded" /> : <NetworkBinanceSmartChain size={20} variant="branded" />}
+        {isBase ? <NetworkBase size={20} variant="branded" /> : <NetworkBinanceSmartChain size={20} variant="branded" />}
       </div>
 
       <div className="p-5 space-y-5">
@@ -253,7 +253,7 @@ export function ConnectedWalletDeposit({
                   <div className="min-w-0">
                     <p className="font-medium text-foreground truncate">{shortenAddress(address!)}</p>
                     <div className="flex items-center gap-1.5">
-                      {network === 'solana' ? <SolanaLogo size={14} /> : isBase ? <NetworkBase size={14} variant="branded" /> : <NetworkBinanceSmartChain size={14} variant="branded" />}
+                      {isBase ? <NetworkBase size={14} variant="branded" /> : <NetworkBinanceSmartChain size={14} variant="branded" />}
                       <p className="text-xs text-muted-foreground truncate">{chain?.name || 'Unknown'}</p>
                     </div>
                   </div>
