@@ -352,9 +352,7 @@ export function Settings({ onClose, initialSection }: SettingsProps) {
               </h3>
               <p className="text-sm text-muted-foreground font-mono">
                 {profile?.wallet?.address ? shortenAddress(
-                  (profile?.preferredNetwork === 'solana' && profile.wallet.solanaAddress) 
-                    ? profile.wallet.solanaAddress 
-                    : profile.wallet.address
+                  profile.wallet.address
                 ) : ''}
               </p>
             </div>
@@ -672,7 +670,7 @@ export function Settings({ onClose, initialSection }: SettingsProps) {
                 </div>
               </div>
               <ModalNetworkToggle
-                value={(profile?.preferredNetwork || 'base') as SupportedNetwork}
+                value={(profile?.preferredNetwork || 'celo') as SupportedNetwork}
                 onChange={async (network) => {
                   if (!profile || network === profile.preferredNetwork) return;
                   await setPreferredNetwork(network);
