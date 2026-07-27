@@ -26,7 +26,7 @@ function parseJobError(error) {
 function getJobContext(job) {
   const payload = job.payload || {};
   const command = payload.command || {};
-  const chain = normalizeChain(command.chain || payload.chain || 'base');
+  const chain = normalizeChain(command.chain || payload.chain || 'celo');
   const rawAmount = command.amount ?? payload.amount;
   const amount = typeof rawAmount === 'string' ? parseFloat(rawAmount) : rawAmount;
   const tweetId = payload.tweetId || job.source_tweet_id || null;
