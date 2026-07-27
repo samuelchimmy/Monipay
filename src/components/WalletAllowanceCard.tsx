@@ -112,8 +112,8 @@ export function WalletAllowanceCard({
     }
   }, [walletAddress, isCelo, hideTokens]);
 
-  // Tempo uses native fee sponsorship — no approval needed.
-  const isTempo = preferredNetwork === "tempo";
+  // Tempo uses native fee sponsorship — no approval needed. (Celo-only: always false.)
+  const isTempo = false;
 
   const fetchAllowance = useCallback(async () => {
     if (isTempo) {
