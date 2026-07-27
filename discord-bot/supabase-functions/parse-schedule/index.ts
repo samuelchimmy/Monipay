@@ -560,7 +560,7 @@ RULES:
 - Also parse recipients (@tags), amount ($X), amountType (each/total), chain (base/bsc/tempo)
 
 OUTPUT (JSON only, no markdown):
-{"hasSchedule": true|false, "scheduledAt": "ISO8601"|null, "timeDescription": "human-friendly"|null, "command": "command without time/recurrence part"|null, "parsed": {"action": "send"|null, "amount": number|null, "recipients": ["tag1"]|[], "amountType": "each"|"total", "chain": "base"|"bsc"|"tempo"}, "isRecurring": boolean, "recurrenceRule": "minute"|"hour"|"day"|"week"|"month"|"monday"|...|null, "recurrenceInterval": number, "repeatCount": number|null, "recurringDuration": {"value": number, "unit": "minute"|"hour"|"day"|"week"|"month"}|null}`;
+{"hasSchedule": true|false, "scheduledAt": "ISO8601"|null, "timeDescription": "human-friendly"|null, "command": "command without time/recurrence part"|null, "parsed": {"action": "send"|null, "amount": number|null, "recipients": ["tag1"]|[], "amountType": "each"|"total", "chain": "celo"}, "isRecurring": boolean, "recurrenceRule": "minute"|"hour"|"day"|"week"|"month"|"monday"|...|null, "recurrenceInterval": number, "repeatCount": number|null, "recurringDuration": {"value": number, "unit": "minute"|"hour"|"day"|"week"|"month"}|null}`;
 
   try {
     const response = await fetch(`${GEMINI_URL}?key=${GOOGLE_AI_API_KEY}`, {
@@ -633,9 +633,7 @@ function parseCommandDetails(text: string) {
   if (!cleaned) return null;
 
   const lower = cleaned.toLowerCase();
-  let chain = "base";
-  if (["on tempo", "tempo", "alphausd", "αusd", "ausd"].some((k) => lower.includes(k))) chain = "tempo";
-  else if (["usdt", "bnb", "bsc"].some((k) => lower.includes(k))) chain = "bsc";
+  let chain = "celo";
 
   // Multi-send: "send $1 each to @alice, @bob"
   const multiMatch = cleaned.match(/(?:send|pay)\s+\$?([\d.]+)\s*(?:\w*\s+)?each\s+to\s+(.*)/i);
