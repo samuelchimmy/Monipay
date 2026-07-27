@@ -30,7 +30,6 @@ const TAXONOMY = [
       { slug: 'concepts/monitag', title: 'MoniTag Identity' },
       { slug: 'concepts/resolution', title: 'Username Resolution' },
       { slug: 'concepts/gasless-payments', title: 'Gasless Payments' },
-      { slug: 'concepts/multi-chain-routing', title: 'Multi-Chain Routing' },
       { slug: 'concepts/walkaway-test', title: 'Walkaway Test' },
       { slug: 'glossary', title: 'Glossary' }
     ]
@@ -90,13 +89,7 @@ const TAXONOMY = [
     slug: 'chains',
     title: 'Supported Chains',
     items: [
-      { slug: 'chains/base', title: 'Base' },
-      { slug: 'chains/bsc', title: 'BSC' },
-      { slug: 'chains/solana', title: 'Solana' },
-      { slug: 'chains/tempo', title: 'Tempo' },
-      { slug: 'chains/celo', title: 'Celo (MiniPay)' },
-      { slug: 'chains/ink', title: 'Ink' },
-      { slug: 'chains/arc', title: 'Arc' }
+      { slug: 'chains/celo', title: 'Celo (MiniPay)' }
     ]
   },
   {
@@ -104,10 +97,7 @@ const TAXONOMY = [
     title: 'Smart Contracts',
     items: [
       { slug: 'contracts/overview', title: 'Contracts Overview' },
-      { slug: 'contracts/base', title: 'Base Contracts' },
-      { slug: 'contracts/bsc', title: 'BSC Contracts' },
-      { slug: 'contracts/celo', title: 'Celo Contracts' },
-      { slug: 'contracts/tempo', title: 'Tempo Contracts' }
+      { slug: 'contracts/celo', title: 'Celo Contracts' }
     ]
   },
   {
@@ -115,7 +105,6 @@ const TAXONOMY = [
     title: 'Security',
     items: [
       { slug: 'security/architecture', title: 'Security Architecture' },
-      { slug: 'security/solana-key-storage', title: 'Solana Key Storage' },
       { slug: 'concepts/reserved-usernames', title: 'Reserved Usernames' }
     ]
   },
