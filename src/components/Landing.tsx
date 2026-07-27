@@ -72,14 +72,9 @@ function GridBg() {
 }
 
 /* ─── Chain badge ─── */
-function ChainBadge({ chain, className = '' }: { chain: 'base' | 'bsc' | 'tempo' | 'solana' | 'ink' | 'celo'; className?: string }) {
+function ChainBadge({ chain, className = '' }: { chain: 'celo'; className?: string }) {
   const config = {
-    base: { label: 'Base · USDC', bg: 'bg-[#0052FF]', fg: 'text-white', href: '/base' },
-    bsc: { label: 'BSC · USDT', bg: 'bg-[#F0B90B]', fg: 'text-gray-950', href: '/bsc' },
-    solana: { label: 'Solana · USDC', bg: 'bg-[#14F195]', fg: 'text-gray-950', href: '/solana' },
-    ink: { label: 'Ink · USDC', bg: 'bg-[#7B5EA7]', fg: 'text-white', href: '/ink' },
     celo: { label: 'Celo · USDT', bg: 'bg-[#FCFF52]', fg: 'text-gray-950', href: '/minipay' },
-    tempo: { label: 'Tempo · αUSD', bg: 'bg-gray-950', fg: 'text-white', href: '/tempo' },
   }[chain];
   return (
     <a href={config.href} className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold tracking-wide ${config.bg} ${config.fg} hover:opacity-80 transition-opacity ${className}`}>
@@ -332,12 +327,7 @@ export function Landing({ onGetStarted, onSignIn }: LandingProps) {
                 transition={{ delay: 0.3, duration: 0.5 }}
                 className="flex gap-2 mt-8 flex-wrap"
               >
-                <ChainBadge chain="base" />
-                <ChainBadge chain="bsc" />
-                <ChainBadge chain="solana" />
-                <ChainBadge chain="ink" />
                 <ChainBadge chain="celo" />
-                <ChainBadge chain="tempo" />
               </motion.div>
             </div>
 
@@ -752,9 +742,7 @@ export function Landing({ onGetStarted, onSignIn }: LandingProps) {
                 </Button>
               </div>
               <div className="flex justify-center gap-2 mt-8">
-                <ChainBadge chain="base" />
-                <ChainBadge chain="bsc" />
-                <ChainBadge chain="tempo" />
+                <ChainBadge chain="celo" />
               </div>
             </div>
           </Reveal>
