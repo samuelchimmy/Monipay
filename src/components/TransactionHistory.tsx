@@ -13,13 +13,7 @@ import { shortenAddress } from '@/lib/wallet';
 
 // Helper: get currency label for a network (network-level default)
 function getNetworkCurrency(network?: SupportedNetwork | string): string {
-  switch (network) {
-    case 'bsc': return 'USDT';
-    case 'tempo': return 'αUSD';
-    case 'solana': return 'USDC';
-    case 'celo': return 'USDT';
-    default: return 'USDC';
-  }
+  return 'USDT';
 }
 
 // Helper: get currency label for a single transaction.
@@ -33,13 +27,7 @@ function getTxCurrency(tx: { metadata?: { network?: SupportedNetwork | string; t
 // Helper: get explorer URL and label for a network
 function getExplorerInfo(network?: SupportedNetwork | string, txHash?: string): { explorerUrl: string; label: string } {
   const hash = txHash || '';
-  switch (network) {
-    case 'bsc': return { explorerUrl: `https://bscscan.com/tx/${hash}`, label: 'BscScan' };
-    case 'tempo': return { explorerUrl: `https://explore.tempo.xyz/tx/${hash}`, label: 'Tempo' };
-    case 'solana': return { explorerUrl: `https://solscan.io/tx/${hash}`, label: 'Solscan' };
-    case 'celo': return { explorerUrl: `https://celoscan.io/tx/${hash}`, label: 'CeloScan' };
-    default: return { explorerUrl: `https://basescan.org/tx/${hash}`, label: 'BaseScan' };
-  }
+  return { explorerUrl: `https://celoscan.io/tx/${hash}`, label: 'CeloScan' };
 }
 import { PrintableReceipt } from './PrintableReceipt';
 import { isMoniBotTag, VerifiedBadge } from './VerifiedBadge';
