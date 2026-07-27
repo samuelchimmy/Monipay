@@ -13,7 +13,7 @@ interface UseDepositDetectionOptions {
 
 export function useDepositDetection({
   address,
-  network = 'base',
+  network = 'celo',
   enabled = true,
   pollInterval = 5000,
   onDeposit,
