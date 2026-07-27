@@ -93,10 +93,10 @@ export function parseMultiRecipientCommand(text) {
  * @param {string[]} params.recipientTags
  * @param {string} params.tweetId
  * @param {Function} params.fetchNumericId - async (username: string) => string|null
- * @param {string} [params.chain='base']
+ * @param {string} [params.chain='celo']
  * @param {string} [params.language='english']
  */
-export async function executeMultiRecipientP2P({ senderProfile, amount, recipientTags, tweetId, fetchNumericId, chain = 'base', language = 'english' }) {
+export async function executeMultiRecipientP2P({ senderProfile, amount, recipientTags, tweetId, fetchNumericId, chain = 'celo', language = 'english' }) {
   const results = [];
 
   console.log(`  📦 Batch: $${amount} x ${recipientTags.length} recipients`);
