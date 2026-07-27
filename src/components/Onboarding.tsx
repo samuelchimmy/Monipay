@@ -13,7 +13,6 @@ import { useTheme } from 'next-themes';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Landing } from './Landing';
 import { AccountActivationButton } from './AccountActivationButton';
-import { TempoLanding } from './TempoLanding';
 import { GoogleDriveRestore } from './GoogleDriveRestore';
 import { SignInChoice } from './SignInChoice';
 import { SignUpChoice } from './SignUpChoice';
