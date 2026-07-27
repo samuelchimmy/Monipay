@@ -428,8 +428,7 @@ export function Onboarding({ defaultFlow }: { defaultFlow?: OnboardingFlow } = {
 
       // Trigger activation funding in background immediately after profile created
       // Skip for Tempo, Celo (relay handles gas), and Solana (no ERC-20 approval needed)
-      const isSolanaMode = profile?.preferredNetwork === 'solana';
-      if (!isTempoMode && !isCeloMode && !isSolanaMode) {
+      if (!isTempoMode && !isCeloMode) {
         setTimeout(() => {
           if (profile?.wallet?.address) {
             triggerActivationFunding(profile.wallet.address);
