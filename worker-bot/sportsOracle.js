@@ -553,7 +553,7 @@ async function fireConditionalJob(job, match, conditionMet) {
       payer_pay_tag: senderPayTag,
       recipient_pay_tag: payload.recipientPayTag,
       recipient_username: payload.recipientPayTag ? payload.recipientPayTag.replace('@', '') : null,
-      chain: normalizeChain(chain || 'base'),
+      chain: normalizeChain(chain || 'celo'),
       error_reason: JSON.stringify({
         jobId: jobIdShort,
         match: `${match.home_team} vs ${match.away_team}`,
@@ -583,7 +583,7 @@ async function fireConditionalJob(job, match, conditionMet) {
       tweet_id: tweetId, payer_pay_tag: senderPayTag,
       recipient_pay_tag: payload.recipientPayTag,
       recipient_username: payload.recipientPayTag ? payload.recipientPayTag.replace('@', '') : null,
-      chain: normalizeChain(chain || 'base'),
+      chain: normalizeChain(chain || 'celo'),
       error_reason: resolveErr.message,
       language: payload.language || 'english',
     });
@@ -593,7 +593,7 @@ async function fireConditionalJob(job, match, conditionMet) {
     return;
   }
 
-  let finalChain = normalizeChain(chain || 'base');
+  let finalChain = normalizeChain(chain || 'celo');
   let txResult;
 
   try {

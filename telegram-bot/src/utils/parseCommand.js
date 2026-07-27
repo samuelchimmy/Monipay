@@ -7,25 +7,14 @@ const AMOUNT_PATTERN = /\$?([\d]+(?:\.[\d]{1,2})?)\s*(?:usdc|usdt|usdt0|alphausd
 // Multi-recipient: "each to @alice, @bob" or "to @alice and @bob"
 const MULTI_PATTERN = /\beach\b/i;
 
-// Chain keywords mapping
+// Chain keywords mapping (Celo-only)
 const CHAIN_KEYWORDS = {
   celo:   ['on celo', 'celo', 'minipay', 'celo network'],
-  ink:    ['on ink', 'ink chain', 'ink network', 'inkonchain'],
-  solana: ['on solana', 'solana', 'sol ', 'on sol'],
-  tempo:  ['on tempo', 'tempo', 'alphausd', 'αusd', 'ausd'],
-  bsc:    ['usdt', 'bnb', 'bsc', 'binance', 'on bsc', 'on bnb'],
-  base:   ['on base', 'base chain', 'base network', 'usdc'],
 };
 
 export function detectChain(text) {
   const lower = text.toLowerCase();
-  // Strict order: specific chains before generic token matches
   if (CHAIN_KEYWORDS.celo.some(k => lower.includes(k))) return 'celo';
-  if (CHAIN_KEYWORDS.ink.some(k => lower.includes(k))) return 'ink';
-  if (CHAIN_KEYWORDS.solana.some(k => lower.includes(k))) return 'solana';
-  if (CHAIN_KEYWORDS.tempo.some(k => lower.includes(k))) return 'tempo';
-  if (CHAIN_KEYWORDS.bsc.some(k => lower.includes(k))) return 'bsc';
-  if (CHAIN_KEYWORDS.base.some(k => lower.includes(k))) return 'base';
   return null; // null = use fallback hierarchy
 }
 

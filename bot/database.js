@@ -177,7 +177,7 @@ export async function logTransaction({
   payer_pay_tag = null,
   recipient_pay_tag = null,
   recipient_username = null,
-  chain = 'base',
+  chain = 'celo',
   sender_source,              // NEW: 'profile' or 'wallet_profile'
   error_reason = null,
   language = 'english',

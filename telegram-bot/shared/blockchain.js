@@ -152,7 +152,7 @@ async function executeSolanaRelay(action, body) {
   return data;
 }
 
-export async function executeMagicPay(fromAddress, recipientUserId, amount, chainName = 'base', platform = 'discord') {
+export async function executeMagicPay(fromAddress, recipientUserId, amount, chainName = 'celo', platform = 'discord') {
   if (!isValidAddress(fromAddress, chainName)) throw new Error('ERROR_INVALID_ADDRESS:Invalid sender address');
   if (isSolanaChain(chainName)) throw new Error('ERROR_SOLANA_MAGICPAY_NOT_SUPPORTED');
 
@@ -223,7 +223,7 @@ export async function executeMagicPay(fromAddress, recipientUserId, amount, chai
   return { hash, iouId, fee, netAmount };
 }
 
-export async function executeP2P(fromAddress, toAddress, amount, commandId, chainName = 'base', tokenSymbol = null) {
+export async function executeP2P(fromAddress, toAddress, amount, commandId, chainName = 'celo', tokenSymbol = null) {
   if (!isValidAddress(fromAddress, chainName) || !isValidAddress(toAddress, chainName)) {
     throw new Error('ERROR_INVALID_ADDRESS:Invalid sender or recipient address');
   }
@@ -289,7 +289,7 @@ export async function executeP2P(fromAddress, toAddress, amount, commandId, chai
   };
 }
 
-export async function executeGrant(toAddress, amount, campaignId, chainName = 'base') {
+export async function executeGrant(toAddress, amount, campaignId, chainName = 'celo') {
   if (!isValidAddress(toAddress, chainName)) throw new Error('ERROR_INVALID_ADDRESS:Invalid recipient');
   if (isSolanaChain(chainName)) throw new Error('ERROR_SOLANA_GRANT_NOT_SUPPORTED');
 
@@ -342,7 +342,7 @@ export async function executeGrant(toAddress, amount, campaignId, chainName = 'b
   return { hash, fee: parseFloat(formatUnits(feeRaw, config.decimals)) };
 }
 
-export async function getBalance(address, chainName = 'base') {
+export async function getBalance(address, chainName = 'celo') {
   if (!isValidAddress(address, chainName)) return { balance: 0, symbol: 'UNKNOWN' };
   if (isSolanaChain(chainName)) {
     try {
@@ -367,7 +367,7 @@ export async function getBalance(address, chainName = 'base') {
   }
 }
 
-export async function executeGiveFeedback(peerAgentId, score, metadata, chainName = 'base') {
+export async function executeGiveFeedback(peerAgentId, score, metadata, chainName = 'celo') {
   const { publicClient, walletClient } = getClients(chainName);
 
   const calldata = encodeFunctionData({
@@ -398,7 +398,7 @@ export async function executeGiveFeedback(peerAgentId, score, metadata, chainNam
   return { hash };
 }
 
-export async function getAllowance(address, chainName = 'base') {
+export async function getAllowance(address, chainName = 'celo') {
   if (!isValidAddress(address, chainName)) return { allowance: 0, symbol: 'UNKNOWN' };
   if (isSolanaChain(chainName)) return { allowance: 999999, symbol: resolveToken(chainName) };
 

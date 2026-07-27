@@ -119,7 +119,7 @@ export async function logCommand({
   commandText,
   parsedAmount,
   parsedRecipients,
-  chain = 'base',
+  chain = 'celo',
   status = 'pending',
   resultTxHash = null,
   errorReason = null,
@@ -176,7 +176,7 @@ export async function logMonibotTransaction({
   tweetId = null,
   payerPayTag = null,
   recipientPayTag = null,
-  chain = 'base',
+  chain = 'celo',
   senderSource = 'profiles',
   magicpayClaimMode = 'default',
 }) {
@@ -228,7 +228,7 @@ export async function getServerConfig(groupId) {
     .eq('guild_id', String(groupId))
     .maybeSingle();
 
-  if (error || !data?.default_chain) return 'base';
+  if (error || !data?.default_chain) return 'celo';
   return data.default_chain;
 }
 

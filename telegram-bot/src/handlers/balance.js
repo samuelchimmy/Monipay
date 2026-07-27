@@ -4,7 +4,7 @@ import { detectChain } from '../utils/parseCommand.js';
 import { checkRateLimit } from '../middleware/rateLimit.js';
 import { escapeMd } from '../utils/replies.js';
 
-const ACTIVE_CHAINS = ['base', 'bsc', 'celo', 'ink', 'solana'];
+const ACTIVE_CHAINS = ['celo'];
 
 export async function handleBalance(bot, msg, overrideText = null) {
   const rl = checkRateLimit(String(msg.from.id));

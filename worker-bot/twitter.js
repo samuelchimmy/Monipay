@@ -145,10 +145,6 @@ export function getTwitterClient() { return twitterClient; }
 
 const NETWORK_KEYWORDS = {
   celo:   ['on celo', 'celo', 'minipay'],
-  ink:    ['on ink', 'ink chain', 'ink network', 'inkonchain'],
-  solana: ['on solana', 'solana', 'sol ', 'spl'],
-  tempo:  ['on tempo', 'tempo', 'alphausd', 'αusd'],
-  bsc:    ['usdt', 'bnb', 'bsc', 'binance'],
 };
 
 function detectRequestedNetwork(text) {
@@ -334,7 +330,7 @@ async function processP2PCommand(tweet, author) {
     const requestedNetwork = detectRequestedNetwork(tweet.text);
     let startingChain = requestedNetwork 
       ? normalizeChain(requestedNetwork) 
-      : (senderProfile?.preferred_network || 'base');
+      : (senderProfile?.preferred_network || 'celo');
 
     if (senderProfile && senderProfile.source === 'wallet_profile') {
       startingChain = 'celo';
@@ -783,7 +779,7 @@ async function executeAndLog({
 
 // ============ Helper: Log Skip ============
 
-async function logSkip({ tweetId, authorUsername, hash, chain = 'base', detail = null, language = 'english' }) {
+async function logSkip({ tweetId, authorUsername, hash, chain = 'celo', detail = null, language = 'english' }) {
   await logTransaction({
     sender_id:         process.env.MONIBOT_PROFILE_ID,
     receiver_id:       process.env.MONIBOT_PROFILE_ID,
@@ -869,7 +865,7 @@ async function processReply(reply, author, campaign) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'SKIP_NO_PAYTAG', campaign_id: campaign.tweet_id,
-        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: null, chain: 'base',
+        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: null, chain: 'celo',
         sender_source: 'profile',
         error_reason: `@${author.username} replied but didn't include a MoniPay tag. They need to reply with their @tag.`,
         language,
@@ -891,7 +887,7 @@ async function processGrantForPayTag(payTag, reply, author, campaign, language =
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_TARGET_NOT_FOUND', type: 'grant',
-        tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: payTag, chain: 'base',
+        tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: payTag, chain: 'celo',
         sender_source: 'profile',
         error_reason: `@${payTag} is not a registered MoniPay tag. The user needs to sign up at monipay.xyz first.`,
         language,
@@ -904,7 +900,7 @@ async function processGrantForPayTag(payTag, reply, author, campaign, language =
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: targetProfile.id,
         amount: 0, fee: 0, tx_hash: 'SKIP_CAMPAIGN_INACTIVE', campaign_id: campaign.tweet_id,
-        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'base',
+        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'celo',
         sender_source: 'profile',
         error_reason: `Campaign ${campaign.tweet_id} is no longer active.`,
         language,
@@ -918,7 +914,7 @@ async function processGrantForPayTag(payTag, reply, author, campaign, language =
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: targetProfile.id,
         amount: 0, fee: 0, tx_hash: 'LIMIT_REACHED', campaign_id: campaign.tweet_id,
-        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'base',
+        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'celo',
         sender_source: 'profile',
         error_reason: `Campaign filled up. ${current_participants}/${max_participants} slots were claimed before @${targetProfile.pay_tag} replied.`,
         language,
@@ -931,7 +927,7 @@ async function processGrantForPayTag(payTag, reply, author, campaign, language =
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: targetProfile.id,
         amount: 0, fee: 0, tx_hash: 'SKIP_DUPLICATE_GRANT_DB', campaign_id: campaign.tweet_id,
-        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'base',
+        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'celo',
         sender_source: 'profile',
         error_reason: `@${targetProfile.pay_tag} already received their grant from this campaign. One per account.`,
         language,
@@ -945,7 +941,7 @@ async function processGrantForPayTag(payTag, reply, author, campaign, language =
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: targetProfile.id,
         amount: 0, fee: 0, tx_hash: 'SKIP_DUPLICATE_GRANT_ONCHAIN', campaign_id: campaign.tweet_id,
-        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'base',
+        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'celo',
         sender_source: 'profile',
         error_reason: `@${targetProfile.pay_tag} grant already recorded on-chain. DB synced.`,
         language,
@@ -961,7 +957,7 @@ async function processGrantForPayTag(payTag, reply, author, campaign, language =
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: targetProfile.id,
         amount: grantAmount, fee: actualFee, tx_hash: hash, campaign_id: campaign.tweet_id,
-        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'base',
+        type: 'grant', tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'celo',
         sender_source: 'profile',
         language,
       });
@@ -981,7 +977,7 @@ async function processGrantForPayTag(payTag, reply, author, campaign, language =
         tweetId:               reply.id,
         campaignId:            campaign.tweet_id,
         campaignName:          campaign.message?.substring(0, 50) || 'MoniBot Campaign',
-        chain:                 'base',
+        chain:                 'celo',
         symbol:                'USDC',
         language,
       });
@@ -1000,7 +996,7 @@ async function processGrantForPayTag(payTag, reply, author, campaign, language =
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: targetProfile.id,
         amount: 0, fee: 0, tx_hash: errorCode, type: 'grant',
-        tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'base',
+        tweet_id: reply.id, payer_pay_tag: 'MoniBot', recipient_pay_tag: targetProfile.pay_tag, chain: 'celo',
         sender_source: 'profile',
         error_reason: detail,
         language,

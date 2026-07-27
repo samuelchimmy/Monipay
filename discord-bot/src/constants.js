@@ -27,15 +27,10 @@ export const COMMAND_TYPES = {
 
 // ============ Chains (canonical lowercase keys) ============
 export const CHAINS = {
-  BASE: 'base',
-  BSC: 'bsc',
   CELO: 'celo',
-  INK: 'ink',
-  TEMPO: 'tempo',
-  SOLANA: 'solana',
 };
 
-export const DEFAULT_CHAIN = CHAINS.BASE;
+export const DEFAULT_CHAIN = CHAINS.CELO;
 
 // ============ Transaction Types ============
 export const TX_TYPES = {

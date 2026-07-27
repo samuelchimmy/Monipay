@@ -17,7 +17,7 @@ export async function handleGiveaway(bot, msg, amount, maxParticipants, chain = 
     return;
   }
 
-  const activeChain = chain || detectChain(msg.text || '') || sender.preferred_network || 'base';
+  const activeChain = chain || detectChain(msg.text || '') || sender.preferred_network || 'celo';
 
   await bot.sendMessage(
     msg.chat.id,

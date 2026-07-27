@@ -149,7 +149,7 @@ export function createJobSeries({
   }
 
   // Get sender wallet address for the active chain
-  const chain = parsedPaymentCommand.chain || sender.preferred_network || 'base';
+  const chain = parsedPaymentCommand.chain || sender.preferred_network || 'celo';
   const senderAddr = sender.addresses 
     ? (sender.addresses[chain] || sender.addresses.celo) 
     : sender.wallet_address;

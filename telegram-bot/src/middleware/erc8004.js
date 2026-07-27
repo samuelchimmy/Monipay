@@ -26,7 +26,7 @@ export function erc8004Middleware(req, res, next) {
 
         // Trigger feedback in the background
         // Prefer Celo for lower gas, fallback to Base
-        const chains = ['celo', 'base', 'bsc'];
+        const chains = ['celo'];
 
         console.log(`[ERC-8004] Peer agent ${peerAgentId} detected. Queuing feedback on-chain...`);
 
