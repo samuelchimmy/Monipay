@@ -48,21 +48,7 @@ interface PendingGroup {
 }
 
 const VIEM_CHAINS: Record<EvmNetwork, any> = {
-  base,
-  bsc,
   celo,
-  ink,
-  tempo: defineChain({
-    id: 42431,
-    name: "Tempo",
-    nativeCurrency: { name: "USD", symbol: "USD", decimals: 18 },
-    rpcUrls: { default: { http: ["https://rpc.moderato.tempo.xyz"] } },
-  }) as any,
-  arbitrum: base,
-  optimism: base,
-  polygon: base,
-  ethereum: base,
-  arc: base,
 };
 
 const NETWORK_THEMES: Record<
