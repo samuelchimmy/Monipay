@@ -9,9 +9,8 @@
  */
 export function getFeedbackAgentId(chainName) {
   const chain = String(chainName || '').toLowerCase();
-  if (chain === 'bsc') return '96451';
   if (chain === 'celo') return '9103';
-  return '51818'; // Default/Base
+  return '51818';
 }
 
 /**
