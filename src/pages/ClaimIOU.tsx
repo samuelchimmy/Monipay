@@ -44,50 +44,6 @@ const NETWORK_THEMES: Record<
     tokenSymbol: string;
   }
 > = {
-  base: {
-    bg: "bg-[#0052FF]",
-    chipBg: "bg-[#0052FF]",
-    chipText: "text-white",
-    logo: "/chains/base-logo.svg",
-    label: "Base",
-    textOnBg: "text-white",
-    subOnBg: "text-white/60",
-    tagline: "Coinbase L2",
-    tokenSymbol: "USDC",
-  },
-  bsc: {
-    bg: "bg-[#F0B90B]",
-    chipBg: "bg-[#F0B90B]",
-    chipText: "text-gray-950",
-    logo: "/chains/bsc-logo.svg",
-    label: "BSC",
-    textOnBg: "text-gray-950",
-    subOnBg: "text-gray-950/60",
-    tagline: "BNB Smart Chain",
-    tokenSymbol: "USDT",
-  },
-  solana: {
-    bg: "bg-gradient-to-br from-[#9945FF] to-[#14F195]",
-    chipBg: "bg-gradient-to-br from-[#9945FF] to-[#14F195]",
-    chipText: "text-white",
-    logo: "/chains/solana-logo.svg",
-    label: "Solana",
-    textOnBg: "text-white",
-    subOnBg: "text-white/60",
-    tagline: "Speed of Light",
-    tokenSymbol: "USDC",
-  },
-  ink: {
-    bg: "bg-[#7B5EA7]",
-    chipBg: "bg-[#7B5EA7]",
-    chipText: "text-white",
-    logo: "/chains/ink-logo.webp",
-    label: "Ink",
-    textOnBg: "text-white",
-    subOnBg: "text-white/60",
-    tagline: "DeFi Native",
-    tokenSymbol: "USDT0",
-  },
   celo: {
     bg: "bg-[#FCFF52]",
     chipBg: "bg-[#FCFF52]",
@@ -98,17 +54,6 @@ const NETWORK_THEMES: Record<
     subOnBg: "text-gray-950/60",
     tagline: "Mobile First",
     tokenSymbol: "USDT",
-  },
-  tempo: {
-    bg: "bg-foreground",
-    chipBg: "bg-foreground",
-    chipText: "text-background",
-    logo: "/chains/tempo-logo.svg",
-    label: "Tempo",
-    textOnBg: "text-background",
-    subOnBg: "text-background/60",
-    tagline: "Payment-Native",
-    tokenSymbol: "αUSD",
   },
 };
 
@@ -654,10 +599,10 @@ interface ClaimCardProps {
 
 function ClaimCard({ ious, matched, claiming, onClaim }: ClaimCardProps) {
   // Use first IOU's chain to drive theme
-  const chain = (ious[0]?.chain || "base").toLowerCase();
-  const theme = NETWORK_THEMES[chain] || NETWORK_THEMES.base;
+  const chain = (ious[0]?.chain || "celo").toLowerCase();
+  const theme = NETWORK_THEMES[chain] || NETWORK_THEMES.celo;
 
-  const isLightTheme = chain === "celo" || chain === "bsc";
+  const isLightTheme = chain === "celo";
   const innerSurface = isLightTheme ? "bg-black/5 border-black/10" : "bg-white/[0.08] border-white/10";
   const innerSurfaceSolid = isLightTheme ? "bg-black/[0.06]" : "bg-white/[0.07]";
   const dividerColor = isLightTheme ? "border-black/10" : "border-white/10";

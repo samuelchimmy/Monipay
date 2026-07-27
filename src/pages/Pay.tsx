@@ -273,7 +273,7 @@ function PayContent() {
         throw new Error('Incorrect PIN. Please try again.');
       }
 
-      const network = (payerProfile.preferredNetwork || payerProfile.preferred_network || 'base') as SupportedNetwork;
+      const network = (payerProfile.preferredNetwork || payerProfile.preferred_network || 'celo') as SupportedNetwork;
       const paymentAmount = order.amount;
       const feeAmount = paymentAmount * 0.01; // 1% fee
 
@@ -329,7 +329,7 @@ function PayContent() {
       const orderItems = (order?.metadata as any)?.items || null;
 
       const txSource = (order?.metadata as any)?.storefront ? 'online_order' : 'payment_link';
-      const relayFunctionName = network === 'celo' ? 'relay-payment-celo' : network === 'ink' ? 'relay-payment-ink' : 'relay-payment';
+      const relayFunctionName = network === 'celo' ? 'relay-payment-celo' : 'relay-payment';
       const { data: relayData, error: relayError } = await supabase.functions.invoke(relayFunctionName, {
         body: {
           action: 'relay',
@@ -412,7 +412,7 @@ function PayContent() {
     setPaymentStatus('processing');
     setPaymentError(null);
     try {
-      const network = (walletProfile.preferredNetwork || 'base') as SupportedNetwork;
+      const network = (walletProfile.preferredNetwork || 'celo') as SupportedNetwork;
       const paymentAmount = order.amount;
       const feeAmount = paymentAmount * 0.01;
 
@@ -456,7 +456,7 @@ function PayContent() {
         deadline: message.deadline.toString(),
       };
       const orderItems = (order?.metadata as any)?.items || null;
-      const relayFunctionName = network === 'celo' ? 'relay-payment-celo' : network === 'ink' ? 'relay-payment-ink' : 'relay-payment';
+      const relayFunctionName = network === 'celo' ? 'relay-payment-celo' : 'relay-payment';
       const { data: relayData, error: relayError } = await supabase.functions.invoke(relayFunctionName, {
         body: {
           action: 'relay',
@@ -862,7 +862,7 @@ function PayContent() {
                           maxLength={6}
                           className="h-12 rounded-xl text-center text-2xl tracking-widest"
                         />
-                        {((payerProfile?.preferredNetwork || payerProfile?.preferred_network || 'base') === 'celo') && (
+                        {((payerProfile?.preferredNetwork || payerProfile?.preferred_network || 'celo') === 'celo') && (
                           <div className="mb-4 text-left">
                             <label className="text-xs text-muted-foreground mb-1 block">Pay with Celo Token</label>
                             <Select value={selectedCeloToken} onValueChange={setSelectedCeloToken}>
@@ -1001,7 +1001,7 @@ function PayContent() {
                         <p className="text-sm text-muted-foreground">
                           Connected as <span className="font-mono">{wagmiAddress?.slice(0, 6)}…{wagmiAddress?.slice(-4)}</span>
                         </p>
-                        {((walletProfile?.preferredNetwork || 'base') === 'celo') && (
+                        {((walletProfile?.preferredNetwork || 'celo') === 'celo') && (
                           <div className="mb-4 text-left">
                             <label className="text-xs text-muted-foreground mb-1 block">Pay with Celo Token</label>
                             <select 

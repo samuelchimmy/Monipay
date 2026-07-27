@@ -25,7 +25,7 @@ interface PrintableReceiptProps {
 
 export const PrintableReceipt = forwardRef<HTMLDivElement, PrintableReceiptProps>(
   ({ transaction, walletAddress, moniBotContext }, ref) => {
-    const txNetwork = (transaction.metadata?.network || 'base') as SupportedNetwork;
+    const txNetwork = (transaction.metadata?.network || 'celo') as SupportedNetwork;
     const chainConfig = getChainConfig(txNetwork);
     const formatDate = (timestamp: number) => {
       return new Date(timestamp).toLocaleDateString('en-US', {

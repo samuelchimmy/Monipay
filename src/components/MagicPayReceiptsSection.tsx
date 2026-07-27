@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, ExternalLink, Sparkles, Clock, Check, RotateCcw
 import { supabase } from "@/integrations/supabase/client";
 import { usePayTag } from "@/contexts/PayTagContext";
 
-type IouChain = "base" | "bsc" | "tempo" | "celo" | "ink" | "solana" | string;
+type IouChain = "celo" | string;
 
 interface MagicPayIou {
   id: string;
@@ -24,14 +24,7 @@ interface MagicPayIou {
 }
 
 function explorerForChain(chain: IouChain, hash: string): { url: string; label: string } {
-  switch (chain) {
-    case "bsc": return { url: `https://bscscan.com/tx/${hash}`, label: "BscScan" };
-    case "tempo": return { url: `https://explore.tempo.xyz/tx/${hash}`, label: "Tempo" };
-    case "solana": return { url: `https://solscan.io/tx/${hash}`, label: "Solscan" };
-    case "celo": return { url: `https://celoscan.io/tx/${hash}`, label: "CeloScan" };
-    case "ink": return { url: `https://explorer.inkonchain.com/tx/${hash}`, label: "Ink" };
-    default: return { url: `https://basescan.org/tx/${hash}`, label: "BaseScan" };
-  }
+  return { url: `https://celoscan.io/tx/${hash}`, label: "CeloScan" };
 }
 
 function platformLabel(p: string | null): string {

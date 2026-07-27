@@ -135,7 +135,7 @@ const Index = () => {
           jsonLd={[
             getOrganizationSchema(),
             getWebSiteSchema(),
-            getSoftwareApplicationSchema('multi'),
+            getSoftwareApplicationSchema('celo'),
           ]}
         />
         <Helmet>

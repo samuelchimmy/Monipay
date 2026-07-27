@@ -62,13 +62,7 @@ interface RunDetail {
 }
 
 function currencyForChain(chain: string | null): string {
-  switch ((chain || "").toLowerCase()) {
-    case "bsc": return "USDT";
-    case "celo": return "USDT";
-    case "tempo": return "αUSD";
-    case "solana": return "USDC";
-    default: return "USDC";
-  }
+  return "USDT";
 }
 
 function relTime(iso: string | null): string {
