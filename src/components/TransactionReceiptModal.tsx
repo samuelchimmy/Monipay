@@ -52,12 +52,9 @@ interface TransactionReceiptModalProps {
 }
 // Helper: Tx hash with explorer link
 function TransactionHashWithExplorer({ txHash, metadata, handleCopy, copied }: { txHash: string; metadata?: Record<string, any>; handleCopy: (text: string) => void; copied: boolean }) {
-  const network = (metadata?.network || 'base') as SupportedNetwork;
+  const network = (metadata?.network || 'celo') as SupportedNetwork;
   const config = getChainConfig(network);
-  const isSolana = network === 'solana';
-  const explorerUrl = isSolana
-    ? `https://solscan.io/tx/${txHash}`
-    : config ? `${config.explorerUrl}/tx/${txHash}` : `https://basescan.org/tx/${txHash}`;
+  const explorerUrl = config ? `${config.explorerUrl}/tx/${txHash}` : `https://celoscan.io/tx/${txHash}`;
 
   return (
     <div className="px-6 py-4 border-b border-dashed border-gray-300">
@@ -79,7 +76,7 @@ function TransactionHashWithExplorer({ txHash, metadata, handleCopy, copied }: {
         rel="noopener noreferrer"
         className="mt-2 inline-flex items-center gap-1 text-[10px] text-blue-500 hover:underline"
       >
-        View on {isSolana ? 'Solscan' : 'Explorer'} <ExternalLink className="w-3 h-3" />
+        View on Explorer <ExternalLink className="w-3 h-3" />
       </a>
     </div>
   );
@@ -97,8 +94,8 @@ export function TransactionReceiptModal({
   const receiptRef = useRef<HTMLDivElement>(null);
   const { profile } = usePayTag();
 
-  // Derive network from transaction metadata, fallback to user's preferred network, then 'base'
-  const txNetwork = (transaction?.metadata?.network || profile?.preferredNetwork || 'base') as SupportedNetwork;
+  // Derive network from transaction metadata, fallback to user's preferred network, then 'celo'
+  const txNetwork = (transaction?.metadata?.network || profile?.preferredNetwork || 'celo') as SupportedNetwork;
   const chainConfig = getChainConfig(txNetwork);
 
   const formatDate = (timestamp: number) => {
