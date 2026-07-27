@@ -72,8 +72,8 @@ import { getIOURegistryAddress, IOU_SUPPORTED_CHAINS } from "@/lib/iouRegistry";
 
 // Create public client for reading blockchain state
 const publicClient = createPublicClient({
-  chain: base,
-  transport: http("https://mainnet.base.org"),
+  chain: celo,
+  transport: http("https://forno.celo.org"),
 });
 
 export interface SocialIdentity {
@@ -262,7 +262,7 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
   const [currentRpc, setCurrentRpc] = useState<string | null>(null);
   const [customRpcInput, setCustomRpcInput] = useState("");
 
-  const network = (profile?.preferredNetwork || "base") as SupportedNetwork;
+  const network = (profile?.preferredNetwork || "celo") as SupportedNetwork;
   const isCelo = network === "celo";
 
   const celoTokenObj = isCelo
@@ -464,18 +464,9 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
       const walletAddress = profile.wallet.address as `0x${string}`;
       const deviceId = getDeviceId();
 
-      const network = (profile?.preferredNetwork || "base") as SupportedNetwork;
+      const network = (profile?.preferredNetwork || "celo") as SupportedNetwork;
 
-      const fundChain =
-        network === "bsc"
-          ? "BSC"
-          : network === "celo"
-            ? "CELO"
-            : network === "ink"
-              ? "INK"
-              : network === "base"
-                ? "BASE"
-                : null;
+      const fundChain = network === "celo" ? "CELO" : null;
 
       if (fundChain) {
         const checkClient = createPublicClient({
@@ -502,7 +493,7 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
           }
           const finalBal = await checkClient.getBalance({ address: walletAddress });
           if (finalBal === 0n) {
-            const gasSymbol = network === "bsc" ? "BNB" : network === "celo" ? "CELO" : "ETH";
+            const gasSymbol = "CELO";
             toast.error(`Couldn't sponsor ${gasSymbol} gas right now. Please try again in a moment.`, {
               id: "approval",
             });
@@ -543,13 +534,7 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
       const receipt = await confirmClient.waitForTransactionReceipt({ hash });
 
       if (receipt.status === "reverted") {
-        throw new Error(
-          network === "bsc"
-            ? "Transaction reverted. You may not have enough BNB for gas fees on BSC."
-            : network === "tempo"
-              ? "Transaction reverted. Visit faucet.tempo.xyz to get testnet gas funds first."
-              : "Transaction reverted on-chain.",
-        );
+        throw new Error("Transaction reverted on-chain.");
       }
 
       if (validProfileId) {
@@ -603,16 +588,7 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
       const walletAddress = profile.wallet.address as `0x${string}`;
       const deviceId = getDeviceId();
 
-      const fundChain =
-        network === "bsc"
-          ? "BSC"
-          : network === "celo"
-            ? "CELO"
-            : network === "ink"
-              ? "INK"
-              : network === "base"
-                ? "BASE"
-                : null;
+      const fundChain = network === "celo" ? "CELO" : null;
 
       if (fundChain) {
         const checkClient = createPublicClient({
@@ -637,7 +613,7 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
           }
           const finalBal = await checkClient.getBalance({ address: walletAddress });
           if (finalBal === 0n) {
-            const gasSymbol = network === "bsc" ? "BNB" : network === "celo" ? "CELO" : "ETH";
+            const gasSymbol = "CELO";
             toast.error(`Couldn't sponsor ${gasSymbol} gas right now. Please try again in a moment.`, {
               id: "iou-approval",
             });
@@ -753,18 +729,7 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
   const canSetBotAllowance = isAdmin || hasSocialLinked;
 
   // ─── Network Theme ───────────────────────────────────────────────────────
-  const tokenSymbol =
-    network === "tempo"
-      ? "αUSD"
-      : network === "bsc"
-        ? "USDT"
-        : network === "celo"
-          ? selectedToken
-          : network === "ink"
-            ? "USDT0"
-            : network === "solana"
-              ? "USDC"
-              : "USDC";
+  const tokenSymbol = network === "celo" ? selectedToken : "USDC";
   const iouRegistry = activeIouRegistry;
 
   const NETWORK_THEMES: Record<
@@ -781,50 +746,6 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
       tagline: string;
     }
   > = {
-    base: {
-      bg: "bg-[#0052FF]",
-      ring: "ring-[#0052FF]/30",
-      chipBg: "bg-[#0052FF]",
-      chipText: "text-white",
-      logo: "/chains/base-logo.svg",
-      label: "Base",
-      textOnBg: "text-white",
-      subOnBg: "text-white/60",
-      tagline: "Coinbase L2",
-    },
-    bsc: {
-      bg: "bg-[#F0B90B]",
-      ring: "ring-[#F0B90B]/30",
-      chipBg: "bg-[#F0B90B]",
-      chipText: "text-gray-950",
-      logo: "/chains/bsc-logo.svg",
-      label: "BSC",
-      textOnBg: "text-gray-950",
-      subOnBg: "text-gray-950/60",
-      tagline: "BNB Smart Chain",
-    },
-    solana: {
-      bg: "bg-gradient-to-br from-[#9945FF] to-[#14F195]",
-      ring: "ring-[#9945FF]/30",
-      chipBg: "bg-gradient-to-br from-[#9945FF] to-[#14F195]",
-      chipText: "text-white",
-      logo: "/chains/solana-logo.svg",
-      label: "Solana",
-      textOnBg: "text-white",
-      subOnBg: "text-white/60",
-      tagline: "Speed of Light",
-    },
-    ink: {
-      bg: "bg-[#7B5EA7]",
-      ring: "ring-[#7B5EA7]/30",
-      chipBg: "bg-[#7B5EA7]",
-      chipText: "text-white",
-      logo: "/chains/ink-logo.webp",
-      label: "Ink",
-      textOnBg: "text-white",
-      subOnBg: "text-white/60",
-      tagline: "DeFi Native",
-    },
     celo: {
       bg: "bg-[#FCFF52]",
       ring: "ring-[#FCFF52]/40",
@@ -836,21 +757,10 @@ export function MoniBotSettings({ profileId }: MoniBotSettingsProps) {
       subOnBg: "text-gray-950/60",
       tagline: "Mobile First",
     },
-    tempo: {
-      bg: "bg-foreground",
-      ring: "ring-foreground/30",
-      chipBg: "bg-foreground",
-      chipText: "text-background",
-      logo: "/chains/tempo-logo.svg",
-      label: "Tempo",
-      textOnBg: "text-background",
-      subOnBg: "text-background/60",
-      tagline: "Payment-Native",
-    },
   };
-  const theme = NETWORK_THEMES[network] || NETWORK_THEMES.base;
+  const theme = NETWORK_THEMES[network] || NETWORK_THEMES.celo;
 
-  const NETWORK_OPTIONS: SupportedNetwork[] = ["base", "bsc", "solana", "ink", "celo"];
+  const NETWORK_OPTIONS: SupportedNetwork[] = ["celo"];
   const selectableNetworks = NETWORK_OPTIONS.filter((n) => NETWORK_THEMES[n]);
 
   const isLightTheme = true; // Celo uses the light theme
