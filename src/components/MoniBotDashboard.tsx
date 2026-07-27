@@ -35,7 +35,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { getGrantBalance, MONIBOT_ROUTER_ADDRESS, MONIBOT_ROUTER_ADDRESS_BSC, USDC_ADDRESS, USDT_ADDRESS_BSC, getMoniBotConfig } from "@/lib/monibotContract";
 import { decryptPrivateKey } from "@/lib/wallet";
 import { createWalletClient, http, parseUnits, erc20Abi } from "viem";
-import { base, bsc } from "viem/chains";
+import { celo } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import type { SupportedNetwork } from "@/config/chains";
 import { NetworkToggle } from "./NetworkToggle";
@@ -88,7 +88,7 @@ export function MoniBotDashboard() {
   const [grantBudgetBase, setGrantBudgetBase] = useState<string>("0");
   const [grantBudgetBsc, setGrantBudgetBsc] = useState<string>("0");
   const [topUpAmount, setTopUpAmount] = useState("");
-  const [topUpNetwork, setTopUpNetwork] = useState<SupportedNetwork>("base");
+  const [topUpNetwork, setTopUpNetwork] = useState<SupportedNetwork>("celo");
   const [isTopUpLoading, setIsTopUpLoading] = useState(false);
   const [isBudgetLoading, setIsBudgetLoading] = useState(true);
 
@@ -105,8 +105,8 @@ export function MoniBotDashboard() {
     setIsBudgetLoading(true);
     try {
       const [baseBalance, bscBalance] = await Promise.all([
-        getGrantBalance('base'),
-        getGrantBalance('bsc'),
+        getGrantBalance('celo'),
+        getGrantBalance('celo'),
       ]);
       setGrantBudgetBase(baseBalance);
       setGrantBudgetBsc(bscBalance);
@@ -141,8 +141,8 @@ export function MoniBotDashboard() {
       const account = privateKeyToAccount(privateKey as `0x${string}`);
 
       const config = getMoniBotConfig(topUpNetwork);
-      const targetChain = topUpNetwork === 'bsc' ? bsc : base;
-      const rpcUrl = topUpNetwork === 'bsc' ? 'https://bsc-dataseed.binance.org' : 'https://base-rpc.publicnode.com';
+      const targetChain = celo;
+      const rpcUrl = 'https://forno.celo.org';
 
       const walletClient = createWalletClient({
         account,
@@ -412,8 +412,7 @@ export function MoniBotDashboard() {
               onChange={(e) => setTopUpNetwork(e.target.value as SupportedNetwork)}
               className="h-9 rounded-md border border-border bg-background px-2 text-xs font-medium"
             >
-              <option value="base">Base</option>
-              <option value="bsc">BSC</option>
+              <option value="celo">Celo</option>
             </select>
             <Input
               type="number"
