@@ -6,16 +6,6 @@ import { HeroSearch } from '@/components/search/HeroSearch';
 const CHAINS = [
   { name: 'Celo', token: 'USDT', status: 'live', color: 'var(--color-celo)', bg: 'var(--color-celo-bg)', href: '/docs/chains/celo',
     icon: <img src="/chains/celo.svg" alt="Celo Logo" className="w-12 h-12 object-contain" /> },
-  { name: 'Base', token: 'USDC', status: 'live', color: 'var(--color-base)', bg: 'var(--color-base-bg)', href: '/docs/chains/base',
-    icon: <img src="/chains/base.svg" alt="Base Logo" className="w-12 h-12 object-contain" /> },
-  { name: 'BNB Chain', token: 'USDT', status: 'live', color: 'var(--color-bsc)', bg: 'var(--color-bsc-bg)', href: '/docs/chains/bsc',
-    icon: <img src="/chains/bnb.svg" alt="BNB Chain Logo" className="w-12 h-12 object-contain" /> },
-  { name: 'Ink', token: 'USDT0', status: 'live', color: 'var(--color-ink)', bg: 'var(--color-ink-bg)', href: '/docs/chains/ink',
-    icon: <img src="/chains/ink.svg" alt="Ink Logo" className="w-12 h-12 object-contain" /> },
-  { name: 'Solana', token: 'USDC', status: 'live', color: '#9945FF', bg: 'rgba(153,69,255,0.08)', href: '/docs/chains/solana',
-    icon: <img src="/chains/solana.svg" alt="Solana Logo" className="w-12 h-12 object-contain" /> },
-  { name: 'Arc', token: 'USDC', status: 'soon', color: 'var(--color-arc)', bg: 'var(--color-arc-bg)', href: '/docs/chains/arc',
-    icon: <img src="/chains/arc.svg" alt="Arc Logo" className="w-12 h-12 object-contain" /> },
 ];
 
 const QUICK_LINKS = [
@@ -52,9 +42,9 @@ const WHO_IS_IT_FOR = [
 const FEATURES = [
   { title: 'Gasless', desc: 'Zero gas for users. Relayer sponsors all fees.', href: '/docs/concepts/gasless-payments', icon: <Zap className="w-4 h-4" /> },
   { title: 'Non-Custodial', desc: 'Keys encrypted client-side. We never touch them.', href: '/docs/concepts/invisible-wallet', icon: <Shield className="w-4 h-4" /> },
-  { title: 'Multi-Chain', desc: 'One API across 6 chains. Automatic routing.', href: '/docs/concepts/multi-chain-routing', icon: <Globe className="w-4 h-4" /> },
+  { title: 'MiniPay Native', desc: 'Built for Celo and the MiniPay wallet.', href: '/docs/chains/celo', icon: <Globe className="w-4 h-4" /> },
   { title: 'Agent Native', desc: 'Scoped keys and natural language for LLM agents.', href: '/docs/monibot/overview', icon: <Bot className="w-4 h-4" /> },
-  { title: 'Pay by Username', desc: 'MoniTag resolves to wallets across all chains.', href: '/docs/concepts/monitag', icon: <CreditCard className="w-4 h-4" /> },
+  { title: 'Pay by Username', desc: 'MoniTag resolves to wallets on Celo.', href: '/docs/concepts/monitag', icon: <CreditCard className="w-4 h-4" /> },
   { title: 'Payment Links', desc: 'One-click links. No wallet extension needed.', href: '/docs/payments/payment-links', icon: <Link2 className="w-4 h-4" /> },
 ];
 

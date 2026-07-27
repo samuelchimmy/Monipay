@@ -64,10 +64,7 @@ const navigation = [
     title: 'CHAINS',
     icon: Network,
     items: [
-      { title: 'Base', href: '/chains/base' },
-      { title: 'BNB Smart Chain', href: '/chains/bsc' },
-      { title: 'Tempo', href: '/chains/tempo' },
-      { title: 'Solana', href: '/chains/solana' },
+      { title: 'Celo (MiniPay)', href: '/chains/celo' },
     ],
   },
   {

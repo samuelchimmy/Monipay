@@ -76,31 +76,10 @@ export function Footer({ updated: propUpdated }: FooterProps = {}) {
 
             <div className="space-y-1 text-[12px] sm:text-sm">
               <Link
-                href="/docs/chains/base"
+                href="/docs/chains/celo"
                 className="block text-text-muted hover:text-text-primary"
               >
-                Base
-              </Link>
-
-              <Link
-                href="/docs/chains/bsc"
-                className="block text-text-muted hover:text-text-primary"
-              >
-                BSC
-              </Link>
-
-              <Link
-                href="/docs/chains/solana"
-                className="block text-text-muted hover:text-text-primary"
-              >
-                Solana
-              </Link>
-
-              <Link
-                href="/docs/chains/tempo"
-                className="block text-text-muted hover:text-text-primary"
-              >
-                Tempo
+                Celo (MiniPay)
               </Link>
             </div>
           </div>
