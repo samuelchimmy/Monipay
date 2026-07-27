@@ -72,16 +72,12 @@ function shortAddr(a: string) {
   return `${a.slice(0, 6)}…${a.slice(-4)}`;
 }
 
-// Networks surfaced in the wallet-connect dashboard selector. Solana is
-// excluded because Path C wallets are EVM-only via wagmi. Tempo is excluded
-// per product decision (fee-sponsored, not user-facing in this surface).
-const WALLET_NETWORKS: EvmNetwork[] = ["base", "bsc", "celo", "ink"];
+// Networks surfaced in the wallet-connect dashboard selector. MoniPay is
+// Celo-only.
+const WALLET_NETWORKS: EvmNetwork[] = ["celo"];
 
 const RPC: Record<string, string> = {
-  base: "https://mainnet.base.org",
-  bsc: "https://bsc-dataseed.binance.org",
   celo: "https://forno.celo.org",
-  ink: "https://rpc-qnd.inkonchain.com",
 };
 
 export function WalletDashboard({ walletAddress, profileId, sessionType, isLegacy }: Props) {
@@ -95,9 +91,7 @@ export function WalletDashboard({ walletAddress, profileId, sessionType, isLegac
   const [showWhatIsMoniBot, setShowWhatIsMoniBot] = useState(false);
   const [pendingIouCount, setPendingIouCount] = useState(0);
   const [preferredName, setPreferredName] = useState<string | null>(null);
-  const [preferredNetwork, setPreferredNetwork] = useState<SupportedNetwork>(
-    sessionType === "minipay" ? "celo" : "base",
-  );
+  const [preferredNetwork, setPreferredNetwork] = useState<SupportedNetwork>("celo");
   const [payTag, setPayTag] = useState<string | null>(null);
   const [identities, setIdentities] = useState<
     Array<{ platform: "discord" | "telegram" | "twitter"; userId: string }>
@@ -128,7 +122,7 @@ export function WalletDashboard({ walletAddress, profileId, sessionType, isLegac
         if (!p) return;
         if (!isLegacy) {
           setPreferredName(p.preferred_name ?? null);
-          setPreferredNetwork((p.preferred_network as SupportedNetwork) ?? "base");
+          setPreferredNetwork((p.preferred_network as SupportedNetwork) ?? "celo");
         }
         setPayTag(p.pay_tag ?? null);
         const ids: Array<{ platform: "discord" | "telegram" | "twitter"; userId: string }> = [];
@@ -218,27 +212,11 @@ export function WalletDashboard({ walletAddress, profileId, sessionType, isLegac
   };
 
   const isMiniPay = sessionType === "minipay";
-  const activeChain = CHAIN_CONFIGS[preferredNetwork as EvmNetwork] ?? CHAIN_CONFIGS.base;
+  const activeChain = CHAIN_CONFIGS[preferredNetwork as EvmNetwork] ?? CHAIN_CONFIGS.celo;
 
-  // Per-chain accent palette — mirrors the [data-base]/[data-bsc]/[data-ink]
-  // scopes in src/index.css so the dashboard accent matches each chain's
-  // landing page (Base blue, BSC gold, Ink purple). Celo keeps the default
-  // green from the [data-minipay] scope.
+  // Celo keeps the default green from the [data-minipay] scope.
   const CHAIN_ACCENT: Record<EvmNetwork, { light: [string, string, string]; dark: [string, string, string] } | null> = {
-    base: {
-      light: ["217 100% 50%", "217 100% 42%", "217 100% 96%"],
-      dark:  ["217 100% 62%", "217 100% 55%", "217 50% 16%"],
-    },
-    bsc: {
-      light: ["45 89% 49%", "38 92% 42%", "45 90% 95%"],
-      dark:  ["45 92% 55%", "45 92% 48%", "45 40% 16%"],
-    },
-    ink: {
-      light: ["262 83% 58%", "262 80% 48%", "262 60% 96%"],
-      dark:  ["262 90% 68%", "262 85% 60%", "262 40% 16%"],
-    },
     celo: null, // keep default green from [data-minipay]
-    tempo: null, arbitrum: null, optimism: null, polygon: null, ethereum: null, arc: null,
   };
   const accent = CHAIN_ACCENT[preferredNetwork as EvmNetwork] ?? null;
   const accentTriplet = accent ? (isDark ? accent.dark : accent.light) : null;
@@ -279,9 +257,8 @@ export function WalletDashboard({ walletAddress, profileId, sessionType, isLegac
 
   // ── Balance fetcher — re-runs on network/address change ──
   useEffect(() => {
-    if (preferredNetwork === "tempo" || preferredNetwork === "solana") return;
     let cancelled = false;
-    const rpc = RPC[preferredNetwork] ?? RPC.base;
+    const rpc = RPC[preferredNetwork] ?? RPC.celo;
     setBalanceLoading(true);
     (async () => {
       try {
@@ -322,8 +299,7 @@ export function WalletDashboard({ walletAddress, profileId, sessionType, isLegac
 
   // Check if wallet is activated on the current preferredNetwork
   useEffect(() => {
-    if (!walletAddress || preferredNetwork === "tempo" || preferredNetwork === "solana") {
-      setIsActivated(true); // tempo and solana don't need gas activation
+    if (!walletAddress) {
       return;
     }
     let cancelled = false;
