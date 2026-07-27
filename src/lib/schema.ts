@@ -20,16 +20,10 @@ export const getWebSiteSchema = () => ({
   url: SITE,
 });
 
-export type ChainKey = 'base' | 'bsc' | 'solana' | 'tempo' | 'ink' | 'celo' | 'multi';
+export type ChainKey = 'celo';
 
 const CHAIN_META: Record<ChainKey, { label: string; token: string; path: string }> = {
-  base:   { label: 'Base',        token: 'USDC',         path: '/base' },
-  bsc:    { label: 'BSC',         token: 'USDT',         path: '/bsc' },
-  solana: { label: 'Solana',      token: 'USDC',         path: '/solana' },
-  tempo:  { label: 'Tempo',       token: 'AlphaUSD',     path: '/tempo' },
-  ink:    { label: 'Ink',         token: 'USDT0',        path: '/ink' },
   celo:   { label: 'Celo',        token: 'USDm',         path: '/minipay' },
-  multi:  { label: 'Multi-chain', token: 'Stablecoins',  path: '/' },
 };
 
 export const getSoftwareApplicationSchema = (chain: ChainKey) => {
@@ -37,14 +31,12 @@ export const getSoftwareApplicationSchema = (chain: ChainKey) => {
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: chain === 'multi' ? NAME : `${NAME} on ${c.label}`,
+    name: `${NAME} on ${c.label}`,
     applicationCategory: 'FinanceApplication',
     operatingSystem: 'Web, iOS, Android',
     url: `${SITE}${c.path}`,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    description: chain === 'multi'
-      ? 'Gasless non-custodial stablecoin payments across multiple chains.'
-      : `Send ${c.token} on ${c.label} by username with zero gas via ${NAME}.`,
+    description: `Send ${c.token} on ${c.label} by username with zero gas via ${NAME}.`,
   };
 };
 
