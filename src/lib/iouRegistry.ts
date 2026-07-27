@@ -113,4 +113,4 @@ export function getIOURegistryAddress(chain: EvmNetwork): `0x${string}` | "" {
 }
 
 /** Chains where MagicPay/IOURegistry is currently live. */
-export const IOU_SUPPORTED_CHAINS: EvmNetwork[] = ["base", "bsc", "celo", "ink"];
+export const IOU_SUPPORTED_CHAINS: EvmNetwork[] = ["celo"];
