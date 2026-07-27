@@ -41,21 +41,11 @@ type BalanceInfo = Record<string, string>;
 type ActivationInfo = Record<string, { funded: boolean; tx_hash?: string }>;
 
 const ACTIVATION_CHAINS: Array<{ key: string; label: string }> = [
-  { key: 'base',   label: 'Base' },
-  { key: 'bsc',    label: 'BSC' },
   { key: 'celo',   label: 'Celo' },
-  { key: 'ink',    label: 'Ink' },
-  { key: 'tempo',  label: 'Tempo' },
-  { key: 'solana', label: 'Solana' },
 ];
 
 const BALANCE_CHAINS: Array<{ key: string; label: string; currency: string; accent: string }> = [
-  { key: 'base',   label: 'Base',   currency: 'USDC',  accent: 'text-blue-500 bg-blue-500/5 border-blue-500/10' },
-  { key: 'bsc',    label: 'BSC',    currency: 'USDT',  accent: 'text-yellow-600 bg-yellow-500/5 border-yellow-500/10' },
   { key: 'celo',   label: 'Celo',   currency: 'USDT',  accent: 'text-amber-400 bg-amber-500/5 border-amber-500/10' },
-  { key: 'ink',    label: 'Ink',    currency: 'USDT0', accent: 'text-purple-500 bg-purple-500/5 border-purple-500/10' },
-  { key: 'tempo',  label: 'Tempo',  currency: 'aUSD',  accent: 'text-sky-500 bg-sky-500/5 border-sky-500/10' },
-  { key: 'solana', label: 'Solana', currency: 'USDC',  accent: 'text-emerald-500 bg-emerald-500/5 border-emerald-500/10' },
 ];
 
 interface SocialTx {
