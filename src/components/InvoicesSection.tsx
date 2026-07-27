@@ -53,7 +53,7 @@ export function InvoicesSection({ isOpen, onClose, deepLinkInvoiceId }: Invoices
   const [hasDeepLinked, setHasDeepLinked] = useState(false);
 
   // ── Celo token selection for paying invoices ──────────────────────────────
-  const invoiceNetwork = (profile?.preferredNetwork || 'base') as SupportedNetwork;
+  const invoiceNetwork = (profile?.preferredNetwork || 'celo') as SupportedNetwork;
   const isCeloInvoice = invoiceNetwork === 'celo';
   const [celoToken, setCeloToken] = useState<CeloTokenSymbol>('USDT');
   const activeCeloToken = CELO_TOKENS.find(t => t.symbol === celoToken) ?? CELO_TOKENS[0];
@@ -584,11 +584,8 @@ export function InvoicesSection({ isOpen, onClose, deepLinkInvoiceId }: Invoices
 
               {/* Paid info */}
               {selectedInvoice.status === 'paid' && selectedInvoice.tx_hash && (() => {
-                const isSolana = invoiceNetwork === 'solana';
-                const explorerUrl = isSolana 
-                  ? `https://solscan.io/tx/${selectedInvoice.tx_hash}`
-                  : `${getChainConfig(invoiceNetwork).explorerUrl}/tx/${selectedInvoice.tx_hash}`;
-                const explorerName = isSolana ? 'SolScan' : `${getChainConfig(invoiceNetwork).name}Scan`;
+                const explorerUrl = `${getChainConfig(invoiceNetwork).explorerUrl}/tx/${selectedInvoice.tx_hash}`;
+                const explorerName = `${getChainConfig(invoiceNetwork).name}Scan`;
                 return (
                   <div className="text-center">
                     <a
