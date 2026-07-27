@@ -230,7 +230,7 @@ export async function handleRecurringManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: 'Please specify the Series ID, e.g. cancel series abc12345.', language
       });
       return;
@@ -245,7 +245,7 @@ export async function handleRecurringManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_NOT_FOUND', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: `Series ID ${seriesId} not found in the database.`, language
       });
       return;
@@ -256,7 +256,7 @@ export async function handleRecurringManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_OWNER', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: "That's not your series, chief 🚫", language
       });
       return;
@@ -271,7 +271,7 @@ export async function handleRecurringManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_CANCEL_DB', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: 'Database error cancelling series. Try again.', language
       });
       return;
@@ -281,7 +281,7 @@ export async function handleRecurringManagement(tweet, author, language) {
     await logTransaction({
       sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
       amount: 0, fee: 0, tx_hash: 'RECURRING_CANCEL', type: 'p2p_command',
-      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
       error_reason: JSON.stringify({ seriesId, cancelledCount }), language
     });
     return;
@@ -296,7 +296,7 @@ export async function handleRecurringManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: 'Please specify the Series ID, e.g. series status abc12345.', language
       });
       return;
@@ -310,7 +310,7 @@ export async function handleRecurringManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_NOT_FOUND', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: `Series ID ${seriesId} not found.`, language
       });
       return;
@@ -321,7 +321,7 @@ export async function handleRecurringManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_STATUS_OWNER', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: "That's not your series, chief 🚫", language
       });
       return;
@@ -335,7 +335,7 @@ export async function handleRecurringManagement(tweet, author, language) {
     await logTransaction({
       sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
       amount: 0, fee: 0, tx_hash: 'RECURRING_STATUS', type: 'p2p_command',
-      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
       error_reason: JSON.stringify({ seriesId, completed, pending, running, failed, total: jobs.length }), language
     });
     return;
@@ -353,7 +353,7 @@ export async function handleRecurringManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_LIST_EMPTY', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: "You don't have any active recurring series, blud.", language
       });
       return;
@@ -377,7 +377,7 @@ export async function handleRecurringManagement(tweet, author, language) {
     await logTransaction({
       sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
       amount: 0, fee: 0, tx_hash: 'RECURRING_LIST', type: 'p2p_command',
-      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
       error_reason: JSON.stringify({ list }), language
     });
     return;
@@ -397,7 +397,7 @@ export async function handleRecurringCreation(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: `@${author.username} is not registered. Sign up at monipay.xyz and link X in Settings.`, language
       });
       return;
@@ -412,7 +412,7 @@ export async function handleRecurringCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_LIMIT', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: e.message, language
       });
       return;
@@ -432,7 +432,7 @@ export async function handleRecurringCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: `Could not parse payment details from command. Format: send $5 to @username every day 7 times.`, language
       });
       return;
@@ -455,7 +455,7 @@ export async function handleRecurringCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_RECURRING_SELF', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: "Blud tried to schedule self-send. Stop the cap 🧢", language
       });
       return;
@@ -464,12 +464,8 @@ export async function handleRecurringCreation(tweet, author, language) {
     // Network detection
     const NETWORK_KEYWORDS = {
       celo:   ['on celo', 'celo', 'minipay'],
-      ink:    ['on ink', 'ink chain', 'ink network', 'inkonchain'],
-      solana: ['on solana', 'solana', 'sol ', 'spl'],
-      tempo:  ['on tempo', 'tempo', 'alphausd', 'αusd'],
-      bsc:    ['usdt', 'bnb', 'bsc', 'binance'],
     };
-    let chain = senderProfile.preferred_network || 'base';
+    let chain = senderProfile.preferred_network || 'celo';
     const lowerText = baseCommandText.toLowerCase();
     for (const [ch, keywords] of Object.entries(NETWORK_KEYWORDS)) {
       if (keywords.some(kw => lowerText.includes(kw))) {
@@ -643,7 +639,7 @@ export async function handleOneTimeScheduleCreation(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: `@${author.username} is not registered. Sign up at monipay.xyz and link X in Settings.`, language
       });
       return;
@@ -655,7 +651,7 @@ export async function handleOneTimeScheduleCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SCHEDULE_PARSE_FAILED', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: "Parsing scheduled time failed, stop being delulu 🤡", language
       });
       return;
@@ -673,7 +669,7 @@ export async function handleOneTimeScheduleCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SCHEDULE_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: `Could not parse payment details from command. Format: send $5 to @username in 5 minutes.`, language
       });
       return;
@@ -696,7 +692,7 @@ export async function handleOneTimeScheduleCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SCHEDULE_SELF', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: "Blud tried to schedule self-send. Stop the cap 🧢", language
       });
       return;
@@ -705,12 +701,8 @@ export async function handleOneTimeScheduleCreation(tweet, author, language) {
     // Network detection
     const NETWORK_KEYWORDS = {
       celo:   ['on celo', 'celo', 'minipay'],
-      ink:    ['on ink', 'ink chain', 'ink network', 'inkonchain'],
-      solana: ['on solana', 'solana', 'sol ', 'spl'],
-      tempo:  ['on tempo', 'tempo', 'alphausd', 'αusd'],
-      bsc:    ['usdt', 'bnb', 'bsc', 'binance'],
     };
-    let chain = senderProfile.preferred_network || 'base';
+    let chain = senderProfile.preferred_network || 'celo';
     const lowerText = baseCommandText.toLowerCase();
     for (const [ch, keywords] of Object.entries(NETWORK_KEYWORDS)) {
       if (keywords.some(kw => lowerText.includes(kw))) {
@@ -838,7 +830,7 @@ export async function handleHelpSetupLink(tweet, author, language) {
         sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'LINK_SHOW', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: JSON.stringify({ linked: !!senderProfile, payTag: senderProfile?.pay_tag }),
         language
       });
@@ -847,7 +839,7 @@ export async function handleHelpSetupLink(tweet, author, language) {
         sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'SETUP_SHOW', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: '',
         language
       });
@@ -856,7 +848,7 @@ export async function handleHelpSetupLink(tweet, author, language) {
         sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ABOUT_SHOW', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: '',
         language
       });
@@ -865,7 +857,7 @@ export async function handleHelpSetupLink(tweet, author, language) {
         sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'COMMANDS_LIST_SHOW', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: '',
         language
       });
@@ -874,7 +866,7 @@ export async function handleHelpSetupLink(tweet, author, language) {
         sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'HELP_SHOW', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: '',
         language
       });
@@ -896,19 +888,19 @@ export async function handleSetChainCommand(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_SET_CHAIN_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: "Invalid set-chain syntax. Try: @monibot set-chain Celo", language
       });
       return;
     }
 
     const requestedChain = match[1].toLowerCase();
-    const SUPPORTED_CHAINS = ['base', 'solana', 'celo', 'ink', 'bsc', 'tempo'];
+    const SUPPORTED_CHAINS = ['celo'];
     if (!SUPPORTED_CHAINS.includes(requestedChain)) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_SET_CHAIN_UNSUPPORTED', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: `\`${requestedChain}\` is not supported. Try: ${SUPPORTED_CHAINS.join(', ')}`, language
       });
       return;
@@ -919,7 +911,7 @@ export async function handleSetChainCommand(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: `@${author.username} is not registered. Sign up at monipay.xyz to change preferences.`, language
       });
       return;
@@ -940,7 +932,7 @@ export async function handleSetChainCommand(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SET_CHAIN_DB', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: 'Database error updating network preference.', language
       });
     }
@@ -962,7 +954,7 @@ export async function handleLeaderboardCommand(tweet, author, language) {
       sender_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
       receiver_id: senderProfile ? senderProfile.id : process.env.MONIBOT_PROFILE_ID,
       amount: 0, fee: 0, tx_hash: 'LEADERBOARD_SHOW', type: 'p2p_command',
-      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+      tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
       error_reason: JSON.stringify({ topSigmas }), language
     });
 
@@ -1019,7 +1011,7 @@ export async function handleSportsConditionCreation(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'ERROR_SENDER_NOT_FOUND', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: `@${author.username} is not registered. Sign up at monipay.xyz and link X in Settings.`, language
       });
       return;
@@ -1043,7 +1035,7 @@ export async function handleSportsConditionCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: `Missing condition. E.g. "... send $5 to @username if France wins Brazil"`, language
       });
       return;
@@ -1056,7 +1048,7 @@ export async function handleSportsConditionCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: parsedCond.error, language
       });
       return;
@@ -1070,7 +1062,7 @@ export async function handleSportsConditionCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_MATCH_NOT_FOUND', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: `No World Cup 2026 match found between ${team1} and ${team2}.`, language
       });
       return;
@@ -1082,7 +1074,7 @@ export async function handleSportsConditionCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: outcomeResolution.error, language
       });
       return;
@@ -1099,7 +1091,7 @@ export async function handleSportsConditionCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SYNTAX', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: `Could not parse payment details from command. Format: send $5 to @username if France beats Brazil.`, language
       });
       return;
@@ -1122,7 +1114,7 @@ export async function handleSportsConditionCreation(tweet, author, language) {
       await logTransaction({
         sender_id: senderProfile.id, receiver_id: senderProfile.id,
         amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_SELF', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: senderProfile.pay_tag, chain: 'celo',
         error_reason: "Blud tried to bet on self-send. Stop the cap 🧢", language
       });
       return;
@@ -1131,12 +1123,8 @@ export async function handleSportsConditionCreation(tweet, author, language) {
     // Network detection
     const NETWORK_KEYWORDS = {
       celo:   ['on celo', 'celo', 'minipay'],
-      ink:    ['on ink', 'ink chain', 'ink network', 'inkonchain'],
-      solana: ['on solana', 'solana', 'sol ', 'spl'],
-      tempo:  ['on tempo', 'tempo', 'alphausd', 'αusd'],
-      bsc:    ['usdt', 'bnb', 'bsc', 'binance'],
     };
-    let chain = senderProfile.preferred_network || 'base';
+    let chain = senderProfile.preferred_network || 'celo';
     const lowerText = baseCommandText.toLowerCase();
     for (const [ch, keywords] of Object.entries(NETWORK_KEYWORDS)) {
       if (keywords.some(kw => lowerText.includes(kw))) {
@@ -1271,7 +1259,7 @@ export async function handleSportsBetManagement(tweet, author, language) {
         await logTransaction({
           sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
           amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_SYNTAX', type: 'p2p_command',
-          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
           error_reason: 'Please specify the Bet ID, e.g. cancel bet abc12345.', language
         });
         return;
@@ -1285,7 +1273,7 @@ export async function handleSportsBetManagement(tweet, author, language) {
         await logTransaction({
           sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
           amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_NOT_FOUND', type: 'p2p_command',
-          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
           error_reason: `Bet ID ${jobId} not found.`, language
         });
         return;
@@ -1296,7 +1284,7 @@ export async function handleSportsBetManagement(tweet, author, language) {
         await logTransaction({
           sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
           amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_OWNER', type: 'p2p_command',
-          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
           error_reason: "That's not your bet, chief 🚫", language
         });
         return;
@@ -1306,7 +1294,7 @@ export async function handleSportsBetManagement(tweet, author, language) {
         await logTransaction({
           sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
           amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_STATE', type: 'p2p_command',
-          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
           error_reason: `Bet is already ${checkJob.status} and cannot be cancelled.`, language
         });
         return;
@@ -1320,7 +1308,7 @@ export async function handleSportsBetManagement(tweet, author, language) {
         await logTransaction({
           sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
           amount: 0, fee: 0, tx_hash: 'ERROR_SPORTS_CANCEL_DB', type: 'p2p_command',
-          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+          tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
           error_reason: 'Database error cancelling bet. Try again.', language
         });
         return;
@@ -1329,7 +1317,7 @@ export async function handleSportsBetManagement(tweet, author, language) {
       await logTransaction({
         sender_id: process.env.MONIBOT_PROFILE_ID, receiver_id: process.env.MONIBOT_PROFILE_ID,
         amount: 0, fee: 0, tx_hash: 'SPORTS_CANCEL', type: 'p2p_command',
-        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'base',
+        tweet_id: tweet.id, payer_pay_tag: author.username, chain: 'celo',
         error_reason: JSON.stringify({ jobId }), language
       });
     }
