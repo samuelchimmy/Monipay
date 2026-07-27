@@ -28,7 +28,7 @@ interface ContractsTabProps {
 type TxStatus = { hash?: string; status: "idle" | "pending" | "success" | "error"; error?: string };
 
 function ContractsContent({ isUnlocked }: ContractsTabProps) {
-  const [network, setNetwork] = useState<SupportedNetwork>("base");
+  const [network, setNetwork] = useState<SupportedNetwork>("celo");
   const chain = CHAIN_CONFIGS[network as EvmNetwork];
   const wagmiChain = wagmiChainFromNetwork(network);
 
@@ -214,10 +214,9 @@ function ContractsContent({ isUnlocked }: ContractsTabProps) {
                   variant={network === n ? "default" : "outline"}
                   size="sm"
                   onClick={() => setNetwork(n)}
-                  className={`font-bold text-xs uppercase ${n === 'tempo' && network === 'tempo' ? 'bg-black text-white hover:bg-black/90' : ''}`}
+                  className="font-bold text-xs uppercase"
                 >
                   {CHAIN_CONFIGS[n].name ?? n}
-                  {n === 'tempo' && <span className="ml-1 text-[8px] opacity-60">TEST</span>}
                 </Button>
               ))}
             </div>
