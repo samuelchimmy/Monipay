@@ -576,17 +576,13 @@ export function TransactionHistory({ onClose, initialFilter = 'all', title = 'Tr
                     <span className="text-muted-foreground text-xs block mb-1">Your Wallet</span>
                     <button
                       onClick={() => {
-                        const addr = (profile?.preferredNetwork === 'solana' && profile?.wallet?.solanaAddress)
-                          ? profile.wallet.solanaAddress
-                          : profile.wallet.address;
+                        const addr = profile.wallet.address;
                         handleCopy(addr);
                       }}
                       className="flex items-center gap-2 text-xs font-mono text-foreground hover:text-base-blue transition-colors"
                     >
                       {shortenAddress(
-                        (profile?.preferredNetwork === 'solana' && profile?.wallet?.solanaAddress)
-                          ? profile.wallet.solanaAddress
-                          : profile.wallet.address
+                        profile.wallet.address
                       )}
                       {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     </button>
