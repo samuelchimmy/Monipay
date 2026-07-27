@@ -220,7 +220,7 @@ async function executeSolanaRelay(action, body) {
 
 // ============ Balance & Allowance ============
 
-export async function getBalance(address, chainName = 'base') {
+export async function getBalance(address, chainName = 'celo') {
   const chain = normalizeChain(chainName);
   if (!address || typeof address !== 'string') return { balance: 0, symbol: 'UNKNOWN' };
 
@@ -256,7 +256,7 @@ export async function getBalance(address, chainName = 'base') {
   return { balance: 0, symbol: config.symbol };
 }
 
-export async function getAllowance(address, chainName = 'base', spender = 'router') {
+export async function getAllowance(address, chainName = 'celo', spender = 'router') {
   const chain = normalizeChain(chainName);
   if (!address || typeof address !== 'string') return { allowance: 0, symbol: 'UNKNOWN' };
   if (isSolanaChain(chain)) return { allowance: 999999, symbol: 'USDC' };
@@ -290,7 +290,7 @@ export async function getAllowance(address, chainName = 'base', spender = 'route
 
 // ============ MagicPay (Social Escrow) ============
 
-export async function executeMagicPay(fromAddress, recipientTwitterUserId, amount, chainName = 'base') {
+export async function executeMagicPay(fromAddress, recipientTwitterUserId, amount, chainName = 'celo') {
   const chain = normalizeChain(chainName);
 
   if (!fromAddress?.startsWith('0x')) throw new Error('ERROR_INVALID_ADDRESS:Sender address is not a valid EVM address');
@@ -377,7 +377,7 @@ export async function executeMagicPay(fromAddress, recipientTwitterUserId, amoun
 
 // ============ P2P via Router (Base + multi-chain) ============
 
-export async function executeP2PViaRouter(fromAddress, toAddress, amount, tweetId, chainName = 'base') {
+export async function executeP2PViaRouter(fromAddress, toAddress, amount, tweetId, chainName = 'celo') {
   const chain = normalizeChain(chainName);
 
   if (isSolanaChain(chain)) {
@@ -455,7 +455,7 @@ export async function executeP2PViaRouter(fromAddress, toAddress, amount, tweetI
 
 // ============ Grant via Router ============
 
-export async function executeGrantViaRouter(toAddress, amount, campaignId, chainName = 'base') {
+export async function executeGrantViaRouter(toAddress, amount, campaignId, chainName = 'celo') {
   const chain = normalizeChain(chainName);
   const config = getChainConfig(chain);
   const amountInUnits = parseUnits(amount.toFixed(config.decimals), config.decimals);
@@ -517,11 +517,11 @@ export async function executeGrantViaRouter(toAddress, amount, campaignId, chain
 
 // ============ Legacy / Wrapper Exports ============
 
-export const getOnchainAllowance  = (user, chain = 'base') => getAllowance(user, chain, 'router');
-export const getMagicPayAllowance = (user, chain = 'base') => getAllowance(user, chain, 'magicpay');
-export const getUSDCBalance       = (user, chain = 'base') => getBalance(user, chain);
+export const getOnchainAllowance  = (user, chain = 'celo') => getAllowance(user, chain, 'router');
+export const getMagicPayAllowance = (user, chain = 'celo') => getAllowance(user, chain, 'magicpay');
+export const getUSDCBalance       = (user, chain = 'celo') => getBalance(user, chain);
 
-export const getUserNonce = async (user, chainName = 'base') => {
+export const getUserNonce = async (user, chainName = 'celo') => {
   const chain = normalizeChain(chainName);
   const config = getChainConfig(chain);
   const totalRpcs = config.rpcs.length;
@@ -536,7 +536,7 @@ export const getUserNonce = async (user, chainName = 'base') => {
   }
 };
 
-export const isTweetProcessed = async (tweetId, chainName = 'base') => {
+export const isTweetProcessed = async (tweetId, chainName = 'celo') => {
   const chain = normalizeChain(chainName);
   const config = getChainConfig(chain);
   const totalRpcs = config.rpcs.length;
@@ -551,7 +551,7 @@ export const isTweetProcessed = async (tweetId, chainName = 'base') => {
   }
 };
 
-export const isGrantAlreadyIssued = async (campaignId, recipient, chainName = 'base') => {
+export const isGrantAlreadyIssued = async (campaignId, recipient, chainName = 'celo') => {
   const chain = normalizeChain(chainName);
   const config = getChainConfig(chain);
   const totalRpcs = config.rpcs.length;
@@ -566,7 +566,7 @@ export const isGrantAlreadyIssued = async (campaignId, recipient, chainName = 'b
   }
 };
 
-export const calculateFee = async (amount, chainName = 'base') => {
+export const calculateFee = async (amount, chainName = 'celo') => {
   const chain = normalizeChain(chainName);
   const config = getChainConfig(chain);
   const amountUnits = parseUnits(amount.toFixed(config.decimals), config.decimals);
