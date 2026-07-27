@@ -6,7 +6,6 @@ import { checkApprovalForNetwork, getTokenBalance } from '@/lib/wallet';
 import { getChainConfig, type SupportedNetwork } from '@/config/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
-import { base, bsc } from 'viem/chains';
 import { feedback } from '@/lib/feedback';
 import { toast } from 'sonner';
 
@@ -142,29 +141,13 @@ export function NetworkActivationStatus({
 
       const account = privateKeyToAccount(decryptedPrivateKey);
 
-      // Build chain definition for Tempo/Celo/Ink or use viem presets
-      const chain = isTempo
-        ? {
-            id: 42431,
-            name: 'Tempo Testnet',
-            nativeCurrency: { name: 'USD', symbol: 'USD', decimals: 18 },
-            rpcUrls: { default: { http: ['https://rpc.moderato.tempo.xyz'] } },
-          } as any
-        : isCelo
-        ? {
+      // MoniPay is Celo-only.
+      const chain = {
             id: 42220,
             name: 'Celo Mainnet',
             nativeCurrency: { name: 'CELO', symbol: 'CELO', decimals: 18 },
             rpcUrls: { default: { http: ['https://forno.celo.org'] } },
-          } as any
-        : network === 'ink'
-        ? {
-            id: 57073,
-            name: 'Ink',
-            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-            rpcUrls: { default: { http: ['https://rpc-qnd.inkonchain.com'] } },
-          } as any
-        : network === 'bsc' ? bsc : base;
+          } as any;
       const rpcUrl = config.rpcUrls[0];
 
       const walletClient = createWalletClient({
