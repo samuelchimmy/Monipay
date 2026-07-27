@@ -12,22 +12,18 @@ import {
 } from 'lucide-react';
 
 /* ─── Chain color themes ─── */
-type ChainTheme = 'neutral' | 'base' | 'bsc' | 'tempo';
+type ChainTheme = 'neutral' | 'celo' | 'dark';
 
 const CHAIN_COLORS: Record<ChainTheme, { bg: string; fg: string; accent: string; accentFg: string; border: string; muted: string }> = {
   neutral: {
     bg: 'bg-white', fg: 'text-gray-950', accent: 'bg-gray-950', accentFg: 'text-white',
     border: 'border-gray-950/10', muted: 'text-gray-950/40',
   },
-  base: {
-    bg: 'bg-[#0052FF]', fg: 'text-white', accent: 'bg-white', accentFg: 'text-[#0052FF]',
-    border: 'border-white/20', muted: 'text-white/50',
-  },
-  bsc: {
-    bg: 'bg-[#F0B90B]', fg: 'text-gray-950', accent: 'bg-gray-950', accentFg: 'text-[#F0B90B]',
+  celo: {
+    bg: 'bg-[#FCFF52]', fg: 'text-gray-950', accent: 'bg-gray-950', accentFg: 'text-[#FCFF52]',
     border: 'border-gray-950/15', muted: 'text-gray-950/50',
   },
-  tempo: {
+  dark: {
     bg: 'bg-gray-950', fg: 'text-white', accent: 'bg-white', accentFg: 'text-gray-950',
     border: 'border-white/10', muted: 'text-white/40',
   },
@@ -35,8 +31,8 @@ const CHAIN_COLORS: Record<ChainTheme, { bg: string; fg: string; accent: string;
 
 /* ─── Grid Background ─── */
 function GridBg({ theme = 'neutral' }: { theme?: ChainTheme }) {
-  const lineColor = theme === 'neutral' || theme === 'bsc' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)';
-  const cornerColor = theme === 'neutral' || theme === 'bsc' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
+  const lineColor = theme === 'neutral' || theme === 'celo' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)';
+  const cornerColor = theme === 'neutral' || theme === 'celo' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <div
@@ -58,9 +54,9 @@ function GridBg({ theme = 'neutral' }: { theme?: ChainTheme }) {
 
 /* ─── Slide wrapper with chain theming ─── */
 function Slide({ children, theme = 'neutral', inverted = false }: { children: React.ReactNode; theme?: ChainTheme; inverted?: boolean }) {
-  const resolvedTheme = inverted && theme === 'neutral' ? 'tempo' : theme;
+  const resolvedTheme = inverted && theme === 'neutral' ? 'dark' : theme;
   const colors = CHAIN_COLORS[resolvedTheme];
-  const isLight = resolvedTheme === 'neutral' || resolvedTheme === 'bsc';
+  const isLight = resolvedTheme === 'neutral' || resolvedTheme === 'celo';
 
   return (
     <div className={`w-full h-full flex flex-col justify-center px-8 sm:px-16 lg:px-24 relative ${colors.bg} ${colors.fg}`}>
@@ -103,15 +99,9 @@ function BulletCheck({ children, className = '' }: { children: React.ReactNode; 
 }
 
 /* ─── Chain Badge ─── */
-function ChainBadge({ chain, size = 'sm' }: { chain: 'base' | 'bsc' | 'tempo'; size?: 'sm' | 'lg' }) {
-  const styles = {
-    base: 'bg-[#0052FF] text-white',
-    bsc: 'bg-[#F0B90B] text-gray-950',
-    tempo: 'bg-gray-950 text-white',
-  };
-  const labels = { base: 'BASE', bsc: 'BSC', tempo: 'TEMPO' };
+function ChainBadge({ chain = 'celo', size = 'sm' }: { chain?: 'celo'; size?: 'sm' | 'lg' }) {
   const px = size === 'lg' ? 'px-3 py-1 text-xs' : 'px-2 py-0.5 text-[10px]';
-  return <span className={`${styles[chain]} ${px} font-bold tracking-widest`}>{labels[chain]}</span>;
+  return <span className={`bg-[#FCFF52] text-gray-950 ${px} font-bold tracking-widest`}>CELO</span>;
 }
 
 /* ─── All Slides ─── */
@@ -125,7 +115,7 @@ function slides() {
         <div className="flex items-center gap-2 mb-8">
           <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-40">
-            Live on 3 Chains · 2026
+            Live on Celo · 2026
           </span>
         </div>
         <MoniPayLogo size={52} color="#0052FF" showText textSize={44} animationMode="idle" entranceOnMount />
@@ -133,9 +123,7 @@ function slides() {
           The Intelligent Social Financial Layer for Agentic Commerce
         </p>
         <div className="mt-8 flex items-center gap-3">
-          <ChainBadge chain="base" />
-          <ChainBadge chain="bsc" />
-          <ChainBadge chain="tempo" />
+          <ChainBadge />
         </div>
         <div className="mt-10 flex items-center gap-6">
           <span className="text-xs font-bold opacity-30">@monibot</span>
@@ -259,7 +247,7 @@ function slides() {
             { icon: Lock, title: 'Local Key Generation', desc: 'Private key generated in-browser, encrypted with your PIN (AES-256-GCM)' },
             { icon: Shield, title: 'Zero Custody', desc: 'Keys never leave your device. Not even MoniPay can access them.' },
             { icon: Smartphone, title: 'MoniTag Identity', desc: 'Human-readable @tags instead of 0x addresses. Like Venmo, but on-chain.' },
-            { icon: Zap, title: 'Gasless Execution', desc: 'Meta-transactions on Base/BSC. Fee sponsorship on Tempo. You pay $0 gas.' },
+            { icon: Zap, title: 'Gasless Execution', desc: 'Meta-transactions on Celo. A relayer sponsors gas. You pay $0.' },
           ].map((item) => (
             <div key={item.title} className="bg-white p-5 flex flex-col gap-2">
               <item.icon className="w-5 h-5 opacity-15" />
@@ -275,29 +263,29 @@ function slides() {
     ),
 
     // ═══════════════════════════════════════════
-    // SLIDE 7: BASE — Blue/White
+    // SLIDE 7: Celo / MiniPay
     // ═══════════════════════════════════════════
     () => (
-      <Slide theme="base">
-        <Label>Chain 1</Label>
-        <H2 className="mb-2">Base · USDC</H2>
-        <p className="text-sm opacity-50 mb-10">Our genesis chain. Mainnet live since Q1 2026.</p>
-        <div className="grid sm:grid-cols-3 gap-px bg-white/10 border border-white/10 max-w-3xl">
-          <div className="bg-[#0052FF] p-6 flex flex-col justify-between min-h-[120px]">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Transactions</span>
+      <Slide theme="celo">
+        <Label>The Chain</Label>
+        <H2 className="mb-2">Celo · MiniPay</H2>
+        <p className="text-sm opacity-50 mb-10">Mobile-first, stablecoin-native, and home to MiniPay's millions of users.</p>
+        <div className="grid sm:grid-cols-3 gap-px bg-gray-950/10 border border-gray-950/10 max-w-3xl">
+          <div className="bg-[#FCFF52] p-6 flex flex-col justify-between min-h-[120px]">
+            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Wallet</span>
             <div>
-              <span className="text-2xl font-extrabold">80+</span>
-              <p className="text-[10px] opacity-40 mt-1">Autonomous</p>
+              <span className="text-2xl font-extrabold">MiniPay</span>
+              <p className="text-[10px] opacity-40 mt-1">Native integration</p>
             </div>
           </div>
-          <div className="bg-[#0052FF] p-6 flex flex-col justify-between min-h-[120px]">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Distributed</span>
+          <div className="bg-[#FCFF52] p-6 flex flex-col justify-between min-h-[120px]">
+            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">User Fees</span>
             <div>
-              <span className="text-2xl font-extrabold">$35+</span>
-              <p className="text-[10px] opacity-40 mt-1">USDC · 6 decimals</p>
+              <span className="text-2xl font-extrabold">$0</span>
+              <p className="text-[10px] opacity-40 mt-1">Relayer-sponsored gas</p>
             </div>
           </div>
-          <div className="bg-[#0052FF] p-6 flex flex-col justify-between min-h-[120px]">
+          <div className="bg-[#FCFF52] p-6 flex flex-col justify-between min-h-[120px]">
             <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Method</span>
             <div>
               <span className="text-lg font-extrabold">EIP-712</span>
@@ -306,87 +294,87 @@ function slides() {
           </div>
         </div>
         <div className="mt-8 space-y-2 max-w-md opacity-80">
-          <BulletCheck>MoniPayRouter: 0x4048...D2c0</BulletCheck>
-          <BulletCheck>MoniBotRouter: 0xBEE3...A516</BulletCheck>
-          <BulletCheck>Gas relayer pays ETH fees for users</BulletCheck>
+          <BulletCheck>MoniPayRouter: 0x2a6F...8B9e</BulletCheck>
+          <BulletCheck>MoniBotRouter + IOU Registry (MagicPay)</BulletCheck>
+          <BulletCheck>Gas relayer pays CELO fees for users</BulletCheck>
         </div>
       </Slide>
     ),
 
     // ═══════════════════════════════════════════
-    // SLIDE 8: BSC — Yellow/Black
+    // SLIDE 8: Stablecoins
     // ═══════════════════════════════════════════
     () => (
-      <Slide theme="bsc">
-        <Label>Chain 2</Label>
-        <H2 className="mb-2">BSC · USDT</H2>
-        <p className="text-sm opacity-50 mb-10">Emerging market expansion. Lower fees, higher reach.</p>
+      <Slide theme="celo">
+        <Label>Stablecoins</Label>
+        <H2 className="mb-2">Every Celo Stablecoin</H2>
+        <p className="text-sm opacity-50 mb-10">One MoniTag receives them all. MoniBot auto-selects the right token.</p>
         <div className="grid sm:grid-cols-3 gap-px bg-gray-950/10 border border-gray-950/10 max-w-3xl">
-          <div className="bg-[#F0B90B] p-6 flex flex-col justify-between min-h-[120px]">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Transactions</span>
+          <div className="bg-[#FCFF52] p-6 flex flex-col justify-between min-h-[120px]">
+            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Dollar-pegged</span>
             <div>
-              <span className="text-2xl font-extrabold">25+</span>
-              <p className="text-[10px] opacity-40 mt-1">Autonomous</p>
+              <span className="text-2xl font-extrabold">USDT · USDC</span>
+              <p className="text-[10px] opacity-40 mt-1">6 decimals</p>
             </div>
           </div>
-          <div className="bg-[#F0B90B] p-6 flex flex-col justify-between min-h-[120px]">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Distributed</span>
+          <div className="bg-[#FCFF52] p-6 flex flex-col justify-between min-h-[120px]">
+            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Local + Impact</span>
             <div>
-              <span className="text-2xl font-extrabold">$15+</span>
-              <p className="text-[10px] opacity-40 mt-1">USDT · 18 decimals</p>
+              <span className="text-2xl font-extrabold">G$ · USDm</span>
+              <p className="text-[10px] opacity-40 mt-1">18 decimals</p>
             </div>
           </div>
-          <div className="bg-[#F0B90B] p-6 flex flex-col justify-between min-h-[120px]">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Method</span>
+          <div className="bg-[#FCFF52] p-6 flex flex-col justify-between min-h-[120px]">
+            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Selection</span>
             <div>
-              <span className="text-lg font-extrabold">EIP-712</span>
-              <p className="text-[10px] opacity-40 mt-1">Meta-transactions</p>
+              <span className="text-lg font-extrabold">Automatic</span>
+              <p className="text-[10px] opacity-40 mt-1">Per-token routing</p>
             </div>
           </div>
         </div>
         <div className="mt-8 space-y-2 max-w-md">
-          <BulletCheck>MoniPayRouter: 0x5572...bcb5</BulletCheck>
-          <BulletCheck>MoniBotRouter: 0x9EED...832E</BulletCheck>
-          <BulletCheck>Gas relayer pays BNB fees for users</BulletCheck>
+          <BulletCheck>Per-token decimals handled transparently</BulletCheck>
+          <BulletCheck>Balances shown in USD across tokens</BulletCheck>
+          <BulletCheck>Send by token name: "send 5 G$ to @alice"</BulletCheck>
         </div>
       </Slide>
     ),
 
     // ═══════════════════════════════════════════
-    // SLIDE 9: TEMPO — Black/White
+    // SLIDE 9: MagicPay
     // ═══════════════════════════════════════════
     () => (
-      <Slide theme="tempo">
-        <Label>Chain 3</Label>
-        <H2 className="mb-2">Tempo · aUSD</H2>
-        <p className="text-sm opacity-50 mb-10">A blockchain built for payments. Our best implementation.</p>
+      <Slide theme="dark">
+        <Label>MagicPay</Label>
+        <H2 className="mb-2">Pay Anyone. Even Off-Chain.</H2>
+        <p className="text-sm opacity-50 mb-10">Send to a social handle that has no wallet yet — funds wait safely on-chain.</p>
         <div className="grid sm:grid-cols-3 gap-px bg-white/10 border border-white/10 max-w-3xl">
           <div className="bg-gray-950 p-6 flex flex-col justify-between min-h-[120px]">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Innovation</span>
+            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Held</span>
             <div>
-              <span className="text-lg font-extrabold">Native</span>
-              <p className="text-[10px] opacity-40 mt-1">Fee sponsorship</p>
+              <span className="text-lg font-extrabold">On-chain</span>
+              <p className="text-[10px] opacity-40 mt-1">IOU Registry</p>
             </div>
           </div>
           <div className="bg-gray-950 p-6 flex flex-col justify-between min-h-[120px]">
             <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">User Fees</span>
             <div>
               <span className="text-2xl font-extrabold">$0</span>
-              <p className="text-[10px] opacity-40 mt-1">True zero-cost</p>
+              <p className="text-[10px] opacity-40 mt-1">Gasless claim</p>
             </div>
           </div>
           <div className="bg-gray-950 p-6 flex flex-col justify-between min-h-[120px]">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Features</span>
+            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Refundable</span>
             <div>
-              <span className="text-lg font-extrabold">TIP-20</span>
-              <p className="text-[10px] opacity-40 mt-1">Payment-native</p>
+              <span className="text-lg font-extrabold">180 days</span>
+              <p className="text-[10px] opacity-40 mt-1">If unclaimed</p>
             </div>
           </div>
         </div>
         <div className="mt-8 space-y-2 max-w-md opacity-80">
-          <BulletCheck>MoniPayRouter: 0xa39C...BDb9</BulletCheck>
-          <BulletCheck>MoniBotRouter: 0x78A8...49fc</BulletCheck>
-          <BulletCheck>2D nonces · Batch calls · Transfer memos</BulletCheck>
+          <BulletCheck>Claim link shared wherever the payment was made</BulletCheck>
+          <BulletCheck>Recipient links a social account to claim</BulletCheck>
+          <BulletCheck>Batch claim &amp; refund supported</BulletCheck>
         </div>
       </Slide>
     ),
@@ -396,42 +384,34 @@ function slides() {
     // ═══════════════════════════════════════════
     () => (
       <Slide>
-        <Label>Multi-Chain</Label>
-        <H2 className="mb-10">Three Chains. One Experience.</H2>
-        <div className="border border-gray-950/10 max-w-3xl overflow-hidden">
+        <Label>Celo</Label>
+        <H2 className="mb-10">One Chain. One Experience.</H2>
+        <div className="border border-gray-950/10 max-w-xl overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-4 gap-px bg-gray-200">
+          <div className="grid grid-cols-2 gap-px bg-gray-200">
             <div className="bg-white p-3" />
-            <div className="bg-[#0052FF] p-3 flex items-center justify-center">
-              <span className="text-[10px] font-bold tracking-widest text-white">BASE</span>
-            </div>
-            <div className="bg-[#F0B90B] p-3 flex items-center justify-center">
-              <span className="text-[10px] font-bold tracking-widest text-gray-950">BSC</span>
-            </div>
-            <div className="bg-gray-950 p-3 flex items-center justify-center">
-              <span className="text-[10px] font-bold tracking-widest text-white">TEMPO</span>
+            <div className="bg-[#35D07F] p-3 flex items-center justify-center">
+              <span className="text-[10px] font-bold tracking-widest text-white">CELO</span>
             </div>
           </div>
           {/* Rows */}
           {[
-            { label: 'Token', base: 'USDC', bsc: 'USDT', tempo: 'aUSD' },
-            { label: 'Gas Model', base: 'Relayer pays ETH', bsc: 'Relayer pays BNB', tempo: 'Native sponsorship' },
-            { label: 'Signature', base: 'EIP-712', bsc: 'EIP-712', tempo: 'Direct / Sponsored' },
-            { label: 'Decimals', base: '6', bsc: '18', tempo: '6' },
-            { label: 'Nonces', base: 'Sequential', bsc: 'Sequential', tempo: '2D Concurrent' },
-            { label: 'User Cost', base: '$0 gas', bsc: '$0 gas', tempo: '$0 everything' },
+            { label: 'Token', celo: 'cUSD' },
+            { label: 'Gas Model', celo: 'Fee abstraction' },
+            { label: 'Signature', celo: 'EIP-712' },
+            { label: 'Decimals', celo: '18' },
+            { label: 'Nonces', celo: 'Sequential' },
+            { label: 'User Cost', celo: '$0 gas' },
           ].map((row) => (
-            <div key={row.label} className="grid grid-cols-4 gap-px bg-gray-200">
+            <div key={row.label} className="grid grid-cols-2 gap-px bg-gray-200">
               <div className="bg-white p-3">
                 <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">{row.label}</span>
               </div>
-              <div className="bg-blue-50 p-3"><span className="text-xs">{row.base}</span></div>
-              <div className="bg-yellow-50 p-3"><span className="text-xs">{row.bsc}</span></div>
-              <div className="bg-gray-100 p-3"><span className="text-xs font-bold">{row.tempo}</span></div>
+              <div className="bg-green-50 p-3"><span className="text-xs font-bold">{row.celo}</span></div>
             </div>
           ))}
         </div>
-        <p className="mt-6 text-xs opacity-30">Same @MoniTag. Same PIN. Funds are chain-specific.</p>
+        <p className="mt-6 text-xs opacity-30">Same @MoniTag. Same PIN.</p>
       </Slide>
     ),
 
@@ -445,9 +425,9 @@ function slides() {
         <p className="text-sm opacity-40 mb-10">Real transactions. Real users. Real money.</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-white/10 border border-white/10 max-w-2xl">
           {[
-            { v: '100+', l: 'Transactions', s: 'Across 3 chains' },
+            { v: '100+', l: 'Transactions', s: 'On Celo' },
             { v: '$50+', l: 'Distributed', s: 'Autonomously' },
-            { v: '3', l: 'Chains', s: 'Base · BSC · Tempo' },
+            { v: '4', l: 'Tokens', s: 'USDT·USDC·G$·USDm' },
             { v: '0', l: 'Human Clicks', s: 'Fully automated' },
             { v: '100%', l: 'Uptime', s: 'Railway deployed' },
             { v: '30s', l: 'Avg Settlement', s: 'Tweet to receipt' },
@@ -475,20 +455,19 @@ function slides() {
         <div className="grid md:grid-cols-3 gap-px bg-gray-200 border border-gray-950/10 max-w-3xl">
           <div className="bg-blue-50 p-6">
             <div className="flex items-center gap-2 mb-6">
-              <ChainBadge chain="base" />
-              <span className="text-[10px] opacity-40">/ BSC</span>
+              <ChainBadge />
             </div>
             <div className="space-y-3 text-xs opacity-60">
               <p>User signs EIP-712 message</p>
               <p>→ Relayer submits on-chain</p>
-              <p>→ Relayer pays gas (ETH/BNB)</p>
+              <p>→ Relayer pays gas (CELO)</p>
               <p>→ 1% fee deducted from amount</p>
             </div>
             <p className="mt-4 text-[10px] opacity-30">User pays indirectly via fee</p>
           </div>
           <div className="bg-gray-950 p-6 text-white">
             <div className="mb-6">
-              <ChainBadge chain="tempo" />
+              <ChainBadge />
             </div>
             <div className="space-y-3 text-xs opacity-80">
               <p>We sponsor ALL fees natively</p>
@@ -525,12 +504,12 @@ function slides() {
         <p className="text-sm opacity-30 mb-10">That never sleeps. On every chain.</p>
         <div className="border border-gray-950/10 p-6 max-w-lg mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <ChainBadge chain="base" />
-            <ChainBadge chain="bsc" />
-            <ChainBadge chain="tempo" />
+            <ChainBadge />
+            <ChainBadge />
+            <ChainBadge />
           </div>
           <p className="text-base font-mono font-bold opacity-80">"First 5 to reply get $1"</p>
-          <p className="text-[10px] opacity-30 mt-2">MoniBot auto-selects token per chain: USDC / USDT / aUSD</p>
+          <p className="text-[10px] opacity-30 mt-2">MoniBot auto-selects the right token: USDT · USDC · G$ · USDm</p>
         </div>
         <div className="space-y-2 max-w-md">
           <BulletCheck>Posts to Twitter autonomously</BulletCheck>
@@ -551,9 +530,9 @@ function slides() {
         <H2 className="mb-10">Real-World Impact</H2>
         <div className="grid sm:grid-cols-2 gap-px bg-gray-950/10 border border-gray-950/10 max-w-2xl">
           {[
-            { icon: Store, title: 'Merchants', desc: "Street vendor's phone = POS terminal. No hardware. No fees. QR or Tap.", badge: 'base' as const },
-            { icon: Send, title: 'P2P Payments', desc: 'Send money like texting. Twitter → Blockchain in 30s.', badge: 'bsc' as const },
-            { icon: Target, title: 'Growth Marketing', desc: 'AI runs campaigns 24/7. Acquires users autonomously.', badge: 'tempo' as const },
+            { icon: Store, title: 'Merchants', desc: "Street vendor's phone = POS terminal. No hardware. No fees. QR or Tap.", badge: 'celo' as const },
+            { icon: Send, title: 'P2P Payments', desc: 'Send money like texting. Twitter → Blockchain in 30s.', badge: 'celo' as const },
+            { icon: Target, title: 'Growth Marketing', desc: 'AI runs campaigns 24/7. Acquires users autonomously.', badge: 'celo' as const },
             { icon: Globe, title: 'Emerging Markets', desc: 'No bank account needed. Just a Twitter handle and a PIN.', badge: null },
           ].map((uc) => (
             <div key={uc.title} className="bg-white p-6 flex flex-col gap-3">
@@ -605,7 +584,7 @@ function slides() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-gray-950/10 border border-gray-950/10">
           {[
             { title: 'Frontend', sub: 'React + TypeScript', items: ['Multi-chain wallets', 'Real-time balances', 'PWA installable'] },
-            { title: 'Contracts', sub: 'Solidity × 3 Chains', items: ['MoniPayRouter (POS)', 'MoniBotRouter (Social)', '1% / 1.3% fees'] },
+            { title: 'Contracts', sub: 'Solidity on Celo', items: ['MoniPayRouter (POS)', 'MoniBotRouter (Social)', '1% / 1.3% fees'] },
             { title: 'Backend', sub: 'Supabase + Railway', items: ['Edge Functions', 'Worker bots (×3)', 'Reply bots (×3)'] },
             { title: 'AI Layer', sub: 'Gemini 2.0 Flash', items: ['Intent parsing', 'Spam detection', 'Campaign strategy'] },
           ].map((col) => (
@@ -690,15 +669,15 @@ function slides() {
           {[
             {
               q: 'Q1 2026', sub: 'Now', items: [
-                '✅ Base + BSC mainnet live',
-                '✅ Tempo testnet integration',
+                '✅ Celo mainnet live',
+                '✅ MiniPay wallet integration',
                 '✅ 100+ autonomous transactions',
-                '✅ 6 deployed smart contracts',
+                '✅ Multi-token (USDT·USDC·G$·USDm)',
               ]
             },
             {
               q: 'Q2 2026', sub: 'Next', items: [
-                '🎯 Tempo mainnet migration',
+                '🎯 V2 contracts rollout',
                 '🎯 Passkey authentication',
                 '🎯 Scheduled payments',
                 '🎯 Chrome Extension',
@@ -740,9 +719,9 @@ function slides() {
           </div>
           <p className="text-sm opacity-50 mb-6">Or visit: monipay.xyz</p>
           <div className="flex items-center justify-center gap-4">
-            <ChainBadge chain="base" size="lg" />
-            <ChainBadge chain="bsc" size="lg" />
-            <ChainBadge chain="tempo" size="lg" />
+            <ChainBadge size="lg" />
+            <ChainBadge size="lg" />
+            <ChainBadge size="lg" />
           </div>
           <p className="mt-10 text-sm font-bold opacity-60">
             The future of payments is autonomous. And it's live today.
@@ -776,17 +755,17 @@ function slides() {
             <p className="text-[10px] font-bold tracking-widest uppercase opacity-25 mb-3">Smart Contracts</p>
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <ChainBadge chain="base" />
+                <ChainBadge />
                 <p className="text-[9px] font-mono opacity-30 mt-1.5">POS: 0x4048...D2c0</p>
                 <p className="text-[9px] font-mono opacity-30">Bot: 0xBEE3...A516</p>
               </div>
               <div>
-                <ChainBadge chain="bsc" />
+                <ChainBadge />
                 <p className="text-[9px] font-mono opacity-30 mt-1.5">POS: 0x5572...bcb5</p>
                 <p className="text-[9px] font-mono opacity-30">Bot: 0x9EED...832E</p>
               </div>
               <div>
-                <ChainBadge chain="tempo" />
+                <ChainBadge />
                 <p className="text-[9px] font-mono opacity-30 mt-1.5">POS: 0xa39C...BDb9</p>
                 <p className="text-[9px] font-mono opacity-30">Bot: 0x78A8...49fc</p>
               </div>
@@ -803,43 +782,43 @@ function slides() {
     () => (
       <Slide>
         <Label>Bonus: Under the Hood</Label>
-        <H2 className="mb-10">Per-Chain Execution</H2>
+        <H2 className="mb-10">Execution Flow</H2>
         <div className="grid sm:grid-cols-3 gap-px bg-gray-200 border border-gray-950/10 max-w-3xl">
-          <div className="bg-blue-50 p-5">
+          <div className="bg-green-50 p-5">
             <div className="flex items-center gap-2 mb-3">
-              <ChainBadge chain="base" />
+              <span className="text-[10px] font-bold tracking-widest opacity-40">1 · SIGN</span>
             </div>
             <div className="space-y-1 text-[11px] opacity-50">
               <p>User signs EIP-712 payload</p>
-              <p>Relayer submits to Base</p>
-              <p>MoniPayRouter.relayPayment()</p>
-              <p>ETH gas paid by relayer</p>
+              <p>No gas token required</p>
+              <p>PIN-encrypted local key</p>
+              <p>Works inside MiniPay</p>
             </div>
           </div>
-          <div className="bg-yellow-50 p-5">
+          <div className="bg-green-50 p-5">
             <div className="flex items-center gap-2 mb-3">
-              <ChainBadge chain="bsc" />
+              <span className="text-[10px] font-bold tracking-widest opacity-40">2 · RELAY</span>
             </div>
             <div className="space-y-1 text-[11px] opacity-50">
-              <p>Same EIP-712 pattern</p>
-              <p>Relayer submits to BSC</p>
+              <p>Relayer submits to Celo</p>
               <p>MoniPayRouter.relayPayment()</p>
-              <p>BNB gas paid by relayer</p>
+              <p>CELO gas paid by relayer</p>
+              <p>1% protocol fee</p>
             </div>
           </div>
           <div className="bg-gray-950 p-5 text-white">
             <div className="flex items-center gap-2 mb-3">
-              <ChainBadge chain="tempo" />
+              <span className="text-[10px] font-bold tracking-widest opacity-40">3 · SETTLE</span>
             </div>
             <div className="space-y-1 text-[11px] opacity-60">
-              <p>feePayer = sponsor wallet</p>
-              <p>TIP-20 transfer with memo</p>
-              <p>2D nonces (parallel)</p>
+              <p>Multi-token: USDT·USDC·G$·USDm</p>
+              <p>MagicPay IOU if no wallet yet</p>
               <p>Batch calls (multi-recipient)</p>
+              <p>Receipt back in seconds</p>
             </div>
           </div>
         </div>
-        <p className="mt-6 text-xs opacity-30">Same user experience. Different execution paths. Optimized per chain.</p>
+        <p className="mt-6 text-xs opacity-30">Sign, relay, settle — gasless on Celo, every time.</p>
       </Slide>
     ),
   ];
@@ -886,7 +865,7 @@ const Deck = () => {
 
   return (
     <>
-      <PageMeta title="Pitch Deck" description="MoniPay investor deck — the future of gasless, non-custodial payments on Base." path="/deck" noIndex />
+      <PageMeta title="Pitch Deck" description="MoniPay investor deck — the future of gasless, non-custodial payments on Celo." path="/deck" noIndex />
       <DeckThemeForcer />
       <div className="fixed inset-0 overflow-hidden select-none">
         <AnimatePresence mode="wait">
