@@ -137,7 +137,7 @@ export async function logCommand({
   commandText,
   parsedAmount,
   parsedRecipients,
-  chain = 'base',
+  chain = 'celo',
   status = 'pending',
   resultTxHash = null,
   errorReason = null,
@@ -221,7 +221,7 @@ export async function logMonibotTransaction({
   tweetId = null,
   payerPayTag = null,
   recipientPayTag = null,
-  chain = 'base',
+  chain = 'celo',
 }) {
   const isError = txHash?.startsWith('ERROR_');
   const status = isError ? 'failed' : 'completed';
@@ -315,7 +315,7 @@ export async function getServerConfig(guildId) {
     .eq('guild_id', guildId)
     .maybeSingle();
 
-  if (error || !data?.default_chain) return { default_chain: 'base', chain_locked: false };
+  if (error || !data?.default_chain) return { default_chain: 'celo', chain_locked: false };
   return data;
 }
 
@@ -496,7 +496,7 @@ export async function logFeedbackPrompt(profileId, txHash) {
 /**
  * Get active campaigns for a specific network
  */
-export async function getActiveCampaigns(network = 'base') {
+export async function getActiveCampaigns(network = 'celo') {
   const { data, error } = await supabase
     .from('campaigns')
     .select('*')
