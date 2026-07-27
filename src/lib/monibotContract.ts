@@ -288,7 +288,7 @@ export async function getMoniBotNonce(userAddress: `0x${string}`): Promise<bigin
 /**
  * Check user's token allowance for the MoniBotRouter (network-aware)
  * @param userAddress User's wallet address
- * @param network Target network (default: 'base')
+ * @param network Target network (default: 'celo')
  * @returns Allowance in token units (formatted with correct decimals)
  */
 export async function getMoniBotAllowance(userAddress: `0x${string}`, network: SupportedNetwork = 'celo'): Promise<{
@@ -368,7 +368,7 @@ export async function isGrantIssued(
 
 /**
  * Get the contract's token balance (available for grants) - network-aware
- * @param network Target network (default: 'base')
+ * @param network Target network (default: 'celo')
  * @returns Balance formatted as string
  */
 export async function getGrantBalance(network: SupportedNetwork = 'celo'): Promise<string> {
