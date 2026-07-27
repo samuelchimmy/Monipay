@@ -33,7 +33,7 @@ export async function sendFeedbackPrompt(target, txHash, chain, profileId) {
     const eligible = await checkFeedbackEligibility(profileId);
     if (!eligible) return;
 
-    const chainSlug = chain?.toLowerCase() || 'base';
+    const chainSlug = chain?.toLowerCase() || 'celo';
     const agentId = AGENT_ID_MAP[chainSlug] || '51818';
     const feedbackUrl = `https://8004scan.io/agents/${chainSlug}/${agentId}?score=5&tx=${txHash}`;
 
@@ -71,7 +71,7 @@ export async function getFeedbackUrlIfEligible(profileId, txHash, chain) {
     const eligible = await checkFeedbackEligibility(profileId);
     if (!eligible) return null;
 
-    const chainSlug = chain?.toLowerCase() || 'base';
+    const chainSlug = chain?.toLowerCase() || 'celo';
     const agentId = AGENT_ID_MAP[chainSlug] || '51818';
     const feedbackUrl = `https://8004scan.io/agents/${chainSlug}/${agentId}?score=5&tx=${txHash}`;
 
