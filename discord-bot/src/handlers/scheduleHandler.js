@@ -97,7 +97,7 @@ export async function handleScheduledCommand(message, scheduleResult, originalTe
         senderDiscordId: message.author.id,
         senderPayTag: senderProfile.pay_tag,
         senderSource: senderProfile.source,
-        senderWallet: senderProfile.addresses[cmd.chain || 'base'],
+        senderWallet: senderProfile.addresses[cmd.chain || 'celo'],
         command: cmd,
         originalText,
         // We set isRecurring to false for pre-calculated individual jobs
