@@ -34,7 +34,7 @@ const EXPLORERS: Record<string, string> = {
   arc: "https://explorer.arc.network/address/",
 };
 
-const CHAIN_ORDER = ["base", "bsc", "celo", "ink", "tempo", "solana", "arc"];
+const CHAIN_ORDER = ["celo"];
 
 export function AdminWalletBalances({ walletOptions }: { walletOptions?: WalletOptions }) {
   const [data, setData] = useState<BalancesPayload | null>(null);
