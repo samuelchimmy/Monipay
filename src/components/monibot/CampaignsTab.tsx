@@ -51,11 +51,9 @@ export function MoniBotCampaignsTab({ walletOptions, isUnlocked }: Props) {
     setIsBudgetLoading(true);
     try {
       const promises: Promise<string>[] = [getGrantBalance('celo')];
-      if (TEMPO_ENABLED) promises.push(getGrantBalance('tempo'));
       const results = await Promise.all(promises);
       setGrantBudgetBase(results[0]);
       setGrantBudgetBsc(results[1]);
-      if (TEMPO_ENABLED && results[2]) setGrantBudgetTempo(results[2]);
     } catch { /* silent */ }
     finally { setIsBudgetLoading(false); }
   }, []);
@@ -216,9 +214,7 @@ export function MoniBotCampaignsTab({ walletOptions, isUnlocked }: Props) {
           </div>
           <div className="flex gap-2">
             <select value={topUpNetwork} onChange={(e) => setTopUpNetwork(e.target.value as SupportedNetwork)} className="h-9 rounded-md border border-border bg-background px-2 text-xs font-medium">
-              <option value="base">Base</option>
-              <option value="bsc">BSC</option>
-              {TEMPO_ENABLED && <option value="tempo">Tempo</option>}
+              <option value="celo">Celo</option>
             </select>
             <Input type="number" value={topUpAmount} onChange={(e) => setTopUpAmount(e.target.value)} placeholder="Amount" className="h-9 flex-1" />
             <Button onClick={handleTopUp} disabled={isTopUpLoading || !topUpAmount} size="sm" className="bg-green-600 hover:bg-green-700 h-9 px-3">
@@ -237,19 +233,9 @@ export function MoniBotCampaignsTab({ walletOptions, isUnlocked }: Props) {
             </CardTitle>
             <div className="flex items-center bg-muted rounded-full p-0.5">
               <button
-                onClick={() => setCampaignNetwork('base')}
-                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-colors ${campaignNetwork === 'base' ? 'bg-blue-500 text-white' : 'text-muted-foreground'}`}
-              >Base</button>
-              <button
-                onClick={() => setCampaignNetwork('bsc')}
-                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-colors ${campaignNetwork === 'bsc' ? 'bg-yellow-500 text-white' : 'text-muted-foreground'}`}
-              >BSC</button>
-              {TEMPO_ENABLED && (
-                <button
-                  onClick={() => setCampaignNetwork('tempo')}
-                  className={`px-3 py-1 rounded-full text-[10px] font-bold transition-colors ${campaignNetwork === 'tempo' ? 'bg-foreground text-background' : 'text-muted-foreground'}`}
-                >Tempo</button>
-              )}
+                onClick={() => setCampaignNetwork('celo')}
+                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-colors ${campaignNetwork === 'celo' ? 'bg-[#FCFF52] text-gray-950' : 'text-muted-foreground'}`}
+              >Celo</button>
             </div>
           </div>
         </CardHeader>
@@ -257,7 +243,7 @@ export function MoniBotCampaignsTab({ walletOptions, isUnlocked }: Props) {
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">
-                Grant ({campaignNetwork === 'tempo' ? 'αUSD' : campaignNetwork === 'bsc' ? 'USDT' : 'USDC'})
+                Grant (USDC)
               </label>
               <Input type="number" value={grantAmount} onChange={(e) => setGrantAmount(e.target.value)} placeholder="1.00" className="h-9" />
             </div>

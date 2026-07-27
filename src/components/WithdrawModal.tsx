@@ -67,13 +67,13 @@ export function WithdrawModal({ isOpen, onClose, balance, forceWalletOnly = fals
     isSendMode ? 'paytag' : (isCeloMode ? 'minipay' : 'paytag'),
   );
   const [step, setStep] = useState<WithdrawStep>('method');
-  const [network, setNetwork] = useState<SupportedNetwork>(isCeloMode ? 'celo' : (profile?.preferredNetwork || 'base'));
+  const [network, setNetwork] = useState<SupportedNetwork>(isCeloMode ? 'celo' : (profile?.preferredNetwork || 'celo'));
 
   // Keep network in sync with the user's currently-active preferred network
   // (fixes merchant withdraw defaulting to base after switching chains).
   useEffect(() => {
     if (!isOpen) return;
-    const current = isCeloMode ? 'celo' : (profile?.preferredNetwork || 'base');
+    const current = isCeloMode ? 'celo' : (profile?.preferredNetwork || 'celo');
     setNetwork(current as SupportedNetwork);
   }, [isOpen, isCeloMode, profile?.preferredNetwork]);
   const [payTag, setPayTag] = useState('');
@@ -104,7 +104,7 @@ export function WithdrawModal({ isOpen, onClose, balance, forceWalletOnly = fals
   const resetModal = () => {
     setStep('auth');
     setMethod('paytag');
-    setNetwork(profile?.preferredNetwork || 'base');
+    setNetwork(profile?.preferredNetwork || 'celo');
     setPayTag('');
     setAddress('');
     setAmount('');
@@ -161,11 +161,7 @@ export function WithdrawModal({ isOpen, onClose, balance, forceWalletOnly = fals
     try {
       const result = await lookupPayTag(payTag);
       if (result) {
-        // Use solana address when on solana network
-        const network = profile?.preferredNetwork || 'base';
-        const resolvedAddress = (network === 'solana' && result.solanaAddress)
-          ? result.solanaAddress
-          : result.walletAddress;
+        const resolvedAddress = result.walletAddress;
         setRecipientInfo({ address: resolvedAddress, payTag: result.payTag });
         setStep('confirm');
       }
@@ -287,7 +283,6 @@ export function WithdrawModal({ isOpen, onClose, balance, forceWalletOnly = fals
 
         const relayEndpoint =
           network === 'celo' ? 'relay-payment-celo'
-          : network === 'ink' ? 'relay-payment-ink'
           : 'relay-payment';
         const buildBody = () => ({
           action: 'relay',
@@ -327,7 +322,7 @@ export function WithdrawModal({ isOpen, onClose, balance, forceWalletOnly = fals
         // Celo/Ink: relay may return 400 + needsApproval=true on first send.
         // Trigger a one-time token→Router approval using the user's local
         // private key, then auto-retry the relay once.
-        if (!ok && (network === 'celo' || network === 'ink') && json?.needsApproval) {
+        if (!ok && network === 'celo' && json?.needsApproval) {
           if (!decryptedPrivateKey) throw new Error('Wallet locked — cannot approve');
           // Proactively top up native gas so the approve tx doesn't silently fail.
           const fromAddr = profile.wallet.address || '';
@@ -422,12 +417,6 @@ export function WithdrawModal({ isOpen, onClose, balance, forceWalletOnly = fals
                 locked={isCeloMode}
               />
             </div>
-
-            {network === 'tempo' && (
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-2">
-                <p className="text-amber-600 font-medium" style={{ fontSize: 'clamp(10px, 3vw, 12px)' }}>⚠️ Tempo Testnet — funds have no real value</p>
-              </div>
-            )}
 
             {(!isCeloMode || isSendMode) && (
             <button

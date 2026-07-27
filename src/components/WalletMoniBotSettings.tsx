@@ -26,6 +26,7 @@ import {
 interface Props {
   profileId: string;
   walletAddress: `0x${string}`;
+  onIdentityChange?: (identity: SocialIdentity | null) => void;
 }
 
 // Light-on-yellow palette so the cards sit cleanly inside the MoniBot AI
@@ -39,7 +40,7 @@ const themeClasses = {
   isLightTheme: true,
 };
 
-export function WalletMoniBotSettings({ profileId, walletAddress }: Props) {
+export function WalletMoniBotSettings({ profileId, walletAddress, onIdentityChange }: Props) {
   const [identity, setIdentity] = useState<SocialIdentity | null>(null);
   const [isUnlinkingX, setIsUnlinkingX] = useState(false);
 
@@ -66,6 +67,7 @@ export function WalletMoniBotSettings({ profileId, walletAddress }: Props) {
       if (response.error) throw response.error;
       const next = response.data as SocialIdentity;
       setIdentity(next);
+      onIdentityChange?.(next);
       writeCachedIdentity(next);
     } catch (err) {
       console.error("WalletMoniBotSettings: fetch identity failed", err);

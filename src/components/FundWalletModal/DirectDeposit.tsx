@@ -30,7 +30,7 @@ export function DirectDeposit({
   const lastBalance = useRef<number | null>(null);
   const { decryptedPrivateKey, profile } = usePayTag();
   const chain = getChainConfig(network);
-  const isBase = network === 'base';
+  const isBase = false;
   const isCelo = network === 'celo';
   const isSolana = isSolanaNetwork(network);
 

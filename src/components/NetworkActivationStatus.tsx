@@ -6,7 +6,6 @@ import { checkApprovalForNetwork, getTokenBalance } from '@/lib/wallet';
 import { getChainConfig, type SupportedNetwork } from '@/config/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
-import { base, bsc } from 'viem/chains';
 import { feedback } from '@/lib/feedback';
 import { toast } from 'sonner';
 
@@ -45,9 +44,9 @@ export function NetworkActivationStatus({
   const [isActivating, setIsActivating] = useState(false);
 
   const config = getChainConfig(network);
-  const isTempo = network === 'tempo';
-  const isCelo = network === 'celo';
-  const isSolana = network === 'solana';
+  const isTempo = false;
+  const isCelo = true;
+  const isSolana = false;
   const hasRouter = Boolean(config.monipayRouter);
   const [hasBalance, setHasBalance] = useState<boolean | null>(null);
 
@@ -66,7 +65,7 @@ export function NetworkActivationStatus({
       // For Tempo, also check if user has aUSD balance (needed to pay approval tx fee)
       if (isTempo && !result.isActivated) {
         try {
-          const balance = await getTokenBalance(walletAddress as `0x${string}`, 'tempo');
+          const balance = await getTokenBalance(walletAddress as `0x${string}`, 'celo');
           setHasBalance(Number.isFinite(balance) && balance > 0.01);
         } catch {
           setHasBalance(false);
@@ -103,11 +102,7 @@ export function NetworkActivationStatus({
     try {
       // Tempo: no native gas; AlphaUSD pays fees. Skip funding.
       // Base/BSC/Celo/Ink: request a tiny native-gas drip from activation-funder.
-      const fundChain =
-        network === 'bsc'  ? 'BSC'  :
-        network === 'celo' ? 'CELO' :
-        network === 'ink'  ? 'INK'  :
-        network === 'base' ? 'BASE' : null;
+      const fundChain = 'CELO';
 
       if (!isTempo && fundChain) {
         try {
@@ -146,29 +141,13 @@ export function NetworkActivationStatus({
 
       const account = privateKeyToAccount(decryptedPrivateKey);
 
-      // Build chain definition for Tempo/Celo/Ink or use viem presets
-      const chain = isTempo
-        ? {
-            id: 42431,
-            name: 'Tempo Testnet',
-            nativeCurrency: { name: 'USD', symbol: 'USD', decimals: 18 },
-            rpcUrls: { default: { http: ['https://rpc.moderato.tempo.xyz'] } },
-          } as any
-        : isCelo
-        ? {
+      // MoniPay is Celo-only.
+      const chain = {
             id: 42220,
             name: 'Celo Mainnet',
             nativeCurrency: { name: 'CELO', symbol: 'CELO', decimals: 18 },
             rpcUrls: { default: { http: ['https://forno.celo.org'] } },
-          } as any
-        : network === 'ink'
-        ? {
-            id: 57073,
-            name: 'Ink',
-            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-            rpcUrls: { default: { http: ['https://rpc-qnd.inkonchain.com'] } },
-          } as any
-        : network === 'bsc' ? bsc : base;
+          } as any;
       const rpcUrl = config.rpcUrls[0];
 
       const walletClient = createWalletClient({

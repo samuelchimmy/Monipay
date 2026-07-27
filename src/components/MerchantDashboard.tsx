@@ -94,10 +94,10 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
 
   // ── Celo token selector for the charge / QR screen ──────────────────────────
-  const isCeloMerchant = (profile?.preferredNetwork || 'base') === 'celo';
+  const isCeloMerchant = (profile?.preferredNetwork || 'celo') === 'celo';
   const [celoToken, setCeloToken] = useState<CeloTokenSymbol>('USDT');
   const activeCeloToken = CELO_TOKENS.find(t => t.symbol === celoToken) ?? CELO_TOKENS[0];
-  const merchantTokenLabel = isCeloMerchant ? activeCeloToken.symbol : getChainConfig((profile?.preferredNetwork || 'base') as SupportedNetwork).currency;
+  const merchantTokenLabel = isCeloMerchant ? activeCeloToken.symbol : getChainConfig((profile?.preferredNetwork || 'celo') as SupportedNetwork).currency;
 
   // Invoice management - get pending count for badge and track sent invoices for payment detection
   const { pendingCount: invoicePendingCount, sentInvoices, fetchInvoices } = useInvoices(profile?.id);
@@ -465,7 +465,7 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
   const monipayPayload = JSON.stringify({
     type: 'monipay',
     payTag: profile?.payTag,
-    network: profile?.preferredNetwork || 'base',
+    network: profile?.preferredNetwork || 'celo',
     // For Celo, embed the selected token so the payer's app knows which token to send
     ...(isCeloMerchant ? { tokenAddress: activeCeloToken.address, tokenSymbol: activeCeloToken.symbol, decimals: activeCeloToken.decimals } : {}),
     addresses: {
@@ -473,7 +473,7 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
       ...(solAddress ? { solana: solAddress } : {}),
     },
     // Legacy compat: keep 'address' for old scanners
-    address: profile?.preferredNetwork === 'solana' ? solAddress : evmAddress,
+    address: evmAddress,
     merchantName: profile?.payTag ? `@${profile.payTag}` : 'Merchant',
     amount: numericAmount,
     fee: fee,
@@ -486,9 +486,7 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
   });
 
   // External wallet QR: plain wallet address for manual transfer
-  const activeReceiveAddress = profile?.preferredNetwork === 'solana'
-    ? profile?.wallet?.solanaAddress
-    : profile?.wallet?.address;
+  const activeReceiveAddress = profile?.wallet?.address;
   const externalWalletPayload = activeReceiveAddress || '';
 
   const qrPayload = qrMode === 'monipay' ? monipayPayload : externalWalletPayload;
@@ -517,10 +515,8 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
   const handlePullRefresh = useCallback(async () => {
     if (!profile?.wallet?.address) return;
     try {
-      const balanceAddr = (profile.preferredNetwork === 'solana' && profile.wallet.solanaAddress)
-        ? profile.wallet.solanaAddress as unknown as `0x${string}`
-        : profile.wallet.address as `0x${string}`;
-      const balance = await getTokenBalance(balanceAddr, profile.preferredNetwork || 'base');
+      const balanceAddr = profile.wallet.address as `0x${string}`;
+      const balance = await getTokenBalance(balanceAddr, profile.preferredNetwork || 'celo');
       if (Number.isFinite(balance)) {
         // Update via context if available, or just sync transactions
       }
@@ -664,7 +660,7 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
                   onClick={handleCharge}
                   disabled={numericAmount < 0.01}
                   className="flex-1 min-w-0 h-12 text-sm font-semibold rounded-2xl"
-                  style={{ backgroundColor: `hsl(${getChainConfig((profile?.preferredNetwork || 'base') as SupportedNetwork).accentColor})`, color: (profile?.preferredNetwork === 'bsc' || profile?.preferredNetwork === 'celo') ? '#000' : '#fff' }}
+                  style={{ backgroundColor: `hsl(${getChainConfig((profile?.preferredNetwork || 'celo') as SupportedNetwork).accentColor})`, color: '#000' }}
                 >
                   <span className="truncate">{t('charge_btn')} ${amount}</span>
                 </Button>
@@ -847,7 +843,7 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
                     onClick={handleCharge}
                     disabled={numericAmount < 0.01}
                     className="w-full h-14 text-base font-semibold rounded-2xl"
-                    style={{ backgroundColor: `hsl(${getChainConfig((profile?.preferredNetwork || 'base') as SupportedNetwork).accentColor})`, color: (profile?.preferredNetwork === 'bsc' || profile?.preferredNetwork === 'celo') ? '#000' : '#fff' }}
+                    style={{ backgroundColor: `hsl(${getChainConfig((profile?.preferredNetwork || 'celo') as SupportedNetwork).accentColor})`, color: '#000' }}
                   >
                     {t('charge_btn')} ${amount}
                   </Button>
@@ -1144,7 +1140,7 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
                              <span className="text-3xl font-bold text-white">${numericAmount.toFixed(2)}</span>
                              <span className="text-sm text-white/80">{merchantTokenLabel}</span>
                            </div>
-                           <p className="text-[10px] text-white/60 mt-1">on {getChainConfig((profile?.preferredNetwork || 'base') as SupportedNetwork).name} Network</p>
+                           <p className="text-[10px] text-white/60 mt-1">on {getChainConfig((profile?.preferredNetwork || 'celo') as SupportedNetwork).name} Network</p>
                          </div>
                          
                          <p className="text-xs text-muted-foreground">
@@ -1266,7 +1262,7 @@ export function MerchantDashboard({ activeTab, onTabHandled }: MerchantDashboard
             items: selectedTransaction.items,
             invoiceId: selectedTransaction.invoiceId,
           }}
-          walletAddress={(profile?.preferredNetwork === 'solana' && profile?.wallet?.solanaAddress) ? profile.wallet.solanaAddress : profile?.wallet?.address}
+          walletAddress={profile?.wallet?.address}
           onClose={() => setSelectedTx(null)}
           onViewInvoice={(invoiceId) => {
             setSelectedTx(null);

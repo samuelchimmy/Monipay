@@ -48,7 +48,7 @@ export function MoniBotOverviewTab({ walletOptions, isUnlocked }: Props) {
   const fetchBudget = useCallback(async () => {
     setIsBudgetLoading(true);
     try {
-      const [b, s] = await Promise.all([getGrantBalance('base'), getGrantBalance('bsc')]);
+      const [b, s] = await Promise.all([getGrantBalance('celo'), getGrantBalance('celo')]);
       setGrantBudgetBase(b);
       setGrantBudgetBsc(s);
     } catch (err) {

@@ -38,13 +38,13 @@ export function FundWalletModal({
   const [depositSuccess, setDepositSuccess] = useState<{ amount: number } | null>(null);
   const { isCeloMode } = usePayTag();
   const [selectedNetwork, setSelectedNetwork] = useState<SupportedNetwork>(
-    defaultNetwork || (isCeloMode ? 'celo' : 'base')
+    defaultNetwork || 'celo'
   );
 
   // Sync selectedNetwork when modal opens
   React.useEffect(() => {
     if (isOpen) {
-      setSelectedNetwork(defaultNetwork || (isCeloMode ? 'celo' : 'base'));
+      setSelectedNetwork(defaultNetwork || 'celo');
     }
   }, [isOpen, defaultNetwork, isCeloMode]);
 
@@ -133,15 +133,6 @@ export function FundWalletModal({
             locked={isCeloMode}
           />
 
-          {/* Tempo warning */}
-          {selectedNetwork === 'tempo' && (
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-[14px] p-2.5 text-center">
-              <p className="text-[11px] font-semibold text-amber-600">⚠ Tempo Testnet — Funds have no real value</p>
-              <a href="https://faucet.tempo.xyz" target="_blank" rel="noopener noreferrer" className="text-[10px] text-amber-600/80 underline">
-                Get free testnet funds →
-              </a>
-            </div>
-          )}
 
           {/* Insufficient Funds Alert */}
           {insufficientFundsAmount !== null && insufficientFundsAmount !== undefined && (

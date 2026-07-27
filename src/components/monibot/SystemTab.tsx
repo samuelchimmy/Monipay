@@ -75,10 +75,10 @@ function setActiveRpc(network: SupportedNetwork, url: string) {
 export function MoniBotSystemTab({ walletOptions, isUnlocked }: Props) {
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [loading, setLoading] = useState(false);
-  const [rpcNetwork, setRpcNetwork] = useState<SupportedNetwork>('base');
+  const [rpcNetwork, setRpcNetwork] = useState<SupportedNetwork>('celo');
   const [rpcStatuses, setRpcStatuses] = useState<RpcStatus[]>([]);
   const [rpcTesting, setRpcTesting] = useState(false);
-  const RPC_NETWORKS: SupportedNetwork[] = ['base', 'bsc', 'celo', 'ink', 'tempo'];
+  const RPC_NETWORKS: SupportedNetwork[] = ['celo'];
   const [activeRpcs, setActiveRpcs] = useState<Record<string, string>>(
     Object.fromEntries(RPC_NETWORKS.map(n => [n, getActiveRpc(n)]))
   );
@@ -506,7 +506,7 @@ export function MoniBotSystemTab({ walletOptions, isUnlocked }: Props) {
             <p className="text-xs text-muted-foreground text-center py-4">Loading…</p>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {(['base','bsc','celo','ink','tempo','solana'] as const).map(c => {
+              {(['celo'] as const).map(c => {
                 const s = magicpayStats[c] ?? { count: 0, volume: 0, fees: 0 };
                 return (
                   <div key={c} className="rounded-lg bg-muted/50 p-2.5">

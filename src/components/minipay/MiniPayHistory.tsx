@@ -98,12 +98,7 @@ export function MiniPayHistory({ onClose }: Props) {
 
   const explorerUrl = useMemo(() => {
     if (!selectedTx?.txHash) return null;
-    const net = selectedTx.metadata?.network;
-    if (net === 'bsc') return `https://bscscan.com/tx/${selectedTx.txHash}`;
-    if (net === 'tempo') return `https://explore.tempo.xyz/tx/${selectedTx.txHash}`;
-    if (net === 'solana') return `https://solscan.io/tx/${selectedTx.txHash}`;
-    if (net === 'celo') return `https://celoscan.io/tx/${selectedTx.txHash}`;
-    return `https://basescan.org/tx/${selectedTx.txHash}`;
+    return `https://celoscan.io/tx/${selectedTx.txHash}`;
   }, [selectedTx]);
 
   return (

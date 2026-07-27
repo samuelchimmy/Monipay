@@ -10,20 +10,11 @@
  * 3. 1% platform fee is automatically deducted
  */
 
-import { createPublicClient, http, formatUnits, parseUnits, erc20Abi, defineChain } from 'viem';
-import { base, bsc } from 'viem/chains';
+import { createPublicClient, http, formatUnits, parseUnits, erc20Abi } from 'viem';
+import { celo } from 'viem/chains';
 
-const tempoTestnet = defineChain({
-  id: 42431,
-  name: 'Tempo Testnet',
-  nativeCurrency: { name: 'USD', symbol: 'USD', decimals: 18 },
-  rpcUrls: { default: { http: ['https://rpc.moderato.tempo.xyz'] } },
-});
-
-function getViemChain(network: SupportedNetwork) {
-  if (network === 'bsc') return bsc;
-  if (network === 'tempo') return tempoTestnet;
-  return base;
+function getViemChain(_network: SupportedNetwork) {
+  return celo;
 }
 import { getChainConfig, type SupportedNetwork } from '@/config/chains';
 import { getActiveRpc } from '@/components/monibot/SystemTab';
@@ -268,8 +259,8 @@ export const MONIBOT_ROUTER_ABI = [
 // ============ Public Client ============
 
 const publicClient = createPublicClient({
-  chain: base,
-  transport: http(getActiveRpc('base')),
+  chain: celo,
+  transport: http(getActiveRpc('celo')),
 });
 
 // ============ Read Functions ============
@@ -300,7 +291,7 @@ export async function getMoniBotNonce(userAddress: `0x${string}`): Promise<bigin
  * @param network Target network (default: 'base')
  * @returns Allowance in token units (formatted with correct decimals)
  */
-export async function getMoniBotAllowance(userAddress: `0x${string}`, network: SupportedNetwork = 'base'): Promise<{
+export async function getMoniBotAllowance(userAddress: `0x${string}`, network: SupportedNetwork = 'celo'): Promise<{
   allowance: bigint;
   allowanceFormatted: string;
 }> {
@@ -380,7 +371,7 @@ export async function isGrantIssued(
  * @param network Target network (default: 'base')
  * @returns Balance formatted as string
  */
-export async function getGrantBalance(network: SupportedNetwork = 'base'): Promise<string> {
+export async function getGrantBalance(network: SupportedNetwork = 'celo'): Promise<string> {
   try {
     const config = getMoniBotConfig(network);
     const client = createPublicClient({
