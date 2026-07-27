@@ -53,16 +53,18 @@ export function appendBuilderCode(calldata: string): string {
 
 /**
  * Check whether Builder Code attribution should be used for the given network.
+ * MoniPay is Celo-only; Builder Code was Base-specific, so this is always false.
  */
 export function shouldUseBuilderCode(network: string): boolean {
-  return network === 'base';
+  return false;
 }
 
 /**
  * Check whether Builder Code attribution should be used for the given chain ID.
+ * MoniPay is Celo-only; Builder Code was Base-specific, so this is always false.
  */
 export function shouldUseBuilderCodeByChainId(chainId: number): boolean {
-  return chainId === BASE_CHAIN_ID;
+  return false;
 }
 
 export { BUILDER_CODE, BASE_CHAIN_ID };
