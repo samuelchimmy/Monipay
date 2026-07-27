@@ -109,7 +109,7 @@ export function validateSeriesDuration(intervalMs, count) {
  * @param {string} chain - Blockchain chain (base, bsc, tempo)
  * @returns {Object} - Validation result
  */
-export function validateUserBalance(senderProfile, amount, count, recipients = [], chain = 'base') {
+export function validateUserBalance(senderProfile, amount, count, recipients = [], chain = 'celo') {
   const totalCost = calculateSeriesCost(amount, count, recipients);
   
   // Get user's balance on the specified chain
@@ -146,7 +146,7 @@ export function validateRecurringPayment(config) {
     amount,
     recipients = [],
     senderProfile,
-    chain = 'base',
+    chain = 'celo',
   } = config;
   
   const errors = [];
