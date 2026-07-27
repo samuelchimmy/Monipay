@@ -99,7 +99,7 @@ async function handleRecurringPayment(bot, msg, sender, recurringCommand, origin
   const { totalAmount, perPaymentAmount } = amountValidation;
 
   // Get chain and sender address
-  const chain = cmd.chain || sender.preferred_network || 'base';
+  const chain = cmd.chain || sender.preferred_network || 'celo';
   const senderAddr = sender.addresses 
     ? (sender.addresses[chain] || sender.addresses.celo) 
     : sender.wallet_address;
@@ -353,7 +353,7 @@ export async function handleScheduledCommand(bot, msg, scheduleResult, originalT
     return;
   }
 
-  const chain = cmd.chain || sender.preferred_network || 'base';
+  const chain = cmd.chain || sender.preferred_network || 'celo';
   const senderAddr = sender.addresses ? (sender.addresses[chain] || sender.addresses.celo) : sender.wallet_address;
 
   // Run allowance check and balance check in parallel
@@ -437,10 +437,10 @@ export async function pollScheduledJobResults(bot) {
 
       const senderTag = job.payload?.senderPayTag || 'Unknown';
       const amount = job.payload?.command?.amount || '?';
-      const chain = job.payload?.command?.chain || 'base';
+      const chain = job.payload?.command?.chain || 'celo';
 
       if (job.status === 'completed') {
-        const activeChain = job.payload?.command?.chain || 'base';
+        const activeChain = job.payload?.command?.chain || 'celo';
         const txHash = job.result?.txHash || job.result?.results?.[0]?.txHash;
         let explorerUrl = null;
         try {
