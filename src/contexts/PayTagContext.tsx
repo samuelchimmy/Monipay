@@ -135,9 +135,10 @@ interface PayTagProviderProps {
 }
 
 export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps) {
-  const isTempoMode = defaultNetwork === 'tempo';
   const isCeloMode = defaultNetwork === 'celo';
-  const isSolanaMode = defaultNetwork === 'solana';
+  // Celo-only: these remain exposed for API compatibility but are always false.
+  const isTempoMode = false;
+  const isSolanaMode = false;
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('lock');
   const [mode, setMode] = useState<AppMode>('user');
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -194,9 +195,7 @@ export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps
         ...parsed,
         preferredNetwork: (
           isCeloMode ? 'celo'
-          : isTempoMode ? 'tempo'
-          : isSolanaMode ? 'solana'
-          : (parsed?.preferredNetwork || 'base')
+          : (parsed?.preferredNetwork || 'celo')
         ) as SupportedNetwork,
       } as UserProfile;
 
@@ -252,7 +251,7 @@ export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps
           payTag: data.payTag || data.preferredName || lower.slice(0, 8),
           pin: '', // unused in wallet-only mode
           preferredMode: 'user',
-          preferredNetwork: data.preferredNetwork ?? 'base',
+          preferredNetwork: data.preferredNetwork ?? 'celo',
           balance: 0,
           merchantBalance: 0,
           wallet: {
@@ -508,9 +507,9 @@ export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps
     const isNetworkSwitch = typeof networkOverride === 'string';
     if (typeof networkOverride === 'number') {
       retries = networkOverride;
-      effectiveNetwork = (profile.preferredNetwork || 'base') as SupportedNetwork;
+      effectiveNetwork = (profile.preferredNetwork || 'celo') as SupportedNetwork;
     } else {
-      effectiveNetwork = networkOverride || (profile.preferredNetwork || 'base') as SupportedNetwork;
+      effectiveNetwork = networkOverride || (profile.preferredNetwork || 'celo') as SupportedNetwork;
     }
 
     console.log('[refreshBalance] network:', effectiveNetwork, 'isSwitch:', isNetworkSwitch);
@@ -521,9 +520,7 @@ export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps
     const attemptRefresh = async (): Promise<number | null> => {
       try {
         // For Solana, use the solanaAddress (Base58) instead of EVM address
-        const balanceAddress = effectiveNetwork === 'solana' && profile.wallet.solanaAddress
-          ? profile.wallet.solanaAddress as unknown as `0x${string}`
-          : profile.wallet.address as `0x${string}`;
+        const balanceAddress = profile.wallet.address as `0x${string}`;
         const onChainBalance = await getTokenBalance(balanceAddress, effectiveNetwork);
         console.log('[refreshBalance] onChainBalance:', onChainBalance, 'isFinite:', Number.isFinite(onChainBalance));
         if (!Number.isFinite(onChainBalance)) return null;
@@ -689,7 +686,7 @@ export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps
         payTag: normalizedTag,
         pin: hashedPin,
         preferredMode,
-        preferredNetwork: defaultNetwork || 'base',
+        preferredNetwork: defaultNetwork || 'celo',
         balance: 0,
         merchantBalance: 0,
         wallet: {
@@ -756,9 +753,7 @@ export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps
         preferredMode: profileData.preferredMode || 'user',
         preferredNetwork: (
           isCeloMode ? 'celo'
-          : isTempoMode ? 'tempo'
-          : isSolanaMode ? 'solana'
-          : (profileData.preferredNetwork || 'base')
+          : (profileData.preferredNetwork || 'celo')
         ) as SupportedNetwork,
         balance: 0,
         merchantBalance: 0,
@@ -873,10 +868,6 @@ export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps
   /** Returns the active wallet address for the current network */
   const getActiveAddress = (): string => {
     if (!profile) return '';
-    const network = profile.preferredNetwork || 'base';
-    if (network === 'solana' && profile.wallet.solanaAddress) {
-      return profile.wallet.solanaAddress;
-    }
     return profile.wallet.address;
   };
 
@@ -900,9 +891,7 @@ export function PayTagProvider({ children, defaultNetwork }: PayTagProviderProps
   const solanaReady = !!(profile?.wallet?.solanaAddress && profile?.wallet?.encryptedSolanaKey);
   const activeNetworkReady = (() => {
     if (!profile) return false;
-    const net = profile.preferredNetwork || 'base';
-    if (net === 'solana') return solanaReady;
-    return evmReady; // base, bsc, celo, tempo all use EVM key
+    return evmReady; // Celo uses EVM key
   })();
 
   /** Repair a broken Solana wallet (address-only without key) by generating fresh keys */
