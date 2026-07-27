@@ -259,8 +259,8 @@ export const MONIBOT_ROUTER_ABI = [
 // ============ Public Client ============
 
 const publicClient = createPublicClient({
-  chain: base,
-  transport: http(getActiveRpc('base')),
+  chain: celo,
+  transport: http(getActiveRpc('celo')),
 });
 
 // ============ Read Functions ============
@@ -291,7 +291,7 @@ export async function getMoniBotNonce(userAddress: `0x${string}`): Promise<bigin
  * @param network Target network (default: 'base')
  * @returns Allowance in token units (formatted with correct decimals)
  */
-export async function getMoniBotAllowance(userAddress: `0x${string}`, network: SupportedNetwork = 'base'): Promise<{
+export async function getMoniBotAllowance(userAddress: `0x${string}`, network: SupportedNetwork = 'celo'): Promise<{
   allowance: bigint;
   allowanceFormatted: string;
 }> {
@@ -371,7 +371,7 @@ export async function isGrantIssued(
  * @param network Target network (default: 'base')
  * @returns Balance formatted as string
  */
-export async function getGrantBalance(network: SupportedNetwork = 'base'): Promise<string> {
+export async function getGrantBalance(network: SupportedNetwork = 'celo'): Promise<string> {
   try {
     const config = getMoniBotConfig(network);
     const client = createPublicClient({
