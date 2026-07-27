@@ -211,7 +211,7 @@ async function executeSolanaRelay(action, body) {
 
 // ============ MagicPay (IOU / Social Escrow) ============
 
-export async function executeMagicPay(fromAddress, recipientUserId, amount, chainName = 'base') {
+export async function executeMagicPay(fromAddress, recipientUserId, amount, chainName = 'celo') {
   if (!isValidAddress(fromAddress, chainName)) throw new Error('ERROR_INVALID_ADDRESS:Invalid sender address');
   if (isSolanaChain(chainName)) throw new Error('ERROR_SOLANA_MAGICPAY_NOT_SUPPORTED');
 
@@ -283,7 +283,7 @@ export async function executeMagicPay(fromAddress, recipientUserId, amount, chai
 }
 
 // ============ P2P (Main Payment Flow) ============
-export async function executeP2P(fromAddress, toAddress, amount, commandId, chainName = 'base', tokenSymbol = null) {
+export async function executeP2P(fromAddress, toAddress, amount, commandId, chainName = 'celo', tokenSymbol = null) {
   if (!isValidAddress(fromAddress, chainName) || !isValidAddress(toAddress, chainName)) {
     throw new Error('ERROR_INVALID_ADDRESS:Invalid sender or recipient address');
   }
@@ -358,7 +358,7 @@ export async function executeP2P(fromAddress, toAddress, amount, commandId, chai
 }
 
 // ============ GRANT (Giveaways & Rewards) ============
-export async function executeGrant(toAddress, amount, campaignId, chainName = 'base') {
+export async function executeGrant(toAddress, amount, campaignId, chainName = 'celo') {
   if (!isValidAddress(toAddress, chainName)) throw new Error('ERROR_INVALID_ADDRESS:Invalid recipient');
   if (isSolanaChain(chainName)) throw new Error('ERROR_SOLANA_GRANT_NOT_SUPPORTED');
 
@@ -419,9 +419,9 @@ export async function executeGrant(toAddress, amount, campaignId, chainName = 'b
   });
 }
 
-export async function giveAgentFeedback(peerAgentId, score = 5, comment = '', chainName = 'base') {
-  if (!['base', 'celo', 'bsc'].includes(chainName.toLowerCase())) {
-    chainName = 'base';
+export async function giveAgentFeedback(peerAgentId, score = 5, comment = '', chainName = 'celo') {
+  if (chainName.toLowerCase() !== 'celo') {
+    chainName = 'celo';
   }
 
   log.info('Queuing agent feedback', { peerAgentId, score, chain: chainName });
@@ -461,7 +461,7 @@ export async function giveAgentFeedback(peerAgentId, score = 5, comment = '', ch
 }
 
 // ============ BALANCE & ALLOWANCE ============
-export async function getBalance(address, chainName = 'base') {
+export async function getBalance(address, chainName = 'celo') {
   if (!isValidAddress(address, chainName)) {
     log.warn('Invalid address passed to getBalance', { address });
     return { balance: 0, symbol: 'UNKNOWN' };
@@ -493,7 +493,7 @@ export async function getBalance(address, chainName = 'base') {
   }
 }
 
-export async function getAllowance(address, chainName = 'base') {
+export async function getAllowance(address, chainName = 'celo') {
   if (!isValidAddress(address, chainName)) {
     log.warn('Invalid address passed to getAllowance', { address });
     return { allowance: 0, symbol: 'UNKNOWN' };
