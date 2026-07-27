@@ -123,7 +123,7 @@ export async function handleRecurringPayment(message, commandTextOrParsed, optio
     }
 
     // Resolve active chain using resolveActiveChain
-    const serverConfig = message.guild ? await getServerConfig(message.guild.id) : { default_chain: 'base', chain_locked: false };
+    const serverConfig = message.guild ? await getServerConfig(message.guild.id) : { default_chain: 'celo', chain_locked: false };
     let activeChain;
     try {
       activeChain = resolveActiveChain(finalCommand.chain, senderProfile, serverConfig);
