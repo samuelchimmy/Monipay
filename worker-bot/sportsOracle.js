@@ -867,9 +867,16 @@ export async function syncMatchResults() {
 
 // ── Conditional Job Evaluation ────────────────────────────────────────────────
 
+let lastJobCheck = 0;
+
 export async function evaluateConditionalJobs() {
   const supabase = getSupabase();
   const now = new Date().toISOString();
+
+  if (Date.now() - lastJobCheck < 30000) {
+    return;
+  }
+  lastJobCheck = Date.now();
 
   // Query settled matches past stability window (exclude disputed matches)
   const { data: settledMatches, error: matchErr } = await supabase
@@ -886,43 +893,46 @@ export async function evaluateConditionalJobs() {
 
   if (!settledMatches || settledMatches.length === 0) return;
 
-  for (const match of settledMatches) {
-    // Find pending conditional jobs for this match
-    const { data: jobs, error: jobErr } = await supabase
+  const matchIds = settledMatches.map(m => m.id);
+
+  const { data: allJobs, error: jobErr } = await supabase
+    .from('scheduled_jobs')
+    .select('id, status, payload, created_at')
+    .eq('type', 'conditional_sports_p2p')
+    .eq('status', 'pending')
+    .in('payload->>matchId', matchIds);
+
+  if (jobErr || !allJobs || allJobs.length === 0) return;
+
+  console.log(`[SportsOracle] 🔎 ${allJobs.length} pending job(s) for ${matchIds.length} match(es)`);
+
+  for (const job of allJobs) {
+    const matchId = job.payload.matchId;
+    const match = settledMatches.find(m => m.id === matchId);
+    if (!match) continue;
+
+    // ── Atomic lock: only one process wins this job ───────────────────────
+    const { data: locked, error: lockErr } = await supabase
       .from('scheduled_jobs')
-      .select('*')
-      .eq('type', 'conditional_sports_p2p')
-      .eq('status', 'pending')
-      .eq('payload->>matchId', match.id);
+      .update({ status: 'processing', started_at: now })
+      .eq('id', job.id)
+      .eq('status', 'pending') // This is the atomic guard
+      .select('id')
+      .single();
 
-    if (jobErr || !jobs || jobs.length === 0) continue;
+    if (lockErr || !locked) {
+      console.log(`[SportsOracle] ⏭️ Job ${job.id.slice(0, 8)} already claimed by another process — skipping`);
+      continue;
+    }
 
-    console.log(`[SportsOracle] 🔎 ${jobs.length} pending job(s) for match ${match.id}`);
-
-    for (const job of jobs) {
-      // ── Atomic lock: only one process wins this job ───────────────────────
-      const { data: locked, error: lockErr } = await supabase
-        .from('scheduled_jobs')
-        .update({ status: 'processing', started_at: now })
-        .eq('id', job.id)
-        .eq('status', 'pending') // This is the atomic guard
-        .select('id')
-        .single();
-
-      if (lockErr || !locked) {
-        console.log(`[SportsOracle] ⏭️ Job ${job.id.slice(0, 8)} already claimed by another process — skipping`);
-        continue;
-      }
-
-      try {
-        const conditionMet = evaluateCondition(job.payload, match);
-        await fireConditionalJob(job, match, conditionMet);
-      } catch (evalErr) {
-        console.error(`[SportsOracle] ❌ Evaluation error for job ${job.id.slice(0, 8)}:`, evalErr.message);
-        await supabase.from('scheduled_jobs')
-          .update({ status: 'failed', error_message: evalErr.message })
-          .eq('id', job.id);
-      }
+    try {
+      const conditionMet = evaluateCondition(job.payload, match);
+      await fireConditionalJob(job, match, conditionMet);
+    } catch (evalErr) {
+      console.error(`[SportsOracle] ❌ Evaluation error for job ${job.id.slice(0, 8)}:`, evalErr.message);
+      await supabase.from('scheduled_jobs')
+        .update({ status: 'failed', error_message: evalErr.message })
+        .eq('id', job.id);
     }
   }
 }
