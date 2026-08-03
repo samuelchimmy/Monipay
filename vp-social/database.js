@@ -91,7 +91,12 @@ export async function isTweetAlreadyReplied(tweetId, currentTxHash) {
 /**
  * Fetch completed scheduled jobs that haven't had their social post yet.
  */
+let lastSocialPostCheck = 0;
 export async function getJobsPendingSocialPost(limit = 5) {
+  const nowMs = Date.now();
+  if (nowMs - lastSocialPostCheck < 30000) return [];
+  lastSocialPostCheck = nowMs;
+
   const { data, error } = await supabase
     .from('scheduled_jobs')
     .select('*')

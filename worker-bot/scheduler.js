@@ -364,7 +364,12 @@ async function executeScheduledGiveaway(job) {
   };
 }
 
+let lastSchedulerCheck = 0;
 export async function processScheduledJobs() {
+  const nowMs = Date.now();
+  if (nowMs - lastSchedulerCheck < 30000) return;
+  lastSchedulerCheck = nowMs;
+
   const supabase = getSupabase();
   const now = new Date().toISOString();
 

@@ -550,7 +550,12 @@ export async function createScheduledJob({
 /**
  * Get pending scheduled jobs ready for execution
  */
+let lastPendingCheck = 0;
 export async function getPendingScheduledJobs() {
+  const nowMs = Date.now();
+  if (nowMs - lastPendingCheck < 30000) return [];
+  lastPendingCheck = nowMs;
+
   const now = new Date().toISOString();
   const { data, error } = await supabase
     .from('scheduled_jobs')
@@ -568,8 +573,13 @@ export async function getPendingScheduledJobs() {
 /**
  * Fetch recently completed or failed scheduled jobs for Discord notification.
  */
+let lastCompletedCheck = 0;
 export async function getCompletedScheduledJobs() {
-  const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+  const nowMs = Date.now();
+  if (nowMs - lastCompletedCheck < 30000) return [];
+  lastCompletedCheck = nowMs;
+
+  const twoMinAgo = new Date(nowMs - 2 * 60 * 1000).toISOString();
 
   const { data, error } = await supabase
     .from('scheduled_jobs')

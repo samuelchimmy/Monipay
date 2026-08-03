@@ -283,7 +283,12 @@ export async function createScheduledJob({
   return data;
 }
 
+let lastPendingCheck = 0;
 export async function getPendingScheduledJobs() {
+  const nowMs = Date.now();
+  if (nowMs - lastPendingCheck < 30000) return [];
+  lastPendingCheck = nowMs;
+
   const now = new Date().toISOString();
   const { data, error } = await supabase
     .from('scheduled_jobs')
@@ -295,8 +300,13 @@ export async function getPendingScheduledJobs() {
   return data || [];
 }
 
+let lastCompletedCheck = 0;
 export async function getCompletedScheduledJobs() {
-  const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+  const nowMs = Date.now();
+  if (nowMs - lastCompletedCheck < 30000) return [];
+  lastCompletedCheck = nowMs;
+
+  const twoMinAgo = new Date(nowMs - 2 * 60 * 1000).toISOString();
   const { data, error } = await supabase
     .from('scheduled_jobs')
     .select('*')
