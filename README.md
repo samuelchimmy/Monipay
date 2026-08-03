@@ -12,7 +12,7 @@ Send stablecoins to anyone on X (Twitter), Telegram, Discord, and WhatsApp direc
 [![ERC-8004](https://img.shields.io/badge/ERC--8004-Registered%20Agent-purple?style=flat-square)](https://8004scan.io/agents/celo/9103)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](LICENSE)
 
-[Open in MiniPay](https://monipay.xyz/minipay) · [Live App](https://monipay.xyz) · [Security Docs](https://docs.monipay.xyz/minipay-security) · [X/Twitter](https://x.com/monipay_xyz) · [Mention MoniBot](https://x.com/monibot) · [MoniBot on Telegram](https://t.me/monipaybot?startgroup=new) · [MoniBot on Discord](https://top.gg/discord/servers/813055720311959552?s=0da542dd50950) · [KarmaHQ](https://karmahq.xyz/project/monipay) · [Dune]([https://karmahq.xyz/project/monipay](https://dune.com/jadeofwallstreet/monipay-multichain-analytics)
+[Open in MiniPay](https://monipay.xyz/minipay) · [Live App](https://monipay.xyz) · [Security Docs](https://docs.monipay.xyz/minipay-security) · [X/Twitter](https://x.com/monipay_xyz) · [Mention MoniBot](https://x.com/monibot) · [MoniBot on Telegram](https://t.me/monipaybot?startgroup=new) · [MoniBot on Discord](https://top.gg/discord/servers/813055720311959552?s=0da542dd50950) · [KarmaHQ](https://karmahq.xyz/project/monipay) · [Dune](https://dune.com/jadeofwallstreet/monipay-multichain-analytics) 
 
 </div>
 
